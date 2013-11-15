@@ -1,0 +1,36 @@
+<div invoicewindow>
+ <form class="form-horizontal" role="form">
+  <fieldset>
+    <div class="form-group">
+      <label for="invoiceDate" class="col-sm-2 control-label">Invoice Date</label>
+      <div class="col-sm-10">
+        <div class="input-append datepicker" data-date="{{ctrl.todaysDate}}" data-date-format="dd-mm-yyyy">
+          <input class="span2" size="16" type="text" value="{{ctrl.invoiceDate}}">
+          <span class="add-on"><i class="icon-th"></i></span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="invoiceNumber" class="col-sm-2 control-label">Starting Invoice Number</label>
+      <div class="col-sm-10">
+        <input type="number" class="form-control" id="invoiceNumber" value="{{ctrl.invoiceNumber}}">
+      </div>
+    </div>
+    
+     <div class="form-group">
+      <label class="col-sm-2 control-label">Selected Invoices</label>
+      <div class="col-sm-10">
+           <table class="form-control-static invoiceList multiSelectBox">
+            <tbody>
+              <tr ng-repeat="invoice in ctrl.invoiceList | invoiceFilter:ctrl.invoiceDate" ng-click="po.expand()"><td>{{invoice.customer}}</td><td>{{invoice.amount}}</td></tr>
+            </tbody>
+           </table>
+      </div>
+    </div>
+        
+    <button type="submit" class="btn btn-primary" ng-click="ctrl.invoice()">Start Invoicing</button>
+    
+  </fieldset>
+ </form>
+</div>

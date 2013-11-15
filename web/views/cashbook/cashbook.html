@@ -1,0 +1,36 @@
+<div cashbookfolder>
+  <div class="controlbox">
+  
+  </div>
+  
+  <table>
+    <thead>
+      <tr>  
+         <th>Date</th>         
+         <th>Customer</th>
+         <th>Amount</th>         
+         <th>Allowance</th>
+         <th>Part Paid</th>
+         <th>Balance</th>
+         <th>Detail</th>
+         <th>Inv No.</th>
+         <th>Total</th>
+         <th>Amount Banked</th>
+      </tr>
+    </thead>
+    <tbody ng-repeat="payment in ctrl.selectedMonth.payments">
+      <tr ng-repeat="customer in payment.customers">
+        <td>{{customer.date}}</td>
+        <td>{{customer.customer}}</td>
+        <td>{{customer.amount}}</td>
+        <td>{{customer.allowance}}</td>
+        <td>{{customer.partpaid}}</td>
+        <td>{{customer.balance}}</td>
+        <td>{{customer.detail}}</td>
+        <td>{{customer.invnumber}}</td>
+        <td>{{customer.total}}</td>
+        <td>{{customer.banked}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

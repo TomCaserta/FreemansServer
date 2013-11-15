@@ -1,0 +1,35 @@
+<div salessheet>
+  <div class="controlbox"></div>
+  
+  <div class="salesSheetContainer">
+    <b>Date: {{ctrl.selectedSheet.date}}</b>
+    <table>
+        <thead>
+          <tr>
+            <th>Supplier</th>
+            <th>Quantity</th>
+            <th>Product</th>
+            <th>Cost Price</th>
+            <th>Haulier</th>
+            <th>Rate</th>
+            <th>Customer</th>
+            <th>Quantity</th>
+            <th>Sold Price</th>
+          </tr>
+        </thead>
+        <tbody>
+           <tr ng-repeat="item in ctrl.selectedSheet.data">
+              <td>{{item.supplier}}</td>
+              <td>{{item.supplierQty}}</td>
+              <td>{{item.product}}</td>
+              <td>{{item.costPrice}}</td>
+              <td>{{item.transport]}}</td>
+              <td>{{item.transportRate}}</td>
+              <td>{{item.customer}}</td>
+              <td>{{item.customerQuantity}}</td>
+              <td>{{item.soldPrice}}</td>
+           </tr>
+        </tbody>
+    </table>
+  </div>
+</div>

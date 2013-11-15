@@ -1,0 +1,41 @@
+<div transportsheet>
+   <div class="controlbox">
+             
+   </div>
+   
+   <table>
+      <thead>
+        <tr>
+          <th>Supplier</th>
+          <th>Pallets</th>
+          <th>Quantity</th>
+          <th>Item</th>
+          <th>Customer</th>
+          <th>Destination</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><th colspan="6"><h2>Collection</h2></th></tr>
+        <tr ng-repeat="collection in ctrl.selectedDay[ctrl.selectedTransport].collections">
+          <td>{{collection.supplier}}</td>
+          <td>{{collection.pallets}}</td>
+          <td>{{collection.quantity}}</td>
+          <td>{{collection.item}}</td>
+          <td>{{collection.customer}}</td>
+          <td>{{collection.destination}}</td>
+        </tr>
+      </tbody>
+      <tbody>
+        <tr><th colspan="6"><h2>Stock At Yard</h2></th></tr>
+        <tr ng-repeat="stock in ctrl.selectedDay[ctrl.selectedTransport].stock">
+          <td>{{stock.supplier}}</td>
+          <td>{{stock.pallets}}</td>
+          <td>{{stock.quantity}}</td>
+          <td>{{stock.item}}</td>
+          <td>{{stock.customer}}</td>
+          <td>{{stock.destination}}</td>
+        </tr>
+      </tbody>
+   </table>
+   
+</div>

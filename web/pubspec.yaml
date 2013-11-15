@@ -1,0 +1,7 @@
+name: FreemansClient
+dependencies:
+  angular: any
+  crypto: any
+  path: any
+  utf: any
+  uuid: any
