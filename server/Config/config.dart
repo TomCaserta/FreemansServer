@@ -13,5 +13,9 @@ Map<String, dynamic> GLOBAL_SETTINGS = {
                                         /* WEBSOCKETS */
                                         
                                         'ws_bind_ip': InternetAddress.ANY_IP_V4,
-                                        'ws_bind_port': 1337
+                                        'ws_bind_port': 1337,
+                                        'ws_bind_type': "SERVER",
+
+                                         'ws_bind_options': "ws://http://www.freemansfamrproduce.com/connection/server.dart?run=positive"
+                                        
 };

@@ -17,8 +17,11 @@ class CashbookCustomer {
     List<CashbookCustomerEntry> customers = new List<CashbookCustomerEntry> ();
     
     CashbookCustomer (this.customers);
+    
+    onClick() {
+              
+    }
 }
-
 
 class CashbookCustomerEntry {
   String date = "";

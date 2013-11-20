@@ -23,7 +23,6 @@ part 'Websocket/ClientPackets/client_packet.dart';
 part 'Websocket/ServerPackets/server_packet.dart';
 part 'Websocket/ServerPackets/timeout_packet.dart';
 
-
 ConnectionPool dbHandler = new ConnectionPool(host: GLOBAL_SETTINGS["db_host"], port: GLOBAL_SETTINGS["db_port"], user: GLOBAL_SETTINGS["db_user"], password: GLOBAL_SETTINGS["db_password"], db: GLOBAL_SETTINGS["db_database"], max: 5);
 void main() {
   print("Test");
