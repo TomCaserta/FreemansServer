@@ -21,6 +21,7 @@ class ClientPacketAuthenticate extends ClientPacket {
         } 
         else {
           client.sendPacket(new LoggedInServerPacket());
+          
         }
       },
       onError: (err) {
@@ -29,3 +30,4 @@ class ClientPacketAuthenticate extends ClientPacket {
     });
   }
 }
+

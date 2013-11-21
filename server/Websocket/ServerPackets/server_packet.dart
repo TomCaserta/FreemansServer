@@ -82,6 +82,33 @@ class TransportAddServerPacket {
   }
 }
 
+class FileResponseServerPacket {
+  static int ID = SERVER_PACKET_IDS.FILE_RESPONSE;
+  
+  String base64Data = "";
+  String fileName = "";
+  FileResponseServerPacket (this.fileName, this.base64Data) {
+    
+  }
+  static Future<FileResponseServerPacket> load (String fileName) {
+    Completer c = new Completer();
+    File f = new File(fileName);
+    f.exists().then((bool exist) { 
+      if (exist) {
+        f.readAsBytes().then((d) { 
+          c.complete(new FileResponseServerPacket(fileName, CryptoUtils.bytesToBase64(d)));         
+        }).catchError((e) { 
+          c.completeError(e);          
+        });
+      }
+      else {
+       c.completeError("File does not exist");
+      }
+    });
+  }
+}
+
+
 
 class SERVER_PACKET_IDS {
   static const int USER_PASS_INCORRECT_ID = 1;
@@ -92,4 +119,5 @@ class SERVER_PACKET_IDS {
   static const int SUPPLIER_ADD = 6;
   static const int CUSTOMER_ADD = 7;
   static const int TRANSPORT_ADD = 7;
+  static const int FILE_RESPONSE = 8;
 }
