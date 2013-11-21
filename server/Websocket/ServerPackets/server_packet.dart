@@ -87,16 +87,17 @@ class FileResponseServerPacket {
   
   String base64Data = "";
   String fileName = "";
-  FileResponseServerPacket (this.fileName, this.base64Data) {
+  String responseID = "";
+  FileResponseServerPacket (this.fileName, this.base64Data, this.responseID) {
     
   }
-  static Future<FileResponseServerPacket> load (String fileName) {
+  static Future<FileResponseServerPacket> load (String fileName, String responseID) {
     Completer c = new Completer();
     File f = new File(fileName);
     f.exists().then((bool exist) { 
       if (exist) {
         f.readAsBytes().then((d) { 
-          c.complete(new FileResponseServerPacket(fileName, CryptoUtils.bytesToBase64(d)));         
+          c.complete(new FileResponseServerPacket(fileName, CryptoUtils.bytesToBase64(d), responseID));         
         }).catchError((e) { 
           c.completeError(e);          
         });
@@ -106,8 +107,29 @@ class FileResponseServerPacket {
       }
     });
   }
+  toJson () {
+    return {"ID": ID, "rID": responseID, "data": base64Data, "filename": fileName };
+  }
 }
 
+class ActionResponseServerPacket {
+  static int ID = SERVER_PACKET_IDS.ACTION_RESPONSE;
+  bool completeSucessfully = false;
+  String responseID = "";
+  ActionResponseServerPacket (this.completeSucessfully, this.responseID);
+  toJson () {
+    return {"ID": ID, "rID": responseID, "complete": completeSucessfully };
+  }
+}
+
+class PingPongServerPacket {
+  static int ID = SERVER_PACKET_IDS.PING_PONG;
+  String responseID = "";
+  PingPongServerPacket (this.responseID);
+  toJson () {
+    return { "ID": ID, "rID": responseID };
+  }
+}
 
 
 class SERVER_PACKET_IDS {
@@ -120,4 +142,6 @@ class SERVER_PACKET_IDS {
   static const int CUSTOMER_ADD = 7;
   static const int TRANSPORT_ADD = 7;
   static const int FILE_RESPONSE = 8;
+  static const int ACTION_RESPONSE = 9;
+  static const int PING_PONG = 10;
 }
