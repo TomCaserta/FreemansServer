@@ -7,6 +7,7 @@ class Client {
   Map<String, Completer> responsePacket = new Map<String, Completer>();
   Uuid u = new Uuid();
   WebsocketHandler wsh;
+  User user = User.getUser("Guest","");
   Client (this.s, this.wsh);
   void send (String message) {
     s.add(message); 

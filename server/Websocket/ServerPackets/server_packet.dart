@@ -32,10 +32,11 @@ class DisconnectServerPacket extends ServerPacket {
 
 class LoggedInServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.LOGGED_IN;
-  LoggedInServerPacket();
-  //TODO: Send connection and negotiate information
+  User user;
+  String responseID;
+  LoggedInServerPacket(this.user, this.responseID);
   toJson () {
-    return { "ID": ID };
+    return { "ID": ID, "rID": responseID, "user": user };
   }
 }
 

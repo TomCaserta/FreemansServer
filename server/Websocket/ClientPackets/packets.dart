@@ -8,25 +8,16 @@ class AuthenticateClientPacket extends ClientPacket {
   String respID;
   AuthenticateClientPacket.create(this.respID, this.username, this.password);
   void handlePacket (WebsocketHandler wsh, Client client) {
-    // Query our database for the allowed users
-    dbHandler.prepareExecute("SELECT ID, username FROM users WHERE username = ? AND password = ?", [this.username, this.password]).then((res) { 
-      bool completedLogin = false;
-      res.listen((rowData) { 
-        completedLogin = true;
-        print(rowData);
-      },
-      onDone: () {
-        if (!completedLogin) {
-          client.sendPacket(new UserPassIncorrectServerPacket(respID));
-        } 
-        else {
-          client.sendPacket(new LoggedInServerPacket());
-        }
-      },
-      onError: (err) {
-        throw err;
-      });
-    });
+    if (client.user.isGuest == true) { 
+      User temp = User.getUser(this.username, this.password);
+       if (temp != null) {
+         client.user = temp;
+         client.sendPacket(new LoggedInServerPacket(temp, this.respID));
+       }
+       else {
+         client.sendPacket(new UserPassIncorrectServerPacket(this.respID));
+       }
+    }
   }
 }
 

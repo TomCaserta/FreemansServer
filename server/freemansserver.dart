@@ -9,6 +9,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'dart:mirrors';
 import 'package:uuid/uuid.dart';
+import 'Class/permissions.dart';
 
 part 'Class/user.dart';
 part 'Config/config.dart';
