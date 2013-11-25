@@ -11,11 +11,11 @@ abstract class ResponsePacket extends ServerPacket {
 
 class UserPassIncorrectServerPacket extends ResponsePacket {
   static int ID = SERVER_PACKET_IDS.USER_PASS_INCORRECT_ID;
-  String RID;
-  UserPassIncorrectServerPacket (this.RID);
+  String responseID;
+  UserPassIncorrectServerPacket (this.responseID);
   
   toJson () {
-    return { "ID": ID, "RID": RID };
+    return { "ID": ID, "rID": responseID };
   }
 }
 
@@ -39,7 +39,7 @@ class LoggedInServerPacket extends ServerPacket {
   }
 }
 
-class DataChangeServerPacket {
+class DataChangeServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.DATA_CHANGE;
   int userID = 0;
   String change = "";
@@ -51,7 +51,7 @@ class DataChangeServerPacket {
   }
 }
 
-class SupplierAddServerPacket {
+class SupplierAddServerPacket extends ServerPacket {
   static int ID  = SERVER_PACKET_IDS.SUPPLIER_ADD;
   int supplierID = 0;
   String supplierName = "";
@@ -61,7 +61,7 @@ class SupplierAddServerPacket {
   }
 }
 
-class CustomerAddServerPacket {
+class CustomerAddServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.CUSTOMER_ADD;
    int customerID = 0;
    String customerName = "";
@@ -72,7 +72,7 @@ class CustomerAddServerPacket {
    
 }
 
-class TransportAddServerPacket {
+class TransportAddServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.TRANSPORT_ADD;
   int transportID = 0;
   String transportName = "";
@@ -82,7 +82,7 @@ class TransportAddServerPacket {
   }
 }
 
-class FileResponseServerPacket {
+class FileResponseServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.FILE_RESPONSE;
   
   String base64Data = "";
@@ -112,7 +112,7 @@ class FileResponseServerPacket {
   }
 }
 
-class ActionResponseServerPacket {
+class ActionResponseServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.ACTION_RESPONSE;
   bool completeSucessfully = false;
   String responseID = "";
@@ -122,12 +122,21 @@ class ActionResponseServerPacket {
   }
 }
 
-class PingPongServerPacket {
+class PingPongServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.PING_PONG;
   String responseID = "";
-  PingPongServerPacket (this.responseID);
+  bool ping;
+  PingPongServerPacket (this.responseID, this.ping);
   toJson () {
-    return { "ID": ID, "rID": responseID };
+    return { "ID": ID, "rID": responseID, "ping": ping };
+  }
+}
+
+class ResponsePacketTimeoutServerPacket extends ServerPacket {
+  static int ID = SERVER_PACKET_IDS.RESPONSE_PACKET_TIMEOUT;
+  ResponsePacketTimeoutServerPacket ();
+  toJson () {
+    return { "ID": ID };
   }
 }
 

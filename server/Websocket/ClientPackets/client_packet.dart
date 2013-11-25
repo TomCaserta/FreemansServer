@@ -48,9 +48,13 @@ abstract class ClientPacket {
     // Check if our packet ID exists in the acceptable packets map.
     if (packets.containsKey(ID)) {
       // Compare our packet ID and do further validation to that 
-       if (ClentPacketEnum.AUTHENTICATE == ID) {
-         var pkt = new ClientPacketAuthenticate.create(data["respID"], data["username"], data["password"]);
-         pkt.client = client;
+      try {
+       if (CLIENT_PACKET_IDS.AUTHENTICATE == ID) {
+         var pkt = new AuthenticateClientPacket.create(data["crID"], data["username"], data["password"]);
+         return pkt;
+       }
+       else if (CLIENT_PACKET_IDS.PING_PONG == ID) {
+         var pkt = new PingPongClientPacket.create(data["crID"], data["ping"]);
          return pkt;
        }
        else {
@@ -60,6 +64,11 @@ abstract class ClientPacket {
          pkt.client = client;
          return pkt;
        }
+      }
+      catch (e) {
+        // TODO: PROPER ERROR HANDLING
+        print("Some sort of error.");
+      }
     }
     else {
       // TODO: PROPER ERROR HANDLING
@@ -71,7 +80,4 @@ abstract class ClientPacket {
   void handlePacket (WebsocketHandler wsh, Client client) {
     
   }
-}
-class ClentPacketEnum {
-  static int AUTHENTICATE = ClientPacketAuthenticate.ID;
 }

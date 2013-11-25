@@ -32,8 +32,8 @@ class WebsocketHandler {
                 // Construct our client packet
                 ClientPacket c = ClientPacket.constructClientPacket(cli, obj["ID"], obj);
                 // Send the client and websocket handler to the packet and ask it to handle the packet.
-                if (obj["RID"] != null) { 
-                  cli.foundResponse(obj["RID"], this, c);
+                if (obj["rID"] != null) { 
+                  cli.foundResponse(obj["rID"], this, c);
                 }
                 else c.handlePacket(this, cli);
                 print("Received packet ${obj.ID}");
