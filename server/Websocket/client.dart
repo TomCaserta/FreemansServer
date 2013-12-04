@@ -16,6 +16,7 @@ class Client {
     s.add(encoder.convert(message)); 
   }
 
+  /// Disconnect the client and remove them from the listener.
   void disconnect (String reason) {
     this.sendPacket(new DisconnectServerPacket(reason));
     wsh.removeClient(this);
@@ -33,6 +34,7 @@ class Client {
       }
     }
   }
+  
   Future<ClientPacket> sendGetResponse(ResponsePacket packet) {
     Completer c = new Completer();
     String id = u.v4();

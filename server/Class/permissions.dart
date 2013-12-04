@@ -67,24 +67,27 @@ class Permissions {
   }
   
   bool _recursePermissionCheck (PermissionNode parent, String permString) {
-    List<String> permList = permString.split(".");
-    for (int x = 0; x < permList.length; x++) {
-      if (parent.exists(permList[x])) {
-        if (x == (permList.length - 1)) {
-          return parent.get(permList[x]).nodeValue;
-        }
-        else {
-          PermissionNode p = parent.get(permList[x]);
-          if (p.nodeValue == true) {
-            return true;
+    if (parent.nodeValue == true) return true;
+    else {
+      List<String> permList = permString.split(".");
+      for (int x = 0; x < permList.length; x++) {
+        if (parent.exists(permList[x])) {
+          if (x == (permList.length - 1)) {
+            return parent.get(permList[x]).nodeValue;
           }
           else {
-            return _recursePermissionCheck(p, permList.getRange(1, permList.length).join("."));
+            PermissionNode p = parent.get(permList[x]);
+            if (p.nodeValue == true) {
+              return true;
+            }
+            else {
+              return _recursePermissionCheck(p, permList.getRange(1, permList.length).join("."));
+            }
           }
         }
-      }
-      else {
-        return false;
+        else {
+          return false;
+        }
       }
     }
   }
@@ -101,7 +104,7 @@ class Permissions {
          tempL.addAll(_recurseToString(node, "$curNodeStr${(override ? "" : ".")}"));
       });
     }
-    if (parent.nodeValue == true) tempL.add(curNodeStr);
+    if (parent.nodeValue == true) tempL.add((curNodeStr == "" ? "*" : "$curNodeStr.*"));
     return tempL;
   }
   toList () {

@@ -43,6 +43,10 @@ class User {
     this.permissions = new Permissions.create(permissionBlob);
   }
   
+  bool hasPermission (String perm) {
+    return permissions.hasPermission(perm);
+  }
+  
   toJson () {
     return { "uID": userID, "username": username, "permissions": permissions.toList() };
   }

@@ -70,7 +70,6 @@ class CustomerAddServerPacket extends ServerPacket {
    toJson () {
      return {"ID": ID, "customerID": customerID, "customerName": customerName };
    }
-   
 }
 
 class TransportAddServerPacket extends ServerPacket {
@@ -85,7 +84,6 @@ class TransportAddServerPacket extends ServerPacket {
 
 class FileResponseServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.FILE_RESPONSE;
-  
   String base64Data = "";
   String fileName = "";
   String responseID = "";

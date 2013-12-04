@@ -43,7 +43,9 @@ class DataChangeClientPacket extends ClientPacket {
   String identifier = "";
   DataChangeClientPacket.create (this.change, this.type, this.identifier);
   void handlePacket (WebsocketHandler wsh, Client client) {
-    
+    if (!client.user.isGuest) {
+      
+    }
   }
 }
 
@@ -52,7 +54,9 @@ class SupplierAddClientPacket extends ClientPacket {
   String rID = "";
   SupplierAddClientPacket (this.supplierName, this.rID);
   void handlePacket (WebsocketHandler wsh, Client client) {
-    
+    if (!client.user.isGuest && client.user.hasPermission("list.supplier.add")) {
+      
+    }
   }
 }
 
@@ -61,7 +65,13 @@ class CustomerAddClientPacket extends ClientPacket {
   String rID = "";
   CustomerAddClientPacket (this.customerName, this.rID);
   void handlePacket (WebsocketHandler wsh, Client client) {
-    
+    if (!client.user.isGuest && client.user.hasPermission("list.customer.add")) {
+      dbHandler.prepareExecute("SELECT count(*) FROM customers WHERE customerName=? LIMIT 1,1", [customerName]).then((row) { 
+        row.listen((res) {
+          print(res[0]);          
+        });
+      });
+    }
   }
 }
 
@@ -70,7 +80,9 @@ class TransportAddClientPacket extends ClientPacket {
   String rID = "";
   TransportAddClientPacket (this.transportName, this.rID);   
   void handlePacket (WebsocketHandler wsh, Client client) {
-    
+    if (!client.user.isGuest && client.user.hasPermission("list.transport.add")) {
+      
+    }
   }
 }
 
