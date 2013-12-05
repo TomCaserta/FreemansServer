@@ -14,6 +14,7 @@ import 'Class/permissions.dart';
 
 part 'Class/user.dart';
 part 'Class/supplier.dart';
+part 'Class/customer.dart';
 part 'Config/config.dart';
 
 part 'Websocket/websocket_handler.dart';

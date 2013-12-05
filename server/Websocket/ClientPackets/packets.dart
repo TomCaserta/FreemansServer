@@ -66,11 +66,7 @@ class CustomerAddClientPacket extends ClientPacket {
   CustomerAddClientPacket (this.customerName, this.rID);
   void handlePacket (WebsocketHandler wsh, Client client) {
     if (!client.user.isGuest && client.user.hasPermission("list.customer.add")) {
-      dbHandler.prepareExecute("SELECT count(*) FROM customers WHERE customerName=? LIMIT 1,1", [customerName]).then((row) { 
-        row.listen((res) {
-          print(res[0]);          
-        });
-      });
+     
     }
   }
 }

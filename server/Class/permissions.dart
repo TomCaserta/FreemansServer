@@ -91,7 +91,7 @@ class Permissions {
       }
     }
   }
-  
+   
   bool hasPermission (String permissionString) {
     return _recursePermissionCheck (permissions, permissionString);
   }
