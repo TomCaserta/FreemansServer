@@ -60,7 +60,10 @@ class Customer {
   
   
   /// Initializes the customers for use by retreiving them from the database
-  static void init () {
+  static Future<bool> init () {
+    Completer c = new Completer();
     Logger.root.info("Loading customer list...");
+    c.complete(true);
+    return c.future;
   }
 }

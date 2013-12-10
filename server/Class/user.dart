@@ -2,20 +2,22 @@ part of FreemansServer;
 
 class User {
   static List<User> users = new List<User>();
+  
+  /// Initializes the user list into the application from the database
   static Future<bool> init () {
     Logger.root.info("Loading users list...");
     Completer c = new Completer();
     new User("Guest", "", 0, "").isGuest = true;
-    dbHandler.prepareExecute("SELECT ID, username, password, permissions FROM users", []).then((res) { 
+    dbHandler.query("SELECT ID, username, password, permissions FROM users").then((res) { 
       res.listen((rowData) { 
         int uID = rowData[0];
         String username = rowData[1];
         String password = rowData[2];
-        String permissions = rowData[3];
+        String permissions = rowData[3].toString();
         new User(username, password, uID, permissions);
       },
       onDone: () {
-        c.complete();
+        c.complete(true);
         Logger.root.info("Loaded user list...");
       },
       onError: (err) {
@@ -23,7 +25,9 @@ class User {
         Logger.root.severe("Mysql error: $err");
       });
     }).catchError((e) { 
-      Logger.root.severe("Error when selecting users from database");
+
+      c.completeError("Error when selecting users from database: $e");
+      Logger.root.severe("Error when selecting users from database", e);
     });
     return c.future;
   }
@@ -51,8 +55,12 @@ class User {
   }
    
   static bool exists(String name) { 
-    Iterable<User> u = users.where((e) => e.username == name);
-    return (u.length > 0);
+    for (User user in users) {
+      if (user.username == name) {
+        return true;
+      }
+    }
+    return false;
   }
   
   /// Warning returns null if user doesnt exist.

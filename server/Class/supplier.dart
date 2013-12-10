@@ -85,7 +85,8 @@ class Supplier {
   }
   
   /// Initializes the suppliers for use by retreiving them from the database
-  static void init () {
+  static Future<bool> init () {
+    Completer c = new Completer();
     Logger.root.info("Loading supplier list...");
     dbHandler.query("SELECT ID, supplierName, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5 FROM suppliers").then((Results results){
       results.listen((Row row) { 
@@ -104,13 +105,17 @@ class Supplier {
         sup.addressLine5 = row[12];
       },
       onDone: () { 
+        c.complete(true);
         Logger.root.info("Supplier list loaded.");
       }, 
       onError: (e) {
+        c.completeError("Could not load supplier list from database: $e");
         Logger.root.severe("Could not load supplier list from database", e);
       });
     }).catchError((e) { 
+      c.completeError("Could not load supplier list from database: $e");
       Logger.root.severe("Could not load supplier list from database", e);
     });
+    return c.future;
   }
 }

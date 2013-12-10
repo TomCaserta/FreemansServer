@@ -21,8 +21,6 @@ class AuthenticateClientPacket extends ClientPacket {
   }
 }
 
-
-
 class PingPongClientPacket extends ClientPacket {
   static final int ID = CLIENT_PACKET_IDS.PING_PONG;
   bool ping;
@@ -40,11 +38,18 @@ class DataChangeClientPacket extends ClientPacket {
   static final int ID = CLIENT_PACKET_IDS.DATA_CHANGE;
   String change = "";
   int type = 0;
+  String rID = "";
   String identifier = "";
-  DataChangeClientPacket.create (this.change, this.type, this.identifier);
+  DataChangeClientPacket.create (this.change, this.type, this.identifier, this.rID);
   void handlePacket (WebsocketHandler wsh, Client client) {
-    if (!client.user.isGuest) {
-      
+    if (!client.user.isGuest && client.user.hasPermission("data-change.$type")) {
+      wsh.clients.values.where((cli) { return cli != client; }).forEach((e) { 
+        e.sendPacket(new DataChangeServerPacket(client.user.userID, change, type, identifier));
+      });             
+      client.sendPacket(new ActionResponseServerPacket(true, rID));
+    }
+    else {
+      client.sendPacket(new ActionResponseServerPacket(false, rID));      
     }
   }
 }
@@ -66,10 +71,11 @@ class CustomerAddClientPacket extends ClientPacket {
   CustomerAddClientPacket (this.customerName, this.rID);
   void handlePacket (WebsocketHandler wsh, Client client) {
     if (!client.user.isGuest && client.user.hasPermission("list.customer.add")) {
-     
+        
     }
   }
 }
+
 
 class TransportAddClientPacket extends ClientPacket {
   String transportName = "";
