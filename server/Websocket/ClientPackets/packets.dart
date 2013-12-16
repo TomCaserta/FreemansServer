@@ -71,7 +71,12 @@ class CustomerAddClientPacket extends ClientPacket {
   CustomerAddClientPacket (this.customerName, this.rID);
   void handlePacket (WebsocketHandler wsh, Client client) {
     if (!client.user.isGuest && client.user.hasPermission("list.customer.add")) {
+      if (Customer.exists(customerName)) {  
+        new Customer.create(customerName);
+      }
+      else {
         
+      }
     }
   }
 }

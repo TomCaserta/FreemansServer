@@ -17,10 +17,12 @@ part 'Class/user.dart';
 part 'Class/supplier.dart';
 part 'Class/customer.dart';
 part 'Class/transport.dart';
+part 'Class/product.dart';
+part 'Class/workbook_data.dart';
 part 'Config/config.dart';
 
 part 'Utilities/date_functions.dart';
-part 'Utilities/prepared_cacher.dart';
+part 'Utilities/database_handler.dart';
 
 part 'Websocket/websocket_handler.dart';
 part 'Websocket/client.dart';
@@ -32,17 +34,7 @@ part 'Websocket/ClientPackets/client_packet.dart';
 part 'Websocket/ServerPackets/server_packet.dart';
 
 
-Future getNumRows (sql, parameters) { 
-  Completer c = new Completer();
-  dbHandler.prepareExecute(sql, parameters).then((row) { 
-    row.listen((res) {
-      c.complete(res[0]);
-    }, onDone: () { 
-      if (!c.isCompleted) c.complete(0);
-    });
-  });
-  return c.future;
-}
+
 
 String str_repeat(String s, int repeat) { 
   StringBuffer sb = new StringBuffer();

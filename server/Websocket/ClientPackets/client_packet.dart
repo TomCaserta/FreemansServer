@@ -50,6 +50,7 @@ abstract class ClientPacket {
       // Compare our packet ID and do further validation to that 
       try {
        if (CLIENT_PACKET_IDS.AUTHENTICATE == ID) {
+         // Create a new autentication packet. 
          var pkt = new AuthenticateClientPacket.create(data["crID"], data["username"], data["password"]);
          return pkt;
        }
