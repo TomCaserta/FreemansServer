@@ -1,6 +1,6 @@
 part of FreemansServer;
 
-class Customer {
+class Customer extends Cachable<Customer> {
   String name;
   String quickbooksName;
   String billto1;
@@ -20,20 +20,15 @@ class Customer {
   bool isEmailedConfirmation;
   String faxNumber;
   String phoneNumber;
-  Customer.create (String this.name, [int this.terms = 42]) {
-    
-  }
-  factory Customer (String name, [int terms = 42]) {
-    if (!exists(name)) {
-      customers[name] = new Customer.create(name);
+  Customer.create (int ID, String this.name, [int this.terms = 42]):super(ID);
+  factory Customer (int ID, String name, [int terms = 42]) {
+    if (exists(ID)) {
+      return get(ID);
     }
-    else {
-      Logger.root.severe("Duplicate customer Entry Found... $name");
-    }
-    return customers[name];
+    else Logger.root.severe("Duplicate customer Entry Found... $name");
   }
-  
-  
+  static exists (int ID) => Cachable.exists(Customer, ID);
+  static get (int ID) => Cachable.exists(Customer, ID);
   
   /// Returns a List containing all lines of the billing address for the scustomer
   List<String> getFullBillingAddress () {
@@ -46,19 +41,7 @@ class Customer {
   }
   
   // Static Methods
-  static Map<String, Customer> customers = new Map<String, Customer>();
-  
-  /// Check if the customer already exists in the map
-  static bool exists(String name) {
-    return customers.containsKey(name);
-  }
-  
-  /// Retreives the customer from the map
-  static Customer get (String name) {
-    return customers[name];
-  }
-  
-  
+
   /// Initializes the customers for use by retreiving them from the database
   static Future<bool> init () {
     Completer c = new Completer();

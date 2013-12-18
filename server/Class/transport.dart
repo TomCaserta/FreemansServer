@@ -31,6 +31,7 @@ class Transport {
     }
   }
   
+  
   static Map<String, Transport> transportCompanies = new Map<String, Transport>();
   
   static bool exists(String name) {

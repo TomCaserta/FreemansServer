@@ -18,6 +18,7 @@ part 'Class/supplier.dart';
 part 'Class/customer.dart';
 part 'Class/transport.dart';
 part 'Class/product.dart';
+part 'Class/syncable.dart';
 part 'Class/workbook_data.dart';
 part 'Config/config.dart';
 
@@ -50,6 +51,17 @@ void main() {
 
   ConnectionPool handler = new ConnectionPool(host: GLOBAL_SETTINGS["db_host"], port: GLOBAL_SETTINGS["db_port"], user: GLOBAL_SETTINGS["db_user"], password: GLOBAL_SETTINGS["db_password"], db: GLOBAL_SETTINGS["db_database"], max: 5);
   dbHandler = new DatabaseHandler(handler);
+  
+  
+  
+  dbHandler.query("SELECT ID, supplierName, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5 FROM suppliers").then((Results results){
+   results.forEach((Row r) { 
+     print(r[0]);
+   });
+    
+  }).catchError((e) { 
+    Logger.root.severe("Could not load supplier list from database", e);
+  });
   
   
   Logger.root.onRecord.listen((e) { 

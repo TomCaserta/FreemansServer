@@ -1,7 +1,6 @@
 part of FreemansServer;
 
-class Supplier {
-  int ID;
+class Supplier extends Cachable<Supplier> {
   String name;
   String quickbooksName;
   int terms;
@@ -14,17 +13,17 @@ class Supplier {
   String addressLine5;
   String phoneNumber;
   String faxNumber;
-  Supplier.create (String this.name) {
-    
-  }
-  factory Supplier (String name) {
-    if (!exists(name)) {
-      suppliers[name] = new Supplier.create(name);
+  Supplier._create (int ID, String this.name):super(ID);
+  
+  factory Supplier (int ID, String name) {
+    if (!exists(ID)) {
+
+      return new Supplier._create(ID, name);
     }
     else {
       Logger.root.severe("Duplicate Supplier Entry Found... $name");
+      return get(ID);
     }
-    return suppliers[name];
   }
   
   /// Returns a List containing all lines of the address for the supplier.
@@ -32,57 +31,59 @@ class Supplier {
     return [addressLine1, addressLine2, addressLine3, addressLine4, addressLine5];
   }
    
-  
-  // Static Methods
-  static Map<String, Supplier> suppliers = new Map<String, Supplier>();
-  
-  /// Check if the supplier already exists in the map
-  static bool exists(String name) {
-    return suppliers.containsKey(name);
-  }
-  
-  /// Retreives the supplier from the map
-  static Supplier get (String name) {
-    return suppliers[name];
-  }
-  
-  /// Creates a new supplier, inserting it into the database and sending it to quickbooks...
-  static Future<Supplier> createNew (String name, String quickbooksName, { int terms: 42, String remittanceEmail: "", String confirmationEmail: "", String addressLine1: "", String addressLine2: "", String addressLine3: "", String addressLine4: "", String addressLine5: "", String phoneNumber: "", String faxNumber: "" }) {
-    Completer c = new Completer<Supplier>();
-    if (!exists(name)) {
-      dbHandler.prepareExecute("INSERT INTO suppliers (supplierName, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", 
+
+  Future<bool> updateDatabase(DatabaseHandler dbh) {
+    Completer c = new Completer<bool>();
+    if (this.isNew) {
+      dbh.prepareExecute("INSERT INTO suppliers (supplierName, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", 
           [name, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5]).then((Results res) {
               if (res.insertId != 0) {
-                Supplier sup = new Supplier(name);
-                sup.ID = res.insertId;
-                sup.quickbooksName = quickbooksName;
-                sup.terms = terms;
-                sup.remittanceEmail = remittanceEmail;
-                sup.confirmationEmail = confirmationEmail;
-                sup.phoneNumber = phoneNumber;
-                sup.faxNumber = faxNumber;
-                sup.addressLine1 = addressLine1;
-                sup.addressLine2 = addressLine2;
-                sup.addressLine3 = addressLine3;
-                sup.addressLine4 = addressLine4;
-                sup.addressLine5 = addressLine5;
-                c.complete(sup);
+                c.complete(true);
                 Logger.root.info("Created new supplier $name");
   
               }
               else {
+                c.completeError("Unspecified mysql error");
                 Logger.root.severe("Unspecified mysql error");
               }
           }).catchError((e) { 
+            c.completeError(e);
             Logger.root.severe("Error whilst creating supplier $name :", e);
           });
     }
     else {
-      c.completeError("Supplier already exists");
-      Logger.root.warning("Attempt to create duplicate supplier");
+      
     }
     return c.future;
   }
+  
+  static exists (int ID) => Cachable.exists(Supplier, ID);
+  static get (int ID) => Cachable.exists(Supplier, ID);
+  
+  /// Creates a new supplier, inserting it into the database and sending it to quickbooks...
+  static Future<Supplier> createNew (String name, String quickbooksName, { int terms: 42, String remittanceEmail: "", String confirmationEmail: "", String addressLine1: "", String addressLine2: "", String addressLine3: "", String addressLine4: "", String addressLine5: "", String phoneNumber: "", String faxNumber: "" }) {
+    Completer c = new Completer<Supplier>();
+    Supplier sup = new Supplier(0, name);
+    sup.quickbooksName = quickbooksName;
+    sup.terms = terms;
+    sup.remittanceEmail = remittanceEmail;
+    sup.confirmationEmail = confirmationEmail;
+    sup.phoneNumber = phoneNumber;
+    sup.faxNumber = faxNumber;
+    sup.addressLine1 = addressLine1;
+    sup.addressLine2 = addressLine2;
+    sup.addressLine3 = addressLine3;
+    sup.addressLine4 = addressLine4;
+    sup.addressLine5 = addressLine5;
+    sup.updateDatabase(dbHandler).then((bool done) {
+      if (done == true) {
+        c.complete(sup);
+      }
+      else c.completeError("Unspecified error");
+    }).catchError((e) => c.completeError(e));
+    return c.future;
+  }
+  
   
   /// Initializes the suppliers for use by retreiving them from the database
   static Future<bool> init () {
@@ -90,8 +91,7 @@ class Supplier {
     Logger.root.info("Loading supplier list...");
     dbHandler.query("SELECT ID, supplierName, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5 FROM suppliers").then((Results results){
       results.listen((Row row) { 
-        Supplier sup = new Supplier(row[1]);
-        sup.ID = row[0];
+        Supplier sup = new Supplier(row[0], row[1]);
         sup.quickbooksName = row[2];
         sup.terms = row[3];
         sup.remittanceEmail = row[4];
