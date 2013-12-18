@@ -1,7 +1,7 @@
 part of FreemansServer;
 
 
-class SalesRow extends Cachable<SalesRow> {
+class SalesRow extends SyncCachable<SalesRow> {
   
   /*
    * CONSTRUCTOR
@@ -16,8 +16,8 @@ class SalesRow extends Cachable<SalesRow> {
     }
     else return new SalesRow._createNew(id, transport, cust);
   }
-  static exists (int ID) => Cachable.exists(SalesRow, ID);
-  static get (int ID) => Cachable.exists(SalesRow, ID);
+  static exists (int ID) => SyncCachable.exists(SalesRow, ID);
+  static get (int ID) => SyncCachable.exists(SalesRow, ID);
   
   /*
    * SALES ROW
@@ -55,8 +55,8 @@ class SalesRow extends Cachable<SalesRow> {
     Completer c = new Completer();
     if (_parent is PurchaseRow) {      
       if (this.isNew) {
-        dbh.prepareExecute("INSERT INTO sales (customerID, produceID, amount, haulageID, deliveryCost, cost, deliveryDate)"
-                           " VALUES (?,?,?,?,?,?,?)", [_cust.id, ]);
+        //dbh.prepareExecute("INSERT INTO sales (customerID, produceID, amount, haulageID, deliveryCost, cost, deliveryDate)"
+       //                    " VALUES (?,?,?,?,?,?,?)", [_cust.id, ]);
       }
     }
     return c.future;
@@ -66,7 +66,7 @@ class SalesRow extends Cachable<SalesRow> {
   
 }
 
-class PurchaseRow extends Cachable<PurchaseRow> {
+class PurchaseRow extends SyncCachable<PurchaseRow> {
 
   /*
    * CONSTRUCTOR
@@ -79,8 +79,8 @@ class PurchaseRow extends Cachable<PurchaseRow> {
     }
     else return new PurchaseRow._createNew(id,  amount, productName, cost, purchaseTime, weight, packaging, supplier, sales);
   }
-  static exists (int ID) => Cachable.exists(PurchaseRow, ID);
-  static get (int ID) => Cachable.exists(PurchaseRow, ID);
+  static exists (int ID) => SyncCachable.exists(PurchaseRow, ID);
+  static get (int ID) => SyncCachable.exists(PurchaseRow, ID);
   
   /*
    * PURCHASE ROW 
@@ -182,7 +182,7 @@ class PurchaseRow extends Cachable<PurchaseRow> {
   }
 }
 
-class TransportRow extends Cachable<TransportRow> {
+class TransportRow extends SyncCachable<TransportRow> {
   /*
    * CONSTRUCTOR
    */
@@ -195,8 +195,8 @@ class TransportRow extends Cachable<TransportRow> {
     }
     else return new TransportRow._createNew(id, company, deliveryCost);
   }
-  static exists (int ID) => Cachable.exists(TransportRow, ID);
-  static get (int ID) => Cachable.exists(TransportRow, ID);
+  static exists (int ID) => SyncCachable.exists(TransportRow, ID);
+  static get (int ID) => SyncCachable.exists(TransportRow, ID);
   
   /*
    * TRANSPORT ROW
@@ -234,7 +234,7 @@ class TransportRow extends Cachable<TransportRow> {
   }
 }
 
-class WorkbookRow extends Cachable<WorkbookRow> {
+class WorkbookRow extends SyncCachable<WorkbookRow> {
   /*
    * CONSTRUCTOR
    */
@@ -249,8 +249,8 @@ class WorkbookRow extends Cachable<WorkbookRow> {
     else return new WorkbookRow._createNew(id, purchaseRow);
     
   }
-  static exists (int ID) => Cachable.exists(WorkbookRow, ID);
-  static get (int ID) => Cachable.exists(WorkbookRow, ID);
+  static exists (int ID) => SyncCachable.exists(WorkbookRow, ID);
+  static get (int ID) => SyncCachable.exists(WorkbookRow, ID);
   
   /*
    *  WORKBOOK ROW

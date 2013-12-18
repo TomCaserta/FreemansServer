@@ -1,7 +1,7 @@
 part of FreemansServer;
 
 
-class ProductWeight extends Cachable<ProductWeight>  {
+class ProductWeight extends SyncCachable<ProductWeight>  {
   // Static
   ProductWeight._create(ID, this.description):super(ID);
   
@@ -11,8 +11,8 @@ class ProductWeight extends Cachable<ProductWeight>  {
     }
     else return new ProductWeight._create(ID, description);
   }
-  static exists (int ID) => Cachable.exists(ProductWeight, ID);
-  static get (int ID) => Cachable.exists(ProductWeight, ID);
+  static exists (int ID) => SyncCachable.exists(ProductWeight, ID);
+  static get (int ID) => SyncCachable.exists(ProductWeight, ID);
   
   //TODO: Implement
   static void init() {
@@ -36,7 +36,7 @@ class ProductWeight extends Cachable<ProductWeight>  {
   }
 }
 
-class ProductPackaging extends Cachable<ProductPackaging>  {
+class ProductPackaging extends SyncCachable<ProductPackaging>  {
   // Static
   ProductPackaging._create(ID, this.description):super(ID);
   factory ProductPackaging (int ID, String description) {
@@ -45,8 +45,8 @@ class ProductPackaging extends Cachable<ProductPackaging>  {
     }
     else return new ProductPackaging._create(ID, description);
   }
-  static exists (int ID) => Cachable.exists(ProductPackaging, ID);
-  static get (int ID) => Cachable.exists(ProductPackaging, ID);
+  static exists (int ID) => SyncCachable.exists(ProductPackaging, ID);
+  static get (int ID) => SyncCachable.exists(ProductPackaging, ID);
   
   //TODO: Implement
   static void init() {
@@ -63,7 +63,7 @@ class ProductPackaging extends Cachable<ProductPackaging>  {
   }
 }
 
-class Product extends Cachable<Product> {
+class Product extends SyncCachable<Product> {
   // Static
   Product._create(ID, this.name, this.validWeights, this.validPackaging, this.quickbooksName):super(ID);
   
@@ -74,8 +74,8 @@ class Product extends Cachable<Product> {
     else return new Product._create(ID, name, validWeights, validPackaging, quickbooksName);
   }
   
-  static exists (int ID) => Cachable.exists(Product, ID);
-  static get (int ID) => Cachable.exists(Product, ID);
+  static exists (int ID) => SyncCachable.exists(Product, ID);
+  static get (int ID) => SyncCachable.exists(Product, ID);
 
   static void init() {
     

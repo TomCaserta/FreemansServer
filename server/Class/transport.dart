@@ -15,33 +15,25 @@ class Surcharge {
   }
 }
 
-class Transport {
+class Transport extends SyncCachable<Transport> {
   List<Surcharge> surcharges = new List<Surcharge>();
-  int ID = 0;
   String name = "";
   String quickbooksName = "";
   String transportSheetEmail = "";
   String remittanceEmail = "";
-  Transport (this.ID, this.name, this.quickbooksName, this.surcharges, this.transportSheetEmail, this.remittanceEmail) {
-    if (!exists(this.name)) {
-      transportCompanies[name] = this;
-    }
-    else {
-      Logger.root.severe("Duplicate Transport entry for $name");
-    }
-  }
+  Transport (ID, this.name, this.quickbooksName, this.surcharges, this.transportSheetEmail, this.remittanceEmail):super(ID);
   
   
-  static Map<String, Transport> transportCompanies = new Map<String, Transport>();
   
   static bool exists(String name) {
-    return transportCompanies.containsKey(name);
+    Iterable<Transport> transportCompanies = SyncCachable.getVals(Transport);
+    return transportCompanies.where((Transport e) { return e.name == name; }).length > 0;
   }
   
   static Transport getTransport (String name) {
-    if (exists(name)) {
-      return transportCompanies[name];
-    }
+    Iterable<Transport> transportCompanies = SyncCachable.getVals(Transport);
+    Iterable<Transport> matchingCo = transportCompanies.where((Transport e) { return e.name == name; });
+    if (matchingCo.length > 0) return matchingCo.elementAt(0);
   }
   
   static Future<bool> init () {
@@ -60,9 +52,7 @@ class Transport {
          surchargeList.forEach((String sur) {
            List<String> splitSur = sur.split(":");
            surcharges.add(new Surcharge.parse(splitSur[0], splitSur[1]));
-         });
-         
-         
+         });         
        }, 
        onDone: () { 
          Logger.root.info("Loaded transport list");

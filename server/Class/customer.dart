@@ -1,6 +1,6 @@
 part of FreemansServer;
 
-class Customer extends Cachable<Customer> {
+class Customer extends SyncCachable<Customer> {
   String name;
   String quickbooksName;
   String billto1;
@@ -27,8 +27,8 @@ class Customer extends Cachable<Customer> {
     }
     else Logger.root.severe("Duplicate customer Entry Found... $name");
   }
-  static exists (int ID) => Cachable.exists(Customer, ID);
-  static get (int ID) => Cachable.exists(Customer, ID);
+  static exists (int ID) => SyncCachable.exists(Customer, ID);
+  static get (int ID) => SyncCachable.exists(Customer, ID);
   
   /// Returns a List containing all lines of the billing address for the scustomer
   List<String> getFullBillingAddress () {

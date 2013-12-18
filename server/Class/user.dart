@@ -1,8 +1,6 @@
 part of FreemansServer;
 
-class User {
-  static List<User> users = new List<User>();
-  
+class User extends SyncCachable<User> {
   /// Initializes the user list into the application from the database
   static Future<bool> init () {
     Logger.root.info("Loading users list...");
@@ -55,6 +53,7 @@ class User {
   }
    
   static bool exists(String name) { 
+    Iterable<User> users = SyncCachable.getVals(User);
     for (User user in users) {
       if (user.username == name) {
         return true;
@@ -65,6 +64,7 @@ class User {
   
   /// Warning returns null if user doesnt exist.
   static User getUser (String username, String password) {
+    Iterable<User> users = SyncCachable.getVals(User);
     Iterable<User> u = users.where((e) => e.username == username && e.password == password);
     if (u.length > 0) {
       return u.elementAt(0);
@@ -73,13 +73,11 @@ class User {
   
   // Non static:
   bool isGuest = false;
-  int userID;
   String username; 
   String password;
   Permissions permissions;
   
-  User (this.username, this.password, this.userID, String permissionBlob) {
-    users.add(this);
+  User (this.username, this.password, ID, String permissionBlob):super(ID) {
     this.permissions = new Permissions.create(permissionBlob);
   }
 
@@ -102,6 +100,6 @@ class User {
   }
   
   toJson () {
-    return { "uID": userID, "username": username, "permissions": permissions.toList() };
+    return { "uID": id, "username": username, "permissions": permissions.toList() };
   }
 }

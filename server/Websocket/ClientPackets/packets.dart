@@ -44,7 +44,7 @@ class DataChangeClientPacket extends ClientPacket {
   void handlePacket (WebsocketHandler wsh, Client client) {
     if (!client.user.isGuest && client.user.hasPermission("data-change.$type")) {
       wsh.clients.values.where((cli) { return cli != client; }).forEach((e) { 
-        e.sendPacket(new DataChangeServerPacket(client.user.userID, change, type, identifier));
+        e.sendPacket(new DataChangeServerPacket(client.user.id, change, type, identifier));
       });             
       client.sendPacket(new ActionResponseServerPacket(true, rID));
     }

@@ -1,10 +1,11 @@
 part of FreemansServer;
 
-abstract class Cachable<T> {
+
+abstract class SyncCachable<T> {
   
   
   /// Syncables parent object. Used to tell the parent that it contains objects that require a database sync.
-  Cachable<T> _parent;
+  SyncCachable<T> _parent;
   
   /// ID of the Syncable. Should match the database ID. IS NOT UNIQUE ACROSS OBJECT TYPES.
   int id = 0;
@@ -16,56 +17,83 @@ abstract class Cachable<T> {
   bool _hasChange = false;
   
   /// Contains a list of child [Syncable]'s with data that has changed.
-  List<Cachable> changedChildElements = new List<Cachable>();
+  List<SyncCachable> changedChildElements = new List<SyncCachable>();
   
   /// Returns weather a row is new or not.
   bool get isNew => _newInsert;
+  dynamic tempKey;
   
-  static Map<Type, Map<int, Cachable>> _cache = new Map<Type, Map<int, Cachable>>();
-  Cachable (int ID) {
+  static Map<Type, Map<int, SyncCachable>> _cache = new Map<Type, Map<dynamic, SyncCachable>>();
+  SyncCachable (int ID, [dynamic key]) {
     this.id = ID;
     if (id != 0) {
-     _put(this);
+      _put(key != null ? key : ID);
+      
     }
-    else setNew();
+    else {
+      tempKey = key;
+      setNew();
+    }
   }
   
-  static Cachable get (Type t, int ID) {
+ 
+  static SyncCachable get (Type t, dynamic key) {
     if (_cache.containsKey(t)) {
-      if (exists(t, ID)) {
-        return _cache[t][ID];
+      if (exists(t, key)) {
+        return _cache[t][key];
       }
     }
     return null;
   }
 
-  static bool exists (Type t, int id) {
+  static bool exists (Type t, dynamic key) {
     if (_cache.containsKey(t)) {
-      return _cache[t].containsKey(id); 
+      return _cache[t].containsKey(key); 
     }
     else {
       return false;
     }
   }
   
-  void _put (Cachable<T> obj) {
-    if (!_cache.containsKey(T)) _cache[T] = new Map<int, Cachable>();
+  void _put (dynamic key) {
+    if (!_cache.containsKey(T)) _cache[T] = new Map<dynamic, SyncCachable>();
       if (id != 0) {
-        if (!exists(T, id)) {
-        _cache[T][id] = this;
+        
+        if (!exists(T, key)) {
+        _cache[T][key] = this;
       }
       else {
         throw "Object already exists";
       }
     }
   }
-
-  Cachable<T> getO (int ID) {
-    return get(T, ID);
+  
+  static Map<dynamic, SyncCachable> getMap (Type t) {
+    if (!_cache.containsKey(t)) _cache[t] = new Map<dynamic, SyncCachable>();
+    return _cache[t];
   }
   
-  bool existsO (int id) {
-    return exists(T, id);
+  static getVals (Type t) {
+    if (!_cache.containsKey(t)) _cache[t] = new Map<dynamic, SyncCachable>();
+    return _cache[t].values;
+  }
+
+  Iterable<T> getValsO () {
+    return getVals(T);
+  }
+  
+ 
+  Map<dynamic, T> getMapO () {
+    return getMap(T);
+  }
+  
+
+  SyncCachable<T> getO (dynamic key) {
+    return get(T, key);
+  }
+  
+  bool existsO (dynamic key) {
+    return exists(T, key);
   }
   
   /// Sets a Syncable as a new insert.
@@ -76,7 +104,8 @@ abstract class Cachable<T> {
     if (_newInsert) {
       this.id = ID;
       _newInsert = false;
-      _put(this);
+      _put(tempKey != null ? tempKey : ID);
+      tempKey = null;
     }
     else {
       Logger.root.severe("firstInsert() called on ${this.runtimeType} ID: $id however this row is not first time insert.");
@@ -84,7 +113,7 @@ abstract class Cachable<T> {
   }
   
   /// Called by a syncable object when a database update is required.
-  void requiresDatabaseSync ([Cachable child = null]) {
+  void requiresDatabaseSync ([SyncCachable child = null]) {
     if (_hasChange == false) {
       _hasChange = true;
       if (child != null) {
@@ -100,16 +129,16 @@ abstract class Cachable<T> {
       e.synced();
     });        
     _hasChange = false;
-    changedChildElements = new List<Cachable>();
+    changedChildElements = new List<SyncCachable>();
   }
   
-  void setParent (Cachable parent) {
+  void setParent (SyncCachable parent) {
     _parent = parent;
   }
   
   /// Overridden, destroys the object from the server and database.
   Future<bool> destroy () {
-    Completer c = new Completer();
+    Completer<bool> c = new Completer<bool>();
     Logger.root.severe("Syncable object ${this.runtimeType} cannot be destroyed. Shutting down to prevent data being out of sync.");
     c.completeError("Syncable object cannot be destroyed.");
     return c.future;
@@ -122,4 +151,9 @@ abstract class Cachable<T> {
     c.completeError("Syncable object does not implement a database update method.");
     return c.future;
   }
+}
+
+class QBSyncCachable<T> extends SyncCachable<T> {
+  QBSyncCachable(int ID):super(ID);
+  // TODO: Implement QB syncing
 }

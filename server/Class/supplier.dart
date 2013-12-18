@@ -1,6 +1,6 @@
 part of FreemansServer;
 
-class Supplier extends Cachable<Supplier> {
+class Supplier extends SyncCachable<Supplier> {
   String name;
   String quickbooksName;
   int terms;
@@ -13,16 +13,17 @@ class Supplier extends Cachable<Supplier> {
   String addressLine5;
   String phoneNumber;
   String faxNumber;
-  Supplier._create (int ID, String this.name):super(ID);
+  Supplier._create (int ID, String name):super(ID, name) {
+    this.name = name;
+  }
   
   factory Supplier (int ID, String name) {
-    if (!exists(ID)) {
-
+    if (!exists(name)) {
       return new Supplier._create(ID, name);
     }
     else {
       Logger.root.severe("Duplicate Supplier Entry Found... $name");
-      return get(ID);
+      return get(name);
     }
   }
   
@@ -57,8 +58,8 @@ class Supplier extends Cachable<Supplier> {
     return c.future;
   }
   
-  static exists (int ID) => Cachable.exists(Supplier, ID);
-  static get (int ID) => Cachable.exists(Supplier, ID);
+  static exists (String name) => SyncCachable.exists(Supplier, name);
+  static get (String name) => SyncCachable.exists(Supplier, name);
   
   /// Creates a new supplier, inserting it into the database and sending it to quickbooks...
   static Future<Supplier> createNew (String name, String quickbooksName, { int terms: 42, String remittanceEmail: "", String confirmationEmail: "", String addressLine1: "", String addressLine2: "", String addressLine3: "", String addressLine4: "", String addressLine5: "", String phoneNumber: "", String faxNumber: "" }) {
