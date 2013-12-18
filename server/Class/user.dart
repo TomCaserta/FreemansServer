@@ -29,20 +29,37 @@ class User extends SyncCachable<User> {
     });
     return c.future;
   }
-  
+
+  Future<bool> updateDatabase(DatabaseHandler dbh) {
+    Completer c = new Completer<bool>();
+    if (this.isNew) {
+      dbHandler.prepareExecute("INSERT INTO users (username, password, permissions) VALUES (?,?,?)", [username, password, permissions]).then((Results res) { 
+        if (res.insertId != 0) {
+          this.id = res.insertId;
+          c.complete(true);
+        }
+        else {
+          c.completeError("Unspecified mysql error");
+          Logger.root.severe("Unspecified mysql error whilst inserting user $username");
+        }
+      });
+    }
+    else {
+      
+    }
+    return c.future;
+  }
   static Future<User> createNew (String name, String password, String permissions) {
     Completer c = new Completer();
     if (!exists(name)) {
-      dbHandler.prepareExecute("INSERT INTO users (username, password, permissions) VALUES (?,?,?)", [name, password, permissions]).then((Results res) { 
-           if (res.insertId != 0) {
-             User u = new User(name, password, res.insertId, permissions);
-             c.complete(u);
-           }
-           else {
-             c.completeError("Unspecified mysql error");
-             Logger.root.severe("Unspecified mysql error whilst inserting user $name");
-           }
-      });
+      User use = new User(name, password, 0, permissions);
+      use.updateDatabase(dbHandler).then((done) { 
+        if (done == true) {
+          c.complete(use);
+        }
+        else c.completeError("Unspecified error");
+      }).catchError((e) => c.completeError(e));
+      
     }
     else { 
       c.completeError("User already exists");
@@ -53,13 +70,7 @@ class User extends SyncCachable<User> {
   }
    
   static bool exists(String name) { 
-    Iterable<User> users = SyncCachable.getVals(User);
-    for (User user in users) {
-      if (user.username == name) {
-        return true;
-      }
-    }
-    return false;
+    return SyncCachable.exists(User, name);
   }
   
   /// Warning returns null if user doesnt exist.
@@ -77,7 +88,8 @@ class User extends SyncCachable<User> {
   String password;
   Permissions permissions;
   
-  User (this.username, this.password, ID, String permissionBlob):super(ID) {
+  User (String username, this.password, ID, String permissionBlob):super(ID, username) {
+    this.username = username;
     this.permissions = new Permissions.create(permissionBlob);
   }
 
