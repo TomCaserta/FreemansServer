@@ -24,6 +24,7 @@ abstract class SyncCachable<T> {
   dynamic tempKey;
 
   static Map<Type, Map<int, SyncCachable>> _cache = new Map<Type, Map<dynamic, SyncCachable>>();
+
   SyncCachable (int ID, [dynamic key]) {
     this.id = ID;
     if (id != 0) {
@@ -57,14 +58,13 @@ abstract class SyncCachable<T> {
 
   void _put (dynamic key) {
     if (!_cache.containsKey(T)) _cache[T] = new Map<dynamic, SyncCachable>();
+    if (!exists(T, key)) {
       if (id != 0) {
-
-        if (!exists(T, key)) {
         _cache[T][key] = this;
       }
-      else {
-        throw "Object already exists";
-      }
+    }
+    else {
+      Logger.root.severe("Object already exists");
     }
   }
 

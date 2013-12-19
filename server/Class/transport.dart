@@ -52,7 +52,7 @@ class Transport extends SyncCachable<Transport> {
     else {
       dbh.prepareExecute("UPDATE transport SET name=?, remittanceEmail=?, transportSheetEmail=?, surcharges=?, quickbooksName=? WHERE ID=?", [name, remittanceEmail, transportSheetEmail, surchargesString.toString(), quickbooksName, id])
          .then((Results res) {
-            if (res.affectedRows == 1) {
+            if (res.affectedRows <= 1) {
               this.synced();
                c.complete(true);
             }

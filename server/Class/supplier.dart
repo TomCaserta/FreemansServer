@@ -1,18 +1,117 @@
 part of FreemansServer;
 
 class Supplier extends SyncCachable<Supplier> {
-  String name;
-  String quickbooksName;
-  int terms;
-  String remittanceEmail;
-  String confirmationEmail;
-  String addressLine1;
-  String addressLine2;
-  String addressLine3;
-  String addressLine4;
-  String addressLine5;
-  String phoneNumber;
-  String faxNumber;
+  String _name;
+  String _quickbooksName;
+  int _terms;
+  String _remittanceEmail;
+  String _confirmationEmail;
+  String _addressLine1;
+  String _addressLine2;
+  String _addressLine3;
+  String _addressLine4;
+  String _addressLine5;
+  String _phoneNumber;
+  String _faxNumber;
+  
+  String get name => _name;
+
+  String get quickbooksName => _quickbooksName;
+
+  int get terms => _terms;
+
+  String get remittanceEmail => _remittanceEmail;
+
+  String get confirmationEmail => _confirmationEmail;
+
+  String get addressLine1 => _addressLine1;
+
+  String get addressLine2 => _addressLine2;
+
+  String get addressLine3 => _addressLine3;
+
+  String get addressLine4 => _addressLine4;
+
+  String get addressLine5 => _addressLine5;
+
+  String get phoneNumber => _phoneNumber;
+
+  String get faxNumber => _faxNumber;
+  
+  
+  set name (String name) {
+    if (name != _name) {
+      _name = name;
+      requiresDatabaseSync();
+    }
+  }
+  set quickbooksName (String quickbooksName) {
+    if (quickbooksName != _quickbooksName) {
+      _quickbooksName = quickbooksName;
+      requiresDatabaseSync();
+    }
+  }
+  set terms (int terms) {
+    if (terms != _terms) {
+      _terms = terms;
+      requiresDatabaseSync();
+    }
+  }
+  set remittanceEmail (String remittanceEmail) {
+    if (remittanceEmail != _remittanceEmail) {
+      _remittanceEmail = remittanceEmail;
+      requiresDatabaseSync();
+    }
+  }
+  set confirmationEmail (String confirmationEmail) {
+    if (confirmationEmail != _confirmationEmail) {
+      _confirmationEmail = confirmationEmail;
+      requiresDatabaseSync();
+    }
+  }
+  set addressLine1 (String addressLine1) {
+    if (addressLine1 != _addressLine1) {
+      _addressLine1 = addressLine1;
+      requiresDatabaseSync();
+    }
+  }
+  set addressLine2 (String addressLine2) {
+    if (addressLine2 != _addressLine2) {
+      _addressLine2 = addressLine2;
+      requiresDatabaseSync();
+    }
+  }
+  set addressLine3 (String addressLine3) {
+    if (addressLine3 != _addressLine3) {
+      _addressLine3 = addressLine3;
+      requiresDatabaseSync();
+    }
+  }
+  set addressLine4 (String addressLine4) {
+    if (addressLine4 != _addressLine4) {
+      _addressLine4 = addressLine4;
+      requiresDatabaseSync();
+    }
+  }
+  set addressLine5 (String addressLine5) {
+    if (addressLine5 != _addressLine5) {
+      _addressLine5 = addressLine5;
+      requiresDatabaseSync();
+    }
+  }
+  set phoneNumber (String phoneNumber) {
+    if (phoneNumber != _phoneNumber) {
+      _phoneNumber = phoneNumber;
+      requiresDatabaseSync();
+    }
+  }
+  set faxNumber (String faxNumber) {
+    if (faxNumber != _faxNumber) {
+      _faxNumber = faxNumber;
+      requiresDatabaseSync();
+    }
+  }
+  
   Supplier._create (int ID, String name):super(ID, name) {
     this.name = name;
   }
@@ -40,6 +139,7 @@ class Supplier extends SyncCachable<Supplier> {
           [name, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5]).then((Results res) {
               if (res.insertId != 0) {
                 c.complete(true);
+                this._firstInsert(res.insertId);
                 Logger.root.info("Created new supplier $name");
 
               }
@@ -53,7 +153,18 @@ class Supplier extends SyncCachable<Supplier> {
           });
     }
     else {
-
+      dbh.prepareExecute("UPDATE suppliers SET supplierName=?, quickbooksName=?, terms=?, remittanceEmail=?, confirmationEmail=?, phoneNumber=?, faxNumber=?, addressLine1=?, addressLine2=?, addressLine3=?, addressLine4=?, addressLine5=? WHERE ID=?",
+          [name, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5, id]).then((Results res) {
+            if (res.affectedRows <= 1) {
+              this.synced();
+               c.complete(true);
+            }
+            else {
+              c.completeError("Tried updating supplier however ${res.affectedRows} rows affected does not equal one.");
+            }
+          }).catchError((e) {
+            c.completeError(e);
+          });
     }
     return c.future;
   }
@@ -93,17 +204,17 @@ class Supplier extends SyncCachable<Supplier> {
     dbHandler.query("SELECT ID, supplierName, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5 FROM suppliers").then((Results results){
       results.listen((Row row) {
         Supplier sup = new Supplier(row[0], row[1]);
-        sup.quickbooksName = row[2];
-        sup.terms = row[3];
-        sup.remittanceEmail = row[4];
-        sup.confirmationEmail = row[5];
-        sup.phoneNumber = row[6];
-        sup.faxNumber = row[7];
-        sup.addressLine1 = row[8];
-        sup.addressLine2 = row[9];
-        sup.addressLine3 = row[10];
-        sup.addressLine4 = row[11];
-        sup.addressLine5 = row[12];
+        sup._quickbooksName = row[2];
+        sup._terms = row[3];
+        sup._remittanceEmail = row[4];
+        sup._confirmationEmail = row[5];
+        sup._phoneNumber = row[6];
+        sup._faxNumber = row[7];
+        sup._addressLine1 = row[8];
+        sup._addressLine2 = row[9];
+        sup._addressLine3 = row[10];
+        sup._addressLine4 = row[11];
+        sup._addressLine5 = row[12];
       },
       onDone: () {
         c.complete(true);
