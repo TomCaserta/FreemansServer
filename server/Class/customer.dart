@@ -204,7 +204,37 @@ class Customer extends SyncCachable<Customer> {
   static Future<bool> init () {
     Completer c = new Completer();
     Logger.root.info("Loading customer list...");
-    c.complete(true);
+    dbHandler.query("SELECT ID, customerName, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2, shipto3, shipto4, shipto5, terms, faxNumber, phoneNumber FROM customers").then((Results results){
+      results.listen((Row row) {
+        Customer cust = new Customer(row[0], row[1], row[15]);
+        cust._invoiceEmail = row[2];
+        cust._confirmationEmail = row[3];
+        cust._quickbooksName = row[4];
+        cust._billto1 = row[5];
+        cust._billto2 = row[6];
+        cust._billto3 = row[7];
+        cust._billto4 = row[8];
+        cust._billto5 = row[9];
+        cust._shipto1 = row[10];
+        cust._shipto2 = row[11];
+        cust._shipto3 = row[12];
+        cust._shipto4 = row[13];
+        cust._shipto5 = row[14];
+        cust._faxNumber = row[16];
+        cust._phoneNumber = row[17];
+      },
+      onDone: () {
+        c.complete(true);
+        Logger.root.info("Customer list loaded.");
+      },
+      onError: (e) {
+        c.completeError("Could not load customer list from database: $e");
+        Logger.root.severe("Could not load customer list from database", e);
+      });
+    }).catchError((e) {
+      c.completeError("Could not load customer list from database: $e");
+      Logger.root.severe("Could not load customer list from database", e);
+    });
     return c.future;
   }
 }
