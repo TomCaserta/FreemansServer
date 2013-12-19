@@ -167,7 +167,7 @@ class ProductPackaging extends SyncCachable<ProductPackaging>  {
 
 class Product extends SyncCachable<Product> {
   // Static
-  Product._create(ID, this.name, this.validWeights, this.validPackaging, this.quickbooksName):super(ID);
+  Product._create(ID, this._name, this._validWeights, this._validPackaging, this._quickbooksName):super(ID);
 
   factory Product (int ID, String name, List<int> validWeights, List<int> validPackaging, String quickbooksName) {
     if (exists(ID)) {
@@ -211,16 +211,85 @@ class Product extends SyncCachable<Product> {
 
   // Object
 
-  String name;
-  List<int> validWeights = new List<int>();
-  List<int> validPackaging = new List<int>();
-  String quickbooksName;
-
-
-  Future<bool> updateDatabase (DatabaseHandler dbh) {
-    if (this.isNew) {
-      
+  String _name;
+  List<int> _validWeights = new List<int>();
+  List<int> _validPackaging = new List<int>();
+  String _quickbooksName;
+  
+  String get name => _name;
+  List<int> get validWeights => _validWeights;
+  List<int> get validPackaging  => _validPackaging;
+  String get quickbooksName => _quickbooksName;
+  
+  set name (  String name) {
+    if (name != _name) {
+      _name = name;
+      requiresDatabaseSync();
     }
+  }
+  set quickbooksName (  String quickbooksName) {
+    if (quickbooksName != _quickbooksName) {
+      _quickbooksName = quickbooksName;
+      requiresDatabaseSync();
+    }
+  }
+  void addValidWeight (ProductWeight weight) {
+    if (!validWeights.contains(weight.id)) {
+      validWeights.add(weight.id);
+      requiresDatabaseSync();
+    }
+  }
+  void removeValidWeight (ProductWeight weight) {
+    if (validWeights.contains(weight.id)) {
+      validWeights.remove(weight.id);
+      requiresDatabaseSync();
+    }
+  }
+  void addValidPackaging (ProductPackaging packaging) {
+    if (!validPackaging.contains(packaging.id)) {
+      validPackaging.add(packaging.id);
+      requiresDatabaseSync();
+    }
+  }
+  void removeValidPackaging (ProductPackaging packaging) {
+    if (validPackaging.contains(packaging.id)) {
+      validPackaging.remove(packaging.id);
+      requiresDatabaseSync();
+    }
+  }
+  Future<bool> updateDatabase (DatabaseHandler dbh) {
+    Completer c = new Completer();
+    if (this.isNew) {
+      dbh.prepareExecute("INSERT INTO prdoucts (productName, validWeights, validPackaging, quickbooksItem) VALUES (?,?,?,?)", [name, validWeights.join(","), validPackaging.join(","), quickbooksName]).then((res) {
+        if (res.insertId != 0) {
+          this._firstInsert(res.insertId);
+          c.complete(true);
+          Logger.root.info("Created new ${this.runtimeType} $name");
+          
+        }
+        else {
+          c.completeError("Unspecified mysql error");
+          Logger.root.severe("Unspecified mysql error");
+        }
+      }).catchError((e) {
+        c.completeError(e);
+        Logger.root.severe("Error whilst creating ${this.runtimeType} $name :", e);
+      });
+    }
+    else {
+      dbh.prepareExecute("UPDATE packaging SET productName=?, validWeights=?, validPackaging=?, quickbooksItem=? WHERE ID=?", [name, validWeights.join(","), validPackaging.join(","), quickbooksName, id]).then((res) {  
+        if (res.affectedRows <= 1) {
+          this.synced();
+          c.complete(true);
+        }
+        else {
+          c.completeError("Tried updating ${this.runtimeType} however ${res.affectedRows} rows affected does not equal one.");
+        }
+      }).catchError((e) {
+        c.completeError(e);
+      });
+    }
+    return c.future;
   }
 
 }
