@@ -179,8 +179,34 @@ class Product extends SyncCachable<Product> {
   static exists (int ID) => SyncCachable.exists(Product, ID);
   static get (int ID) => SyncCachable.get(Product, ID);
 
-  static void init() {
-     Logger.root.info("Loading product list...");
+  static Future<bool> init() {
+    Completer c = new Completer();
+    Logger.root.info("Loading product list...");
+    dbHandler.query("SELECT ID, productName, validWeights, validPackaging, quickbooksItem FROM products").then((Results results){
+      results.listen((Row row) {
+        List<int> vWeights = new List<int>();
+        List<int> vPackaging = new List<int>();
+        String vWeightString = row[2];
+        String vPackagingString = row[3];
+        vWeightString.split(",").forEach((String val) {
+          vWeights.add(int.parse(val));
+        });
+        vPackagingString.split(",").forEach((String val) {
+          vPackaging.add(int.parse(val));
+        });
+        new Product(row[0], row[1], vWeights, vPackaging, row[4]);
+      },
+      onDone: () {
+        c.complete(true);
+        Logger.root.info("List loaded.");
+      },
+      onError: (e) {
+        c.completeError("Could not load list from database: $e");
+      });
+    }).catchError((e) {
+      c.completeError("Could not load list from database: $e");
+    });
+    return c.future;
   }
 
   // Object
@@ -192,7 +218,9 @@ class Product extends SyncCachable<Product> {
 
 
   Future<bool> updateDatabase (DatabaseHandler dbh) {
-
+    if (this.isNew) {
+      
+    }
   }
 
 }
