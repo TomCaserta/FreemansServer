@@ -15,9 +15,9 @@ class Customer extends SyncCachable<Customer> {
   String _shipto5;
   int _terms;
   String _invoiceEmail;
-  bool _isEmailedInvoice;
+  bool _isEmailedInvoice = true;
   String _confirmationEmail;
-  bool _isEmailedConfirmation;
+  bool _isEmailedConfirmation = true;
   String _faxNumber;
   String _phoneNumber;
 
@@ -175,15 +175,18 @@ class Customer extends SyncCachable<Customer> {
   }
 
 
-  Customer.create (int ID, String name, [int this._terms = 42]):super(ID, name) {
+  Customer._create (int ID, String name, [int this._terms = 42]):super(ID, name) {
       this._name = name;
   }
 
   factory Customer (int ID, String name, [int terms = 42]) {
     if (exists(name)) {
+      Logger.root.severe("Duplicate customer Entry Found... $name");
       return get(name);
     }
-    else Logger.root.severe("Duplicate customer Entry Found... $name");
+    else {
+      return new Customer._create(ID, name, terms);
+    }
   }
   static exists (String name) => SyncCachable.exists(Customer, name);
   static get (String name) => SyncCachable.get(Customer, name);
@@ -198,13 +201,51 @@ class Customer extends SyncCachable<Customer> {
     return [shipto1, shipto2, shipto3, shipto4, shipto5];
   }
 
+
+  Future<bool> updateDatabase (DatabaseHandler dbh) {
+    Completer c = new Completer();
+     if (this.isNew) {
+        dbh.prepareExecute("INSERT INTO customers (customerName, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2,"
+                            "shipto3, shipto4, shipto5, terms, faxNumber, phoneNumber, isEmailedInvoice, isEmailedConfirmation) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                            [name, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2, shipto3, shipto4, shipto5,
+                             terms, faxNumber, phoneNumber, (isEmailedInvoice ? 1 : 0), (isEmailedConfirmation ? 1 : 0)])
+           .then((Results res) {
+             if (res.insertId != 0) {
+               _firstInsert(res.insertId);
+               c.complete(true);
+             }
+             else {
+               c.completeError("Unspecified mysql error");
+             }
+           }).catchError((e) => c.completeError(e));
+     }
+     else {
+       dbh.prepareExecute("UPDATE customers SET customerName=?, invoiceEmail=?, confirmationEmail=?, quickbooksName=?, billto1=?, billto2=?, billto3=?, billto4=?, billto5=?, shipto1=?, shipto2=?,"
+           "shipto3=?, shipto4=?, shipto5=?, terms=?, faxNumber=?, phoneNumber=?, isEmailedInvoice=?, isEmailedConfirmation=? WHERE ID=?",
+           [name, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2, shipto3, shipto4, shipto5,
+            terms, faxNumber, phoneNumber, (isEmailedInvoice ? 1 : 0), (isEmailedConfirmation ? 1 : 0), id])
+           .then((Results res) { 
+             if (res.affectedRows <= 1) {
+               synced();
+               c.complete(true);
+             }
+             else {
+               c.completeError("Query affected ${res.affectedRows} instead of just one.");
+             }
+           })
+           .catchError((err) => c.completeError(err));
+     }
+     return c.future;
+  }
+
+
   // Static Methods
 
   /// Initializes the customers for use by retreiving them from the database
   static Future<bool> init () {
     Completer c = new Completer();
     Logger.root.info("Loading customer list...");
-    dbHandler.query("SELECT ID, customerName, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2, shipto3, shipto4, shipto5, terms, faxNumber, phoneNumber FROM customers").then((Results results){
+    dbHandler.query("SELECT ID, customerName, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2, shipto3, shipto4, shipto5, terms, faxNumber, phoneNumber, isEmailedInvoice, isEmailedConfirmation FROM customers").then((Results results){
       results.listen((Row row) {
         Customer cust = new Customer(row[0], row[1], row[15]);
         cust._invoiceEmail = row[2];
@@ -222,6 +263,8 @@ class Customer extends SyncCachable<Customer> {
         cust._shipto5 = row[14];
         cust._faxNumber = row[16];
         cust._phoneNumber = row[17];
+        cust._isEmailedInvoice = (row[18] == 1 ? true : false);
+        cust._isEmailedConfirmation = (row[19] == 1 ? true : false);
       },
       onDone: () {
         c.complete(true);
