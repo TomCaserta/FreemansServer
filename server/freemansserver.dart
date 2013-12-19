@@ -22,7 +22,7 @@ part 'Class/syncable.dart';
 part 'Class/workbook_data.dart';
 part 'Config/config.dart';
 
-part 'Utilities/date_functions.dart';
+part 'Utilities/functions.dart';
 part 'Utilities/database_handler.dart';
 
 part 'Websocket/websocket_handler.dart';
@@ -36,35 +36,15 @@ part 'Websocket/ServerPackets/server_packet.dart';
 
 
 
-
-String str_repeat(String s, int repeat) { 
-  StringBuffer sb = new StringBuffer();
-  for (int x = 0; x < repeat; x++) {
-    sb.write(s);
-  }
-  return sb.toString();
-}
-
 DatabaseHandler dbHandler;
 
 void main() {
 
   ConnectionPool handler = new ConnectionPool(host: GLOBAL_SETTINGS["db_host"], port: GLOBAL_SETTINGS["db_port"], user: GLOBAL_SETTINGS["db_user"], password: GLOBAL_SETTINGS["db_password"], db: GLOBAL_SETTINGS["db_database"], max: 5);
   dbHandler = new DatabaseHandler(handler);
-  
-  
-  
-  dbHandler.query("SELECT ID, supplierName, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5 FROM suppliers").then((Results results){
-   results.forEach((Row r) { 
-     print(r[0]);
-   });
-    
-  }).catchError((e) { 
-    Logger.root.severe("Could not load supplier list from database", e);
-  });
-  
-  
-  Logger.root.onRecord.listen((e) { 
+
+
+  Logger.root.onRecord.listen((e) {
     print(e);
     if (e.level == Level.SEVERE) {
       throw e;
@@ -75,15 +55,15 @@ void main() {
   prel.addFuture(new PreloadElement("UserInit", User.init));
   prel.addFuture(new PreloadElement("SupplierInit", Supplier.init));
   prel.addFuture(new PreloadElement("CustomerInit", Customer.init));
-  prel.startLoad(onError: (e) { 
+  prel.addFuture(new PreloadElement("TransportInit", Transport.init));
+  prel.startLoad(onError: (e) {
     Logger.root.severe("$e");
-  }).listen((int x) { 
-    stdout.flush();
+  }).listen((int x) {
     print("[${str_repeat("|",x)}${str_repeat("=",(100-x))}]");
-  }, onDone: () { 
+  }, onDone: () {
     print("Finished loading!");
   });
- 
+
   //WebsocketHandler wsh = new WebsocketHandler ();
   //wsh.start();
 }

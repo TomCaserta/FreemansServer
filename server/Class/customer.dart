@@ -175,15 +175,18 @@ class Customer extends SyncCachable<Customer> {
   }
 
 
-  Customer.create (int ID, String this._name, [int this._terms = 42]):super(ID);
+  Customer.create (int ID, String name, [int this._terms = 42]):super(ID, name) {
+      this._name = name;
+  }
+
   factory Customer (int ID, String name, [int terms = 42]) {
-    if (exists(ID)) {
-      return get(ID);
+    if (exists(name)) {
+      return get(name);
     }
     else Logger.root.severe("Duplicate customer Entry Found... $name");
   }
-  static exists (int ID) => SyncCachable.exists(Customer, ID);
-  static get (int ID) => SyncCachable.exists(Customer, ID);
+  static exists (String name) => SyncCachable.exists(Customer, name);
+  static get (String name) => SyncCachable.get(Customer, name);
 
   /// Returns a List containing all lines of the billing address for the scustomer
   List<String> getFullBillingAddress () {
