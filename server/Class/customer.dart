@@ -206,9 +206,9 @@ class Customer extends SyncCachable<Customer> {
     Completer c = new Completer();
      if (this.isNew) {
         dbh.prepareExecute("INSERT INTO customers (customerName, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2,"
-                            "shipto3, shipto4, shipto5, terms, faxNumber, phoneNumber, isEmailedInvoice, isEmailedConfirmation) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                            "shipto3, shipto4, shipto5, terms, faxNumber, phoneNumber, isEmailedInvoice, isEmailedConfirmation, active) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                             [name, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2, shipto3, shipto4, shipto5,
-                             terms, faxNumber, phoneNumber, (isEmailedInvoice ? 1 : 0), (isEmailedConfirmation ? 1 : 0)])
+                             terms, faxNumber, phoneNumber, (isEmailedInvoice ? 1 : 0), (isEmailedConfirmation ? 1 : 0), (isActive ? 1 : 0)])
            .then((Results res) {
              if (res.insertId != 0) {
                _firstInsert(res.insertId);
@@ -221,9 +221,9 @@ class Customer extends SyncCachable<Customer> {
      }
      else {
        dbh.prepareExecute("UPDATE customers SET customerName=?, invoiceEmail=?, confirmationEmail=?, quickbooksName=?, billto1=?, billto2=?, billto3=?, billto4=?, billto5=?, shipto1=?, shipto2=?,"
-           "shipto3=?, shipto4=?, shipto5=?, terms=?, faxNumber=?, phoneNumber=?, isEmailedInvoice=?, isEmailedConfirmation=? WHERE ID=?",
+           "shipto3=?, shipto4=?, shipto5=?, terms=?, faxNumber=?, phoneNumber=?, isEmailedInvoice=?, isEmailedConfirmation=?, active=? WHERE ID=?",
            [name, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2, shipto3, shipto4, shipto5,
-            terms, faxNumber, phoneNumber, (isEmailedInvoice ? 1 : 0), (isEmailedConfirmation ? 1 : 0), id])
+            terms, faxNumber, phoneNumber, (isEmailedInvoice ? 1 : 0), (isEmailedConfirmation ? 1 : 0), (isActive ? 1 : 0), ID])
            .then((Results res) { 
              if (res.affectedRows <= 1) {
                synced();
@@ -245,7 +245,7 @@ class Customer extends SyncCachable<Customer> {
   static Future<bool> init () {
     Completer c = new Completer();
     Logger.root.info("Loading customer list...");
-    dbHandler.query("SELECT ID, customerName, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2, shipto3, shipto4, shipto5, terms, faxNumber, phoneNumber, isEmailedInvoice, isEmailedConfirmation FROM customers").then((Results results){
+    dbHandler.query("SELECT ID, customerName, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2, shipto3, shipto4, shipto5, terms, faxNumber, phoneNumber, isEmailedInvoice, isEmailedConfirmation, active FROM customers").then((Results results){
       results.listen((Row row) {
         Customer cust = new Customer(row[0], row[1], row[15]);
         cust._invoiceEmail = row[2];
@@ -263,8 +263,9 @@ class Customer extends SyncCachable<Customer> {
         cust._shipto5 = row[14];
         cust._faxNumber = row[16];
         cust._phoneNumber = row[17];
-        cust._isEmailedInvoice = (row[18] == 1 ? true : false);
-        cust._isEmailedConfirmation = (row[19] == 1 ? true : false);
+        cust._isEmailedInvoice = (row[18] != 0 ? true : false);
+        cust._isEmailedConfirmation = (row[19] != 0 ? true : false);
+        cust._isActive = (row[20] != 0 ? true : false);
       },
       onDone: () {
         c.complete(true);

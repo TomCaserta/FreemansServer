@@ -2,13 +2,13 @@ part of FreemansServer;
 
 
 abstract class SyncCachable<T> {
-
-
   /// Syncables parent object. Used to tell the parent that it contains objects that require a database sync.
-  SyncCachable<T> _parent;
+  SyncCachable _parent;
 
   /// ID of the Syncable. Should match the database ID. IS NOT UNIQUE ACROSS OBJECT TYPES.
-  int id = 0;
+  int ID = 0;
+
+  bool _isActive = true;
 
   /// Defines weather a Syncable is new data to be inserted into the database
   bool _newInsert = false;
@@ -18,18 +18,31 @@ abstract class SyncCachable<T> {
 
   /// Contains a list of child [Syncable]'s with data that has changed.
   List<SyncCachable> changedChildElements = new List<SyncCachable>();
+  
+  /// Contains a list of child [Syncable]'s
+  List<SyncCachable> childElements = new List<SyncCachable>();
 
   /// Returns weather a row is new or not.
   bool get isNew => _newInsert;
+  bool get isActive => _isActive; 
+  
+  set isActive (bool active) {
+    if (active != _isActive) {
+      childElements.forEach((e) {
+        e.isActive = active;
+      });
+      requiresDatabaseSync();
+    }
+  }
+  
+  
   dynamic tempKey;
 
   static Map<Type, Map<int, SyncCachable>> _cache = new Map<Type, Map<dynamic, SyncCachable>>();
 
-  SyncCachable (int ID, [dynamic key]) {
-    this.id = ID;
-    if (id != 0) {
+  SyncCachable (this.ID, [dynamic key]) {
+    if (ID != 0) {
       _put(key != null ? key : ID);
-
     }
     else {
       tempKey = key;
@@ -59,7 +72,7 @@ abstract class SyncCachable<T> {
   void _put (dynamic key) {
     if (!_cache.containsKey(T)) _cache[T] = new Map<dynamic, SyncCachable>();
     if (!exists(T, key)) {
-      if (id != 0) {
+      if (ID != 0) {
         _cache[T][key] = this;
       }
     }
@@ -99,57 +112,73 @@ abstract class SyncCachable<T> {
   /// Sets a Syncable as a new insert.
   void setNew () {
     _newInsert = true;
+    requiresDatabaseSync();
   }
-  void _firstInsert (int ID) {
+  
+  void _firstInsert (int identifier) {
     if (_newInsert) {
-      this.id = ID;
+      this.ID = identifier;
       _newInsert = false;
-      _put(tempKey != null ? tempKey : ID);
+      _put(tempKey != null ? tempKey : identifier);
       synced();
       tempKey = null;
     }
     else {
-      Logger.root.severe("firstInsert() called on ${this.runtimeType} ID: $id however this row is not first time insert.");
+      Logger.root.severe("firstInsert() called on ${this.runtimeType} ID: $ID however this row is not first time insert.");
     }
   }
 
   /// Called by a syncable object when a database update is required.
   void requiresDatabaseSync ([SyncCachable child = null]) {
+    if (child != null) {
+      changedChildElements.add(child);
+    }
     if (_hasChange == false) {
       _hasChange = true;
-      if (child != null) {
-        changedChildElements.add(child);
-      }
-      if (_parent != null) _parent.requiresDatabaseSync();
+      if (_parent != null) _parent.requiresDatabaseSync(this);
     }
   }
 
   /// Used to update the synced status of a Syncable
   void synced () {
-    changedChildElements.forEach((e) {
-      e.synced();
-    });
+    if (_parent != null) _parent._childSynced(this);
     _hasChange = false;
-    changedChildElements = new List<SyncCachable>();
   }
 
-  void setParent (SyncCachable parent) {
-    _parent = parent;
+  void _childSynced (SyncCachable child) {
+    if (changedChildElements.contains(child)) {
+      changedChildElements.remove(child);
+    }
   }
-
-  /// Overridden, destroys the object from the server and database.
-  Future<bool> destroy () {
-    Completer<bool> c = new Completer<bool>();
-    Logger.root.severe("Syncable object ${this.runtimeType} cannot be destroyed. Shutting down to prevent data being out of sync.");
-    c.completeError("Syncable object cannot be destroyed.");
-    return c.future;
+  
+  void addChild (SyncCachable child) {
+    childElements.add(child);
   }
-
+  
+  void removeChild (SyncCachable child) {
+    _childSynced(child);
+    if (childElements.contains(child)) childElements.remove(child);
+  }
+  
+  void addParent (SyncCachable parent) {
+    if (_parent == null && parent != null) {
+      _parent = parent;
+      if (parent != null) {
+        parent.addChild(this);
+      }
+    }
+  }
+  
+  void detatchParent () {
+    if (_parent != null) _parent.removeChild(this);
+    _parent = null;
+  }
+  
   /// Called when a update to the database is occuring.
   Future<bool> updateDatabase (DatabaseHandler dbh) {
     Completer c = new Completer();
-    Logger.root.severe("Syncable object ${this.runtimeType} does not implement a database update method. Shutting down to prevent data being out of sync.");
-    c.completeError("Syncable object does not implement a database update method.");
+    Logger.root.warning("Syncable object ${this.runtimeType} does not implement a database update method.");
+    c.complete(false);
     return c.future;
   }
 }

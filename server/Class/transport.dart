@@ -16,13 +16,44 @@ class Surcharge {
 }
 
 class Transport extends SyncCachable<Transport> {
-  List<Surcharge> surcharges = new List<Surcharge>();
-  String name = "";
-  String quickbooksName = "";
-  String transportSheetEmail = "";
-  String remittanceEmail = "";
-  Transport._create (int ID, String name, this.quickbooksName, this.surcharges, this.transportSheetEmail, this.remittanceEmail):super(ID, name) {
-    this.name = name;
+  List<Surcharge> _surcharges = new List<Surcharge>();
+  String _name = "";
+  String _quickbooksName = "";
+  String _transportSheetEmail = "";
+  String _remittanceEmail = "";
+
+  String get name => _name;
+  String get quickbooksName => _quickbooksName;
+  String get transportSheetEmail => _transportSheetEmail;
+  String get remittanceEmail => _remittanceEmail;
+  
+  set name ( String name) {
+    if (name != _name) {
+      _name = name;
+      requiresDatabaseSync();
+    }
+  }
+  set quickbooksName (  String quickbooksName) {
+    if (quickbooksName != _quickbooksName) {
+      _quickbooksName = quickbooksName;
+      requiresDatabaseSync();
+    }
+  }
+  set transportSheetEmail (  String transportSheetEmail) {
+    if (transportSheetEmail != _transportSheetEmail) {
+      _transportSheetEmail = transportSheetEmail;
+      requiresDatabaseSync();
+    }
+  }
+  set remittanceEmail (  String remittanceEmail) {
+    if (remittanceEmail != _remittanceEmail) {
+      _remittanceEmail = remittanceEmail;
+      requiresDatabaseSync();
+    }
+  }
+  
+  Transport._create (int ID, String name, this._quickbooksName, this._surcharges, this._transportSheetEmail, this._remittanceEmail):super(ID, name) {
+    this._name = name;
   }
 
   factory Transport (int ID, String name, String quickbooksName, List<Surcharge> surcharges, String transportSheetEmail, String remittanceEmail) {
@@ -35,7 +66,7 @@ class Transport extends SyncCachable<Transport> {
 
   Future<bool> updateDatabase (DatabaseHandler dbh) {
     Completer c = new Completer();
-    String surchargesString = surcharges.join(",");
+    String surchargesString = _surcharges.join(",");
     if (this.isNew) {
       dbh.prepareExecute("INSERT INTO transport (name, remittanceEmail, transportSheetEmail, surcharges, quickbooksName) VALUES (?,?,?,?,?)", [name, remittanceEmail,  transportSheetEmail, surchargesString.toString(), quickbooksName])
          .then((Results res) {
@@ -50,7 +81,7 @@ class Transport extends SyncCachable<Transport> {
          .catchError((e) => c.completeError(e));
     }
     else {
-      dbh.prepareExecute("UPDATE transport SET name=?, remittanceEmail=?, transportSheetEmail=?, surcharges=?, quickbooksName=? WHERE ID=?", [name, remittanceEmail, transportSheetEmail, surchargesString.toString(), quickbooksName, id])
+      dbh.prepareExecute("UPDATE transport SET name=?, remittanceEmail=?, transportSheetEmail=?, surcharges=?, quickbooksName=? WHERE ID=?", [name, remittanceEmail, transportSheetEmail, surchargesString.toString(), quickbooksName, ID])
          .then((Results res) {
             if (res.affectedRows <= 1) {
               this.synced();
@@ -86,6 +117,7 @@ class Transport extends SyncCachable<Transport> {
            List<String> splitSur = sur.split(":");
            surcharges.add(new Surcharge.parse(splitSur[0], splitSur[1]));
          });
+         new Transport(ID, name, quickbooksName, surcharges,  transportSheetEmail, remittanceEmail);
        },
        onDone: () {
          Logger.root.info("Loaded transport list");

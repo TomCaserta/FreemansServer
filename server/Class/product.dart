@@ -17,9 +17,10 @@ class ProductWeight extends SyncCachable<ProductWeight>  {
   static Future<bool> init() {
     Completer c = new Completer();
     Logger.root.info("Loading product weights list...");
-    dbHandler.query("SELECT ID, description FROM productweights").then((Results results){
+    dbHandler.query("SELECT ID, description, active FROM productweights").then((Results results){
       results.listen((Row row) {
         ProductWeight weight = new ProductWeight(row[0], row[1]);
+        weight._isActive = row[2];
       },
       onDone: () {
         c.complete(true);
@@ -67,7 +68,7 @@ class ProductWeight extends SyncCachable<ProductWeight>  {
        });
      }
      else {
-       dbh.prepareExecute("UPDATE productweights SET description=? WHERE ID=?", [this.description,this.id]).then((res) {  
+       dbh.prepareExecute("UPDATE productweights SET description=? WHERE ID=?", [this.description,this.ID]).then((res) {  
          if (res.affectedRows <= 1) {
            this.synced();
            c.complete(true);
@@ -118,7 +119,7 @@ class ProductPackaging extends SyncCachable<ProductPackaging>  {
   // Object
 
   String _description;
-
+  
   String get description => description;
   
   set description (String description) {
@@ -149,7 +150,7 @@ class ProductPackaging extends SyncCachable<ProductPackaging>  {
       });
     }
     else {
-      dbh.prepareExecute("UPDATE packaging SET description=? WHERE ID=?", [this.description,this.id]).then((res) {  
+      dbh.prepareExecute("UPDATE packaging SET description=? WHERE ID=?", [this.description,this.ID]).then((res) {  
         if (res.affectedRows <= 1) {
           this.synced();
           c.complete(true);
@@ -234,26 +235,26 @@ class Product extends SyncCachable<Product> {
     }
   }
   void addValidWeight (ProductWeight weight) {
-    if (!validWeights.contains(weight.id)) {
-      validWeights.add(weight.id);
+    if (!validWeights.contains(weight.ID)) {
+      validWeights.add(weight.ID);
       requiresDatabaseSync();
     }
   }
   void removeValidWeight (ProductWeight weight) {
-    if (validWeights.contains(weight.id)) {
-      validWeights.remove(weight.id);
+    if (validWeights.contains(weight.ID)) {
+      validWeights.remove(weight.ID);
       requiresDatabaseSync();
     }
   }
   void addValidPackaging (ProductPackaging packaging) {
-    if (!validPackaging.contains(packaging.id)) {
-      validPackaging.add(packaging.id);
+    if (!validPackaging.contains(packaging.ID)) {
+      validPackaging.add(packaging.ID);
       requiresDatabaseSync();
     }
   }
   void removeValidPackaging (ProductPackaging packaging) {
-    if (validPackaging.contains(packaging.id)) {
-      validPackaging.remove(packaging.id);
+    if (validPackaging.contains(packaging.ID)) {
+      validPackaging.remove(packaging.ID);
       requiresDatabaseSync();
     }
   }
@@ -277,7 +278,7 @@ class Product extends SyncCachable<Product> {
       });
     }
     else {
-      dbh.prepareExecute("UPDATE packaging SET productName=?, validWeights=?, validPackaging=?, quickbooksItem=? WHERE ID=?", [name, validWeights.join(","), validPackaging.join(","), quickbooksName, id]).then((res) {  
+      dbh.prepareExecute("UPDATE packaging SET productName=?, validWeights=?, validPackaging=?, quickbooksItem=? WHERE ID=?", [name, validWeights.join(","), validPackaging.join(","), quickbooksName, ID]).then((res) {  
         if (res.affectedRows <= 1) {
           this.synced();
           c.complete(true);

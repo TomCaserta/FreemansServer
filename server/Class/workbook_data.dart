@@ -7,7 +7,10 @@ class SalesRow extends SyncCachable<SalesRow> {
    * CONSTRUCTOR
    */
 
-  SalesRow._createNew (int id, TransportRow this._transport, Customer this._cust):super(id);
+  SalesRow._createNew (int id, TransportRow this._transport, Customer this._cust):super(id) {
+    _transport.addParent(this);
+    _cust.addParent(this);
+  }
 
   /// Factory constructor for the SalesRow to avoid duplicate objects in memory. If it already exists it will use the old object.
   factory SalesRow (int id,  TransportRow transport, Customer cust) {
@@ -25,45 +28,38 @@ class SalesRow extends SyncCachable<SalesRow> {
 
   TransportRow _transport;
   Customer _cust;
+  
+  TransportRow get transport => _transport;
+  Customer get customer => _cust;
+  
   set customer (Customer cust) {
      if (cust != _cust) {
+       _cust.detatchParent();
        _cust = cust;
+       cust.addParent(this);
       requiresDatabaseSync();
     }
   }
 
   set transport (TransportRow transport) {
-    if (transport != _transport && transport != null) {
+    if (transport != _transport) {
+      _transport.detatchParent();
       _transport = transport;
+      transport.addParent(this);
       requiresDatabaseSync();
     }
   }
-
-  TransportRow get transport => _transport;
-  Customer get customer => _cust;
-
-  // TODO: IMPLEMENT
-  void setTransportUnknown () {
-
-  }
-
-  void detatch() {
-    this._parent = null;
-  }
-
+  
   Future<bool> updateDatabase (DatabaseHandler dbh) {
     Completer c = new Completer();
-    if (_parent is PurchaseRow) {
-      if (this.isNew) {
-        //dbh.prepareExecute("INSERT INTO sales (customerID, produceID, amount, haulageID, deliveryCost, cost, deliveryDate)"
-       //                    " VALUES (?,?,?,?,?,?,?)", [_cust.id, ]);
-      }
+    if (this.isNew) {
+      
+    }
+    else {
+      
     }
     return c.future;
   }
-
-
-
 }
 
 class PurchaseRow extends SyncCachable<PurchaseRow> {
@@ -95,6 +91,13 @@ class PurchaseRow extends SyncCachable<PurchaseRow> {
   Supplier _supplier;
   List<SalesRow> _sales;
 
+  num get amount => _amount;
+  String get productName => _productName;
+  num get cost => _cost;
+  DateTime get purchaseTime => _purchaseTime;
+  ProductWeight get productWeight => _weight;
+  ProductPackaging get productPackaging => _packaging;
+  Supplier get supplier => _supplier;
 
   /*
    * SETTERS
@@ -149,24 +152,12 @@ class PurchaseRow extends SyncCachable<PurchaseRow> {
     }
   }
 
-  /*
-   * GETTERS
-   */
-
-  num get amount => _amount;
-  String get productName => _productName;
-  num get cost => _cost;
-  DateTime get purchaseTime => _purchaseTime;
-  ProductWeight get productWeight => _weight;
-  ProductPackaging get productPackaging => _packaging;
-  Supplier get supplier => _supplier;
-
   void detatchSalesRow (SalesRow row) {
     if (_sales.contains(row)) {
       _sales.remove(row);
-      row.detatch();
+      row.detatchParent();
       requiresDatabaseSync();
-      Logger.root.info("Marking detatchment of row ID ${row.id}");
+      Logger.root.info("Marking detatchment of row ID ${row.ID}");
     }
   }
 
@@ -205,6 +196,9 @@ class TransportRow extends SyncCachable<TransportRow> {
   Transport _company;
   num _deliveryCost;
 
+  Transport get company => _company;
+  num get deliveryCost => _deliveryCost;
+  
   /*
    * SETTERS
    */
@@ -221,13 +215,6 @@ class TransportRow extends SyncCachable<TransportRow> {
       requiresDatabaseSync();
     }
   }
-
-  /*
-   * GETTERS
-   */
-
-  Transport get company => _company;
-  num get deliveryCost => _deliveryCost;
 
   Future<bool> updateDatabase (DatabaseHandler dbh) {
 
@@ -256,12 +243,7 @@ class WorkbookRow extends SyncCachable<WorkbookRow> {
    *  WORKBOOK ROW
    */
 
-  /// Cannot set, change data for row individually.
   PurchaseRow _purchase;
-
-  /*
-   * GETTERS
-   */
 
   get purchaseData => _purchase;
 

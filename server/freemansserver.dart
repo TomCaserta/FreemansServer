@@ -18,7 +18,7 @@ part 'Class/supplier.dart';
 part 'Class/customer.dart';
 part 'Class/transport.dart';
 part 'Class/product.dart';
-part 'Utilities/syncable.dart';
+part 'Utilities/sync_cachable.dart';
 part 'Class/workbook_data.dart';
 part 'Config/config.dart';
 

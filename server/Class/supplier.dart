@@ -15,27 +15,16 @@ class Supplier extends SyncCachable<Supplier> {
   String _faxNumber;
   
   String get name => _name;
-
   String get quickbooksName => _quickbooksName;
-
   int get terms => _terms;
-
   String get remittanceEmail => _remittanceEmail;
-
   String get confirmationEmail => _confirmationEmail;
-
   String get addressLine1 => _addressLine1;
-
   String get addressLine2 => _addressLine2;
-
   String get addressLine3 => _addressLine3;
-
   String get addressLine4 => _addressLine4;
-
   String get addressLine5 => _addressLine5;
-
   String get phoneNumber => _phoneNumber;
-
   String get faxNumber => _faxNumber;
   
   
@@ -154,7 +143,7 @@ class Supplier extends SyncCachable<Supplier> {
     }
     else {
       dbh.prepareExecute("UPDATE suppliers SET supplierName=?, quickbooksName=?, terms=?, remittanceEmail=?, confirmationEmail=?, phoneNumber=?, faxNumber=?, addressLine1=?, addressLine2=?, addressLine3=?, addressLine4=?, addressLine5=? WHERE ID=?",
-          [name, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5, id]).then((Results res) {
+          [name, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5, ID]).then((Results res) {
             if (res.affectedRows <= 1) {
               this.synced();
                c.complete(true);

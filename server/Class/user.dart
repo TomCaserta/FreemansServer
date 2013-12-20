@@ -1,33 +1,56 @@
 part of FreemansServer;
 
 class User extends SyncCachable<User> {
-  /// Initializes the user list into the application from the database
-  static Future<bool> init () {
-    Logger.root.info("Loading users list...");
-    Completer c = new Completer();
-    new User("Guest", "", 0, "").isGuest = true;
-    dbHandler.query("SELECT ID, username, password, permissions FROM users").then((res) {
-      res.listen((rowData) {
-        int uID = rowData[0];
-        String username = rowData[1];
-        String password = rowData[2];
-        String permissions = rowData[3].toString();
-        new User(username, password, uID, permissions);
-      },
-      onDone: () {
-        c.complete(true);
-        Logger.root.info("Loaded user list...");
-      },
-      onError: (err) {
-        c.completeError("Mysql error: $err");
-        Logger.root.severe("Mysql error: $err");
-      });
-    }).catchError((e) {
+  bool _isGuest = false;
+  String _username;
+  String _password;
+  Permissions _permissions;
+  
+  bool get isGuest => _isGuest;
+  String get username => _username;
+  String get password => _password;
+  Permissions get permissions => _permissions;
 
-      c.completeError("Error when selecting users from database: $e");
-      Logger.root.severe("Error when selecting users from database", e);
-    });
-    return c.future;
+  set isGuest (bool isGuest) {
+    if (isGuest != _isGuest) {
+      _isGuest = isGuest;
+      requiresDatabaseSync();
+    }
+  }
+  
+  set username (String username) {
+    if (username != _username) {
+      _username = username;
+      requiresDatabaseSync();
+    }
+  }
+  
+  set password (  String password) {
+    if (password != _password) {
+      _password = password;
+      requiresDatabaseSync();
+    }
+  }
+  
+  set permissions (Permissions permissions) {
+    if (permissions != _permissions) {
+      _permissions = permissions;
+      requiresDatabaseSync();
+    }
+  }
+  
+  User._create (String username, this._password, int ID, String permissionBlob):super(ID, username) {
+    this._username = username;
+    this._permissions = new Permissions.create(permissionBlob);
+  }
+
+  factory User (String username, String password, int ID, String permissionBlob) {
+     if (exists(username)) {
+       return get(username);
+     }
+     else {
+       return new User._create(username, password, ID, permissionBlob);
+     }
   }
 
   Future<bool> updateDatabase(DatabaseHandler dbh) {
@@ -58,7 +81,48 @@ class User extends SyncCachable<User> {
     }
     return c.future;
   }
+  
+  bool hasPermission (String perm) {
+    return permissions.hasPermission(perm);
+  }
 
+  toJson () {
+    return { "uID": ID, "username": username, "permissions": permissions.toList() };
+  }
+  
+  /*****************************
+   ***********STATIC************
+   *****************************/
+  
+  
+  /// Initializes the user list into the application from the database
+  static Future<bool> init () {
+    Logger.root.info("Loading users list...");
+    Completer c = new Completer();
+    new User("Guest", "", 0, "").isGuest = true;
+    dbHandler.query("SELECT ID, username, password, permissions FROM users").then((res) {
+      res.listen((rowData) {
+        int uID = rowData[0];
+        String username = rowData[1];
+        String password = rowData[2];
+        String permissions = rowData[3].toString();
+        new User(username, password, uID, permissions);
+      },
+      onDone: () {
+        c.complete(true);
+        Logger.root.info("Loaded user list...");
+      },
+      onError: (err) {
+        c.completeError("Mysql error: $err");
+        Logger.root.severe("Mysql error: $err");
+      });
+    }).catchError((e) {
+
+      c.completeError("Error when selecting users from database: $e");
+      Logger.root.severe("Error when selecting users from database", e);
+    });
+    return c.future;
+  }
 
   static bool exists(String name) {
     return SyncCachable.exists(User, name);
@@ -75,31 +139,4 @@ class User extends SyncCachable<User> {
 
   static User get(String username) => SyncCachable.get(User, username);
 
-  // Non static:
-  bool isGuest = false;
-  String username;
-  String password;
-  Permissions permissions;
-
-  User._create (String username, this.password, int ID, String permissionBlob):super(ID, username) {
-    this.username = username;
-    this.permissions = new Permissions.create(permissionBlob);
-  }
-
-  factory User (String username, String password, int ID, String permissionBlob) {
-     if (exists(username)) {
-       return get(username);
-     }
-     else {
-       return new User._create(username, password, ID, permissionBlob);
-     }
-  }
-
-  bool hasPermission (String perm) {
-    return permissions.hasPermission(perm);
-  }
-
-  toJson () {
-    return { "uID": id, "username": username, "permissions": permissions.toList() };
-  }
 }
