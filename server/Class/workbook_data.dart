@@ -7,9 +7,9 @@ class SalesRow extends SyncCachable<SalesRow> {
    * CONSTRUCTOR
    */
 
-  SalesRow._createNew (int id, TransportRow this._transport, Customer this._cust):super(id) {
+  SalesRow._createNew (int id, TransportRow this._transport, Customer this._customer):super(id) {
     _transport.addParent(this);
-    _cust.addParent(this);
+    _customer.addParent(this);
   }
 
   /// Factory constructor for the SalesRow to avoid duplicate objects in memory. If it already exists it will use the old object.
@@ -27,16 +27,19 @@ class SalesRow extends SyncCachable<SalesRow> {
    */
 
   TransportRow _transport;
-  Customer _cust;
+  Customer _customer;
+  num _amount;
+  num _salePrice;
+  DateTime deliveryDate;
   
   TransportRow get transport => _transport;
-  Customer get customer => _cust;
+  Customer get customer => _customer;
+  num get amount => _amount;
+  num get salePrice => _salePrice;
   
   set customer (Customer cust) {
-     if (cust != _cust) {
-       _cust.detatchParent();
-       _cust = cust;
-       cust.addParent(this);
+     if (cust != _customer) {
+       _customer = cust;
       requiresDatabaseSync();
     }
   }
@@ -45,19 +48,83 @@ class SalesRow extends SyncCachable<SalesRow> {
     if (transport != _transport) {
       _transport.detatchParent();
       _transport = transport;
-      transport.addParent(this);
+      if (transport != null) transport.addParent(this);
+      requiresDatabaseSync();
+    }
+  }
+
+  set amount (num amount) {
+    if (amount != _amount) {
+      _amount = amount;
+      requiresDatabaseSync();
+    }
+  }
+  set salePrice (  num salePrice) {
+    if (salePrice != _salePrice) {
+      _salePrice = salePrice;
       requiresDatabaseSync();
     }
   }
   
   Future<bool> updateDatabase (DatabaseHandler dbh) {
-    Completer c = new Completer();
-    if (this.isNew) {
-      
-    }
-    else {
-      
-    }
+  Completer c = new Completer();
+    List<Future<bool>> futures = new List<Future<bool>>();
+    if (_transport != null) futures.add(_transport.updateDatabase(dbh));
+    if (_customer != null) futures.add(_customer.updateDatabase(dbh));
+    Future.wait(futures).then((List<bool> returnVal )  { 
+      bool all = returnVal.every((e) { return e; });
+      if (all) {
+        int haulageID;
+        int deliveryCost;
+        if (_transport != null) {
+          haulageID = _transport.ID;
+          deliveryCost = _transport.deliveryCost;
+        }
+        int customerID;
+        if (_customer != null) {
+          customerID = _customer.ID;
+        }
+        int produceID;
+        if (this._parent is PurchaseRow) {
+          produceID = _parent.ID;
+        }
+        
+        if (this.isNew) {
+          dbh.prepareExecute("INSERT INTO sales (customerID, produceID, haulageID, amount, cost, deliveryCost, deliveryDate, active) VALUES (?,?,?,?,?,?,?,?)", [customerID, produceID, haulageID, _amount, _salePrice, deliveryCost, deliveryDate.millisecondsSinceEpoch, (this.isActive ? 1 : 0)])
+             .then((Results res) { 
+               if (res.insertId != 0) {
+                 this._firstInsert(res.insertId);
+                 c.complete(true);
+                 ffpServerLog.info("Created new ${this.runtimeType}");
+                 
+               }
+               else {
+                 c.completeError("Unspecified mysql error");
+                 ffpServerLog.severe("Unspecified mysql error");
+               }
+             }).catchError((e) {
+               c.completeError(e);
+               ffpServerLog.severe("Error whilst creating ${this.runtimeType}:", e);
+             });
+        }
+        else {
+          dbh.prepareExecute("UPDATE sales SET customerID=?, produceID=?, haulageID=?, amount=?, cost=?, deliveryCost=?, deliveryDate=?, active=? WHERE ID=?", [customerID, produceID, haulageID, _amount, _salePrice, deliveryCost, deliveryDate.millisecondsSinceEpoch, (this.isActive ? 1 : 0), ID]).then((res) {  
+            if (res.affectedRows <= 1) {
+              this.synced();
+              c.complete(true);
+            }
+            else {
+              c.completeError("Tried updating ${this.runtimeType} however ${res.affectedRows} rows affected does not equal one.");
+            }
+          }).catchError((e) {
+            c.completeError(e);
+          });
+        }
+      }
+      else { 
+        ffpServerLog.severe("Unspecified error.");
+      }
+    }).catchError((e) => c.completeError(e));
     return c.future;
   }
 }
@@ -67,13 +134,13 @@ class PurchaseRow extends SyncCachable<PurchaseRow> {
   /*
    * CONSTRUCTOR
    */
-  PurchaseRow._createNew (int id, num this._amount, String this._productName, num this._cost, DateTime this._purchaseTime, ProductWeight this._weight, ProductPackaging this._packaging, Supplier this._supplier, List<SalesRow> this._sales):super(id);
+  PurchaseRow._createNew (int id, num this._amount, ProductGroup this._product, num this._cost, DateTime this._purchaseTime, Supplier this._supplier, List<SalesRow> this._sales):super(id);
 
-  factory PurchaseRow (int id,  num amount, String productName, num cost, DateTime purchaseTime, ProductWeight weight, ProductPackaging packaging, Supplier supplier, List<SalesRow> sales) {
+  factory PurchaseRow (int id,  num amount, ProductGroup product, num cost, DateTime purchaseTime, Supplier supplier, List<SalesRow> sales) {
     if (exists(id) && id != 0) {
       return get(id);
     }
-    else return new PurchaseRow._createNew(id,  amount, productName, cost, purchaseTime, weight, packaging, supplier, sales);
+    else return new PurchaseRow._createNew(id,  amount, product, cost, purchaseTime,  supplier, sales);
   }
   static exists (int ID) => SyncCachable.exists(PurchaseRow, ID);
   static get (int ID) => SyncCachable.get(PurchaseRow, ID);
@@ -83,22 +150,17 @@ class PurchaseRow extends SyncCachable<PurchaseRow> {
    */
 
   num _amount;
-  String _productName;
   num _cost;
   DateTime _purchaseTime;
-  ProductWeight _weight;
-  ProductPackaging _packaging;
   Supplier _supplier;
   List<SalesRow> _sales;
+  ProductGroup _product;
 
   num get amount => _amount;
-  String get productName => _productName;
   num get cost => _cost;
   DateTime get purchaseTime => _purchaseTime;
-  ProductWeight get productWeight => _weight;
-  ProductPackaging get productPackaging => _packaging;
   Supplier get supplier => _supplier;
-
+  ProductGroup get product => _product;
   /*
    * SETTERS
    */
@@ -106,13 +168,6 @@ class PurchaseRow extends SyncCachable<PurchaseRow> {
   set amount (num amount) {
     if (amount != _amount) {
       _amount = amount;
-      requiresDatabaseSync();
-    }
-  }
-
-  set productName (String name) {
-    if (name != _productName) {
-      _productName = name;
       requiresDatabaseSync();
     }
   }
@@ -131,23 +186,16 @@ class PurchaseRow extends SyncCachable<PurchaseRow> {
     }
   }
 
-  set productWeight (ProductWeight weight) {
-    if (weight != _weight) {
-      _weight = weight;
-      requiresDatabaseSync();
-    }
-  }
-
-  set productPackaging (ProductPackaging packaging) {
-    if (packaging != _packaging) {
-      _packaging = packaging;
-      requiresDatabaseSync();
-    }
-  }
-
   set supplier (Supplier supplier) {
     if (supplier != _supplier) {
       _supplier = supplier;
+      requiresDatabaseSync();
+    }
+  }
+  
+  set product (ProductGroup product) {
+    if (product != _product) {
+      _product = product;
       requiresDatabaseSync();
     }
   }
@@ -157,7 +205,7 @@ class PurchaseRow extends SyncCachable<PurchaseRow> {
       _sales.remove(row);
       row.detatchParent();
       requiresDatabaseSync();
-      Logger.root.info("Marking detatchment of row ID ${row.ID}");
+      ffpServerLog.info("Marking detatchment of row ID ${row.ID}");
     }
   }
 
@@ -212,7 +260,7 @@ class TransportRow extends SyncCachable<TransportRow> {
   set deliveryCost (num cost) {
     if (_deliveryCost != cost) {
       _deliveryCost = cost;
-      requiresDatabaseSync();
+      if (_parent != null) _parent.requiresDatabaseSync();
     }
   }
 

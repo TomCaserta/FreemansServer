@@ -77,7 +77,7 @@ abstract class SyncCachable<T> {
       }
     }
     else {
-      Logger.root.severe("Object already exists");
+      ffpServerLog.severe("Object already exists");
     }
   }
 
@@ -124,7 +124,7 @@ abstract class SyncCachable<T> {
       tempKey = null;
     }
     else {
-      Logger.root.severe("firstInsert() called on ${this.runtimeType} ID: $ID however this row is not first time insert.");
+      ffpServerLog.severe("firstInsert() called on ${this.runtimeType} ID: $ID however this row is not first time insert.");
     }
   }
 
@@ -177,7 +177,7 @@ abstract class SyncCachable<T> {
   /// Called when a update to the database is occuring.
   Future<bool> updateDatabase (DatabaseHandler dbh) {
     Completer c = new Completer();
-    Logger.root.warning("Syncable object ${this.runtimeType} does not implement a database update method.");
+    ffpServerLog.warning("Syncable object ${this.runtimeType} does not implement a database update method.");
     c.complete(false);
     return c.future;
   }

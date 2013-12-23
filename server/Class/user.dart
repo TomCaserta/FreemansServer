@@ -63,7 +63,7 @@ class User extends SyncCachable<User> {
         }
         else {
           c.completeError("Unspecified mysql error");
-          Logger.root.severe("Unspecified mysql error whilst inserting user $username");
+          ffpServerLog.severe("Unspecified mysql error whilst inserting user $username");
         }
       });
     }
@@ -71,11 +71,11 @@ class User extends SyncCachable<User> {
       dbHandler.prepareExecute("UPDATE users SET `name`=?, `password`=?, `permissions`=? WHERE ID=?",[this.username, this.password, this.permissions.toString()]).then((row) {
         if (row.affectedRows == 1) {
           c.complete(true);
-          Logger.root.info("Updated user $username");
+          ffpServerLog.info("Updated user $username");
         }
         else {
           c.completeError("Unspecified error occurred when updating user $username (${row.affectedRows} Rows Updated)");
-          Logger.root.severe("Unspecified error occurred when updating user $username (${row.affectedRows} Rows Updated)");
+          ffpServerLog.severe("Unspecified error occurred when updating user $username (${row.affectedRows} Rows Updated)");
         }
       });
     }
@@ -97,7 +97,7 @@ class User extends SyncCachable<User> {
   
   /// Initializes the user list into the application from the database
   static Future<bool> init () {
-    Logger.root.info("Loading users list...");
+    ffpServerLog.info("Loading users list...");
     Completer c = new Completer();
     new User("Guest", "", 0, "").isGuest = true;
     dbHandler.query("SELECT ID, username, password, permissions FROM users").then((res) {
@@ -110,16 +110,16 @@ class User extends SyncCachable<User> {
       },
       onDone: () {
         c.complete(true);
-        Logger.root.info("Loaded user list...");
+        ffpServerLog.info("Loaded user list...");
       },
       onError: (err) {
         c.completeError("Mysql error: $err");
-        Logger.root.severe("Mysql error: $err");
+        ffpServerLog.severe("Mysql error: $err");
       });
     }).catchError((e) {
 
       c.completeError("Error when selecting users from database: $e");
-      Logger.root.severe("Error when selecting users from database", e);
+      ffpServerLog.severe("Error when selecting users from database", e);
     });
     return c.future;
   }

@@ -16,7 +16,7 @@ class ProductWeight extends SyncCachable<ProductWeight>  {
 
   static Future<bool> init() {
     Completer c = new Completer();
-    Logger.root.info("Loading product weights list...");
+    ffpServerLog.info("Loading product weights list...");
     dbHandler.query("SELECT ID, description, active FROM productweights").then((Results results){
       results.listen((Row row) {
         ProductWeight weight = new ProductWeight(row[0], row[1]);
@@ -24,7 +24,7 @@ class ProductWeight extends SyncCachable<ProductWeight>  {
       },
       onDone: () {
         c.complete(true);
-        Logger.root.info("List loaded.");
+        ffpServerLog.info("List loaded.");
       },
       onError: (e) {
         c.completeError("Could not load list from database: $e");
@@ -55,16 +55,16 @@ class ProductWeight extends SyncCachable<ProductWeight>  {
          if (res.insertId != 0) {
            this._firstInsert(res.insertId);
            c.complete(true);
-           Logger.root.info("Created new ${this.runtimeType} $description");
+           ffpServerLog.info("Created new ${this.runtimeType} $description");
   
          }
          else {
            c.completeError("Unspecified mysql error");
-           Logger.root.severe("Unspecified mysql error");
+           ffpServerLog.severe("Unspecified mysql error");
          }
        }).catchError((e) {
          c.completeError(e);
-         Logger.root.severe("Error whilst creating ${this.runtimeType} $description :", e);
+         ffpServerLog.severe("Error whilst creating ${this.runtimeType} $description :", e);
        });
      }
      else {
@@ -98,14 +98,14 @@ class ProductPackaging extends SyncCachable<ProductPackaging>  {
 
   static Future<bool> init() {
     Completer c = new Completer();
-    Logger.root.info("Loading product weights list...");
+    ffpServerLog.info("Loading product weights list...");
     dbHandler.query("SELECT ID, description FROM packaging").then((Results results){
       results.listen((Row row) {
         ProductPackaging p = new ProductPackaging(row[0],row[1]);
       },
       onDone: () {
         c.complete(true);
-        Logger.root.info("List loaded.");
+        ffpServerLog.info("List loaded.");
       },
       onError: (e) {
         c.completeError("Could not load list from database: $e");
@@ -137,16 +137,16 @@ class ProductPackaging extends SyncCachable<ProductPackaging>  {
         if (res.insertId != 0) {
           this._firstInsert(res.insertId);
           c.complete(true);
-          Logger.root.info("Created new ${this.runtimeType} $description");
+          ffpServerLog.info("Created new ${this.runtimeType} $description");
           
         }
         else {
           c.completeError("Unspecified mysql error");
-          Logger.root.severe("Unspecified mysql error");
+          ffpServerLog.severe("Unspecified mysql error");
         }
       }).catchError((e) {
         c.completeError(e);
-        Logger.root.severe("Error whilst creating ${this.runtimeType} $description :", e);
+        ffpServerLog.severe("Error whilst creating ${this.runtimeType} $description :", e);
       });
     }
     else {
@@ -182,7 +182,7 @@ class Product extends SyncCachable<Product> {
 
   static Future<bool> init() {
     Completer c = new Completer();
-    Logger.root.info("Loading product list...");
+    ffpServerLog.info("Loading product list...");
     dbHandler.query("SELECT ID, productName, validWeights, validPackaging, quickbooksItem FROM products").then((Results results){
       results.listen((Row row) {
         List<int> vWeights = new List<int>();
@@ -199,7 +199,7 @@ class Product extends SyncCachable<Product> {
       },
       onDone: () {
         c.complete(true);
-        Logger.root.info("List loaded.");
+        ffpServerLog.info("List loaded.");
       },
       onError: (e) {
         c.completeError("Could not load list from database: $e");
@@ -265,16 +265,16 @@ class Product extends SyncCachable<Product> {
         if (res.insertId != 0) {
           this._firstInsert(res.insertId);
           c.complete(true);
-          Logger.root.info("Created new ${this.runtimeType} $name");
+          ffpServerLog.info("Created new ${this.runtimeType} $name");
           
         }
         else {
           c.completeError("Unspecified mysql error");
-          Logger.root.severe("Unspecified mysql error");
+          ffpServerLog.severe("Unspecified mysql error");
         }
       }).catchError((e) {
         c.completeError(e);
-        Logger.root.severe("Error whilst creating ${this.runtimeType} $name :", e);
+        ffpServerLog.severe("Error whilst creating ${this.runtimeType} $name :", e);
       });
     }
     else {
@@ -296,10 +296,13 @@ class Product extends SyncCachable<Product> {
 }
 
 
-class ProductGroup {
-  String name;
+class ProductGroup extends SyncCachable<ProductGroup> {
   Product product;
   ProductWeight item;
   ProductPackaging packaging;
-
-}
+  ProductGroup(this.product, this.item, this.packaging):super(0) {
+    
+  }
+  
+  
+} 

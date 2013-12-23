@@ -181,7 +181,7 @@ class Customer extends SyncCachable<Customer> {
 
   factory Customer (int ID, String name, [int terms = 42]) {
     if (exists(name)) {
-      Logger.root.severe("Duplicate customer Entry Found... $name");
+      ffpServerLog.severe("Duplicate customer Entry Found... $name");
       return get(name);
     }
     else {
@@ -244,7 +244,7 @@ class Customer extends SyncCachable<Customer> {
   /// Initializes the customers for use by retreiving them from the database
   static Future<bool> init () {
     Completer c = new Completer();
-    Logger.root.info("Loading customer list...");
+    ffpServerLog.info("Loading customer list...");
     dbHandler.query("SELECT ID, customerName, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2, shipto3, shipto4, shipto5, terms, faxNumber, phoneNumber, isEmailedInvoice, isEmailedConfirmation, active FROM customers").then((Results results){
       results.listen((Row row) {
         Customer cust = new Customer(row[0], row[1], row[15]);
@@ -269,15 +269,15 @@ class Customer extends SyncCachable<Customer> {
       },
       onDone: () {
         c.complete(true);
-        Logger.root.info("Customer list loaded.");
+        ffpServerLog.info("Customer list loaded.");
       },
       onError: (e) {
         c.completeError("Could not load customer list from database: $e");
-        Logger.root.severe("Could not load customer list from database", e);
+        ffpServerLog.severe("Could not load customer list from database", e);
       });
     }).catchError((e) {
       c.completeError("Could not load customer list from database: $e");
-      Logger.root.severe("Could not load customer list from database", e);
+      ffpServerLog.severe("Could not load customer list from database", e);
     });
     return c.future;
   }

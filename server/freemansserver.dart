@@ -37,26 +37,26 @@ part 'Websocket/ServerPackets/server_packet.dart';
 
 
 DatabaseHandler dbHandler;
-
+Logger ffpServerLog = new Logger("FFPServer");
 void main() {
-
+  
   ConnectionPool handler = new ConnectionPool(host: GLOBAL_SETTINGS["db_host"], port: GLOBAL_SETTINGS["db_port"], user: GLOBAL_SETTINGS["db_user"], password: GLOBAL_SETTINGS["db_password"], db: GLOBAL_SETTINGS["db_database"], max: 5);
   dbHandler = new DatabaseHandler(handler);
   
-  Logger.root.onRecord.listen((e) {
+  ffpServerLog.onRecord.listen((e) {
     print(e);
     if (e.level == Level.SEVERE) {
       throw e;
     }
   });
-  Logger.root.info("Initializing database values");
+  ffpServerLog.info("Initializing database values");
   Preloader prel = new Preloader();
   prel.addFuture(new PreloadElement("UserInit", User.init));
   prel.addFuture(new PreloadElement("SupplierInit", Supplier.init));
   prel.addFuture(new PreloadElement("CustomerInit", Customer.init));
   prel.addFuture(new PreloadElement("TransportInit", Transport.init));
   prel.startLoad(onError: (e) {
-    Logger.root.severe("$e");
+    ffpServerLog.severe("$e");
   }).listen((int x) {
     print("[${str_repeat("|",x)}${str_repeat("=",(100-x))}]");
   }, onDone: () {

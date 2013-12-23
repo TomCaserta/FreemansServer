@@ -110,7 +110,7 @@ class Supplier extends SyncCachable<Supplier> {
       return new Supplier._create(ID, name);
     }
     else {
-      Logger.root.severe("Duplicate Supplier Entry Found... $name");
+      ffpServerLog.severe("Duplicate Supplier Entry Found... $name");
       return get(name);
     }
   }
@@ -129,16 +129,16 @@ class Supplier extends SyncCachable<Supplier> {
               if (res.insertId != 0) {
                 c.complete(true);
                 this._firstInsert(res.insertId);
-                Logger.root.info("Created new supplier $name");
+                ffpServerLog.info("Created new supplier $name");
 
               }
               else {
                 c.completeError("Unspecified mysql error");
-                Logger.root.severe("Unspecified mysql error");
+                ffpServerLog.severe("Unspecified mysql error");
               }
           }).catchError((e) {
             c.completeError(e);
-            Logger.root.severe("Error whilst creating supplier $name :", e);
+            ffpServerLog.severe("Error whilst creating supplier $name :", e);
           });
     }
     else {
@@ -189,7 +189,7 @@ class Supplier extends SyncCachable<Supplier> {
   /// Initializes the suppliers for use by retreiving them from the database
   static Future<bool> init () {
     Completer c = new Completer();
-    Logger.root.info("Loading supplier list...");
+    ffpServerLog.info("Loading supplier list...");
     dbHandler.query("SELECT ID, supplierName, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5 FROM suppliers").then((Results results){
       results.listen((Row row) {
         Supplier sup = new Supplier(row[0], row[1]);
@@ -207,15 +207,15 @@ class Supplier extends SyncCachable<Supplier> {
       },
       onDone: () {
         c.complete(true);
-        Logger.root.info("Supplier list loaded.");
+        ffpServerLog.info("Supplier list loaded.");
       },
       onError: (e) {
         c.completeError("Could not load supplier list from database: $e");
-        Logger.root.severe("Could not load supplier list from database", e);
+        ffpServerLog.severe("Could not load supplier list from database", e);
       });
     }).catchError((e) {
       c.completeError("Could not load supplier list from database: $e");
-      Logger.root.severe("Could not load supplier list from database", e);
+      ffpServerLog.severe("Could not load supplier list from database", e);
     });
     return c.future;
   }

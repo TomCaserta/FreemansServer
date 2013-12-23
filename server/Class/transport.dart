@@ -6,7 +6,7 @@ class Surcharge {
   Surcharge (DateTime this.dateBefore, this.surcharge);
   Surcharge.parse(String dateBefore, String surcharge) {
      this.surcharge = int.parse(surcharge, onError: (e) {
-       Logger.root.severe("Could not parse surcharge $surcharge", e);
+       ffpServerLog.severe("Could not parse surcharge $surcharge", e);
      });
      this.dateBefore = FFPDToDate(dateBefore);
   }
@@ -101,7 +101,7 @@ class Transport extends SyncCachable<Transport> {
 
   static Future<bool> init () {
     Completer c = new Completer();
-    Logger.root.info("Loading transport list...");
+    ffpServerLog.info("Loading transport list...");
     dbHandler.query("SELECT ID, name, remittanceEmail, transportSheetEmail, surcharges, quickbooksName FROM transport").then((Results res) {
        res.listen((Row data) {
          int ID = data[0];
@@ -120,16 +120,16 @@ class Transport extends SyncCachable<Transport> {
          new Transport(ID, name, quickbooksName, surcharges,  transportSheetEmail, remittanceEmail);
        },
        onDone: () {
-         Logger.root.info("Loaded transport list");
+         ffpServerLog.info("Loaded transport list");
          c.complete(true);
        },
        onError: (e) {
          c.completeError("Error whilst querying Transport list: $e");
-         Logger.root.severe("Error whilst querying Transport list", e);
+         ffpServerLog.severe("Error whilst querying Transport list", e);
        });
     }).catchError((e) {
       c.completeError("Error whilst loading Transport list: $e");
-      Logger.root.severe("Error whilst loading Transport list", e);
+      ffpServerLog.severe("Error whilst loading Transport list", e);
     });
     return c.future;
   }
