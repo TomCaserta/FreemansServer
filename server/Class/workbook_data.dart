@@ -155,12 +155,14 @@ class PurchaseRow extends SyncCachable<PurchaseRow> {
   Supplier _supplier;
   List<SalesRow> _sales;
   ProductGroup _product;
+  Transport _collectingHaulier;
 
   num get amount => _amount;
   num get cost => _cost;
   DateTime get purchaseTime => _purchaseTime;
   Supplier get supplier => _supplier;
   ProductGroup get product => _product;
+  Transport get collectingHaulier => _collectingHaulier;
   /*
    * SETTERS
    */
@@ -194,12 +196,19 @@ class PurchaseRow extends SyncCachable<PurchaseRow> {
   }
   
   set product (ProductGroup product) {
-    if (product != _product) {
+    if (product != _product && product != null) {
       _product = product;
       requiresDatabaseSync();
     }
   }
-
+  
+  set collectingHaulier (Transport company) {
+    if (company != _collectingHaulier) {
+      _collectingHaulier = company;
+      requiresDatabaseSync();
+    }
+  }
+  
   void detatchSalesRow (SalesRow row) {
     if (_sales.contains(row)) {
       _sales.remove(row);
@@ -217,7 +226,50 @@ class PurchaseRow extends SyncCachable<PurchaseRow> {
 
 
   Future<bool> updateDatabase (DatabaseHandler dbh) {
-
+    Completer c = new Completer();
+    int supplierID;
+    if (supplier != null) {
+      supplierID = supplier.ID;
+    }
+    int haulierID;
+    if (collectingHaulier != null) {
+      haulierID = collectingHaulier.ID;
+    }
+    if (this.isNew) {
+      
+      dbh.prepareExecute("INSERT INTO `produce` (`productID`, `supplierID`, `haulageID`, `cost`, `weightID`, `packagingID`, `timeofpurchase`, `insertedBy`, `active`) VALUES (?,?,?,?,?,?,?,?,?)",
+          [product.product.ID, supplierID, haulierID, cost, product.item.ID, product.packaging.ID, purchaseTime.millisecondsSinceEpoch, null, (isActive ? 1 : 0)])
+          .then((Results res) { 
+            if (res.insertId != 0) {
+              this._firstInsert(res.insertId);
+              c.complete(true);
+              ffpServerLog.info("Created new ${this.runtimeType}");
+              
+            }
+            else {
+              c.completeError("Unspecified mysql error");
+              ffpServerLog.severe("Unspecified mysql error");
+            }
+          }).catchError((e) {
+            c.completeError(e);
+            ffpServerLog.severe("Error whilst creating ${this.runtimeType}:", e);
+          });
+    }
+    else {
+      dbh.prepareExecute("UPDATE `produce` SET `productID`=?, `supplierID`=?, `haulageID`=?, `cost`=?, `weightID`=?, `packagingID`=?, `timeofpurchase`=?, `insertedBy`=?, `active`=? WHERE ID=?", 
+          [product.product.ID, supplierID, haulierID, cost, product.item.ID, product.packaging.ID, purchaseTime.millisecondsSinceEpoch, null, (isActive ? 1 : 0), ID]).then((res) {  
+        if (res.affectedRows <= 1) {
+          this.synced();
+          c.complete(true);
+        }
+        else {
+          c.completeError("Tried updating ${this.runtimeType} however ${res.affectedRows} rows affected does not equal one.");
+        }
+      }).catchError((e) {
+        c.completeError(e);
+      });
+    }
+    return c.future;
   }
 }
 
@@ -265,7 +317,7 @@ class TransportRow extends SyncCachable<TransportRow> {
   }
 
   Future<bool> updateDatabase (DatabaseHandler dbh) {
-
+      
   }
 }
 
