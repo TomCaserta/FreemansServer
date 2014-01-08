@@ -40,7 +40,7 @@ DatabaseHandler dbHandler;
 Logger ffpServerLog = new Logger("FFPServer");
 void main() {
   
-  ConnectionPool handler = new ConnectionPool(host: GLOBAL_SETTINGS["db_host"], port: GLOBAL_SETTINGS["db_port"], user: GLOBAL_SETTINGS["db_user"], password: GLOBAL_SETTINGS["db_password"], db: GLOBAL_SETTINGS["db_database"], max: 5);
+  ConnectionPool handler = new ConnectionPool(host: GLOBAL_CONFIG["db_host"], port: GLOBAL_CONFIG["db_port"], user: GLOBAL_CONFIG["db_user"], password: GLOBAL_CONFIG["db_password"], db: GLOBAL_CONFIG["db_database"], max: 5);
   dbHandler = new DatabaseHandler(handler);
   
   ffpServerLog.onRecord.listen((e) {
@@ -49,6 +49,7 @@ void main() {
       throw e;
     }
   });
+  
   ffpServerLog.info("Initializing database values");
   Preloader prel = new Preloader();
   prel.addFuture(new PreloadElement("UserInit", User.init));
@@ -66,29 +67,8 @@ void main() {
 }
 
 void afterLoading () {
-//WebsocketHandler wsh = new WebsocketHandler ();
-  //wsh.start();
-  if (!Customer.exists("Tom12s")) {
-    
-    Customer cust = new Customer(0,"Tom12s");
-    cust.billto2 = "Test :)";
-    cust.updateDatabase(dbHandler).then((comp) {
-      cust.billto1 = "Testing 123!";
-      print("Inserted!");
-      cust.updateDatabase(dbHandler).then((done) { 
-        print("Updated customer");
-      });
-    });
-  }
-  else {
-    print("Customer already inserted");
-    Customer cust = Customer.get("Tom12s");
-    print(cust.billto1);
-    cust.billto3 = "Hmm2";
-    cust.updateDatabase(dbHandler).then((done) { 
-      print("Updated customer");
-    });
-  }
+  WebsocketHandler wsh = new WebsocketHandler ();
+  wsh.start(GLOBAL_CONFIG["ws_bind_ip"], GLOBAL_CONFIG["ws_bind_port"]);
 }
 
 

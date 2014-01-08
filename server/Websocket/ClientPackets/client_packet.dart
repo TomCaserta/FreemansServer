@@ -30,7 +30,7 @@ abstract class ClientPacket {
             // Check the name of the super class has the name we require
             if (superClass.simpleName == new Symbol("ClientPacket")) {
               // Get the ID of the packet from the class
-              int ID = declarationMirror.declarations[new Symbol("ID")];
+              int ID = declarationMirror.getField(new Symbol("ID")).reflectee;
               // Insert all our packets into the packets map.
               packets[ID] = declarationMirror;
             }

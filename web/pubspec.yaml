@@ -1,7 +1,6 @@
-name: FreemansClient
+name: StockBot
+description: A sample web application
 dependencies:
   angular: any
-  crypto: any
-  path: any
-  utf: any
-  uuid: any
+  browser: any
+  logging: any

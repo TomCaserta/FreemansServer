@@ -128,9 +128,10 @@ class User extends SyncCachable<User> {
     return SyncCachable.exists(User, name);
   }
 
-  /// Warning returns null if user doesnt exist.
+  /// Finds a user where the username and password matches the supplied username and password.
+  /// Password is the plaintext password.
   static User getUser (String username, String password) {
-    Iterable<User> users = SyncCachable.getVals(User);
+    List users = SyncCachable.getVals(User).toList();
     Iterable<User> u = users.where((e) => e.username == username && e.password == password);
     if (u.length > 0) {
       return u.elementAt(0);

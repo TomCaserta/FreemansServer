@@ -1,19 +1,52 @@
 <!DOCTYPE html>
-
-<html ng-app>
+<html>
   <head>
     <meta charset="utf-8">
     <title>Freemans Software</title>
-    
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/datepicker.css" rel="stylesheet" media="screen">
+    <link href="css/main.css" rel="stylesheet" media="screen">
     
   </head>
-  <body>
+  <body ng-app>
+       
+   <nav mainnav ng-cloak class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="nav-mobile">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Freemans Software</a>
+      </div>
+      <div class="collapse navbar-collapse" id="nav-mobile">
+        <ul class="nav navbar-nav">
+          <li ng-repeat="link in main.links" ng-class="{'active': main.activeLink == link }"><a href="#{{link.url}}">{{link.name}}</a></li>
+        </ul>
+        
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="settings-cog">Settings </span><span class="glyphicon glyphicon-cog"></span></a>
+            <ul role="menu" class="dropdown-menu">
+              <li><a href="#">Logout</a></li>
+              <li><a href="#">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+
     
+    <ng-view>
+    </ng-view>
     <noscript>This page requires javascript to run. If you have not got javascript or you have blocked the page from loading then the rest of this page will not work.</noscript>
     <script type="application/dart" src="main.dart"></script>
     <script src="packages/browser/dart.js"></script>
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
   </body>
 </html>

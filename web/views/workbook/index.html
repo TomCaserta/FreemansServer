@@ -1,0 +1,95 @@
+<div workbook class="col-md-10 col-md-offset-1">
+  <div class="well well-sm">
+    <form class="form-inline fullwidth" role="form">
+      <div class="form-group">
+        <label for="dateFrom" class="control-label small">From:</label>
+        <input size="16" type="date" id="dateFrom" class="form-control" placeholder="01/01/2014">
+      </div>
+      <div class="form-group">
+        <label for="dateTo" class="control-label small">To:</label>
+        <input size="16" type="date" id="dateTo" class="form-control" placeholder="01/01/2014">
+      </div>
+      <div class="form-group">
+        <label for="product" class="control-label sr-only">Product:</label>
+        <input auto-completer data-type="product" size="30" type="text" id="product" class="form-control" placeholder="Product">
+      </div>
+        <div class="form-group">
+        <label for="supplier" class="control-label sr-only">Supplier:</label>
+        <input auto-completer data-type="supplier" size="30" type="text" id="supplier" class="form-control" placeholder="Supplier">
+      </div>
+      <div class="form-group">
+        <label for="customer" class="control-label sr-only">Customer:</label>
+        <input auto-completer data-type="customer" size="30" type="text" id="customer" class="form-control" placeholder="Customer">
+      </div>
+      
+      
+      <div class="form-group pull-right wkbookfinddata">
+        <button type="button" class="btn btn-default">
+          <span class="glyphicon glyphicon-search"></span> Find Data
+        </button>
+      </div>
+    </form> 
+  </div>
+  <div class="well well-sm scrollwithview" data-drag-top="50" data-drag-style='{ "width": "100% !important", "left": "0px" }' style="width: 100%;">
+    <button class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></button>
+    <button class="btn btn-default"><span class="glyphicon glyphicon-remove"></span></button>
+    <button class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span></button>
+    <button class="btn btn-default">Invoice</button>
+    <button class="btn btn-default">Credit</button>
+  </div>
+  <div ng-repeat="day in workbook.loadedDays" class="panel panel-default">
+    <div ng-click="day.toggleDay()" class="panel-heading">
+      <h4>{{ day.formattedDate }}</h4>
+    </div>
+      <div ng-if="day.active" class="table-responsive">
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th class="text-center" width="2.24%"><div class="wkb checkbox">
+                  <label>
+                    <input ng-click="day.select()" type="checkbox"><span class="sr-only">Select All</span>
+                  </label>
+                </div></th>
+              <th class="text-left" width="2.24%">Ref</th>
+              <th class="text-center" width="13.24%">Supplier</th>
+              <th class="text-center" width="2.74%">Qty</th>
+              <th class="text-center" width="13.24%">Item</th>
+              <th class="text-center" width="2.24%">Cost Price</th>
+              <th class="text-center" width="4.24%">Total Price</th>
+              <th class="text-center" width="5.24%">Transport</th>
+              <th class="text-center" width="2.24%">Del Cost</th>
+              <th class="text-center" width="13.24%">Customer</th>
+              <th class="text-center" width="2.24%">Del Date</th>
+              <th class="text-center" width="2.74%">Qty</th>
+              <th class="text-center" width="2.24%">Price</th>
+              <th class="text-center" width="3.24%">Invoice Number</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="row in day.produce" ng-click="row.select()">
+              <td class="text-center"><div class="wkb checkbox">
+                  <label>
+                    <input ng-model="row.selected" ng-click="row.select()" type="checkbox"><span class="sr-only">Select Row</span>
+                  </label>
+                </div>
+              </td>
+              <td><strong>{{row.refID}}</strong></td>
+              <td class="text-center">{{row.supplier}}</td>
+              <td class="text-center">{{row.supplierQuantity}}</td>
+              <td class="text-center">{{row.item}}</td>
+              <td class="text-center">&pound;{{row.costPrice | number:2 }}</td>
+              <td class="text-center">&pound;{{row.costPrice * row.supplierQuantity | number:2}}</td>
+              <td class="text-center">{{row.transport}}</td>
+              <td class="text-center">&pound;{{row.transportCost | number:2 }}</td>
+              <td class="text-center">{{row.customer}}</td>
+              <td class="text-center">{{row.deliveryDate}}</td>
+              <td class="text-center">{{row.customerQuantity}}</td>
+              <td class="text-center">&pound;{{row.salePrice | number:2 }}</td>
+              <td class="text-center">{{row.invoiceNumber}}</td>
+            </tr>
+          </tbody>
+        </table>
+   </div>     
+  </div>
+</div>
+

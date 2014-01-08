@@ -1,8 +1,8 @@
 //TODO: LIST
-/** Add database to Workbook Data * PROGRESS: NOT STARTED * START: 17/12/13 EXP COMPLETION: DEC 13
+/** Add database to Workbook Data * PROGRESS: DONE
  ** Products, Item weights etc * PROGRESS: NOT STARTED * START: 17/12/13 EXP COMPLETION: DEC 13
- ** Front end design ~* PROGRESS: INITIAL PREPARATION *~ START: JAN 14 - EXP COMPLETION: JAN 14
- ** Front end websocket handler ~* PROGRESS: INITIAL PREPARATION *~ EXP COMPLETION: LATE DEC 13
+ ** Front end design ~* PROGRESS: STARTED
+ ** Front end websocket handler ~* PROGRESS: STARTED
  ** Quickbooks Integration needs completing ~* PROGRESS: STARTED *~ EXP COMPLETION: EARLY FEB 14
  ** Admin Panel * PROGRESS: NOT STARTED * EXP COMPLETION: NOT IMPORTANT
  **  

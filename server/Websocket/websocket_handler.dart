@@ -7,11 +7,11 @@ class WebsocketHandler {
   // Decoder used to decode JSON packets
   JsonDecoder decoder = new JsonDecoder(null);
   JsonEncoder encoder = new JsonEncoder(null);
-  void start () {
-    print ("Starting HTTP/Websocket server on ${GLOBAL_SETTINGS["ws_bind_ip"]}:${GLOBAL_SETTINGS["ws_bind_port"]} ");
+  void start (InternetAddress ipAddress, int port) {
+    print ("Starting HTTP/Websocket server on $ipAddress:$port");
     
     // Listen to HTTP Connections on the specified port
-    HttpServer.bind(GLOBAL_SETTINGS["ws_bind_ip"], GLOBAL_SETTINGS["ws_bind_port"]).then((HttpServer server) {
+    HttpServer.bind(ipAddress, port).then((HttpServer server) {
       
         // Create a new stream controller to handle our websocket connections separately from our normal http connections
         var sc = new StreamController();
@@ -54,7 +54,10 @@ class WebsocketHandler {
         
       // Listen to normal http connections and upgrade them to a websocket connection
       server.listen((HttpRequest request) { 
-        sc.add(request);
+        print("Listening for connections");
+        if (request.uri.path == "/websocket") {
+               sc.add(request);
+        }
       });
       
     });

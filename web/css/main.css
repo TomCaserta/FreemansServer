@@ -1,0 +1,72 @@
+body { padding-top: 70px; }
+.form-inline .form-group > label {
+ 
+}
+.form-inline .form-group input,
+
+.form-inline .form-group select
+ {
+ width: auto;;
+ margin-left: 10px; 
+ margin-right: 10px;
+}
+
+.splitr {
+  width: 20px;
+  display: inline-block;
+}
+
+.control-label.small {
+  font-size: 12px;
+  text-transform: uppercase;
+}
+[ng-click] {
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.flex-form {
+      display: -webkit-flex;
+      -webkit-flex-direction: row;
+
+      display: flex;
+      flex-direction: row;
+}
+.fullwidth {
+  width: 100%;
+}
+
+@media all and (max-width: 831px) and (min-width: 766px) {
+
+  #settings-cog {
+    display: none;
+  }
+}
+
+.wkb.checkbox {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+
+@media all and (max-width: 1684px) {
+  .wkbookfinddata {
+  display: block;
+  
+clear: right;
+    float: none;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .wkbookfinddata > * {
+  display: block;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

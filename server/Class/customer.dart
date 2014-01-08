@@ -1,6 +1,9 @@
 part of FreemansServer;
 
 class Customer extends SyncCachable<Customer> {
+  /*
+   * GETTERS AND SETTERS. ANYTHING CHANGED ON THE SETTERS WILL BE REFLECTED IN THE DATABASE AUTOMATICALLY WHEN RESYNCED   
+   */
   String _name;
   String _quickbooksName;
   String _billto1;
@@ -173,12 +176,13 @@ class Customer extends SyncCachable<Customer> {
       requiresDatabaseSync();
     }
   }
-
-
+  
+  /// Constructor for a new Customer if it doesnt already exist
   Customer._create (int ID, String name, [int this._terms = 42]):super(ID, name) {
       this._name = name;
   }
 
+  /// Factory constructor checks if a customer name already exists, if it doesnt it returns a new Customer object.
   factory Customer (int ID, String name, [int terms = 42]) {
     if (exists(name)) {
       ffpServerLog.severe("Duplicate customer Entry Found... $name");
@@ -188,7 +192,11 @@ class Customer extends SyncCachable<Customer> {
       return new Customer._create(ID, name, terms);
     }
   }
+  
+  /// Checks if the customer name already exists in the program
   static exists (String name) => SyncCachable.exists(Customer, name);
+  
+  /// Retreives a Customer object from the database by the name
   static get (String name) => SyncCachable.get(Customer, name);
 
   /// Returns a List containing all lines of the billing address for the scustomer
@@ -202,6 +210,7 @@ class Customer extends SyncCachable<Customer> {
   }
 
 
+  /// Syncs any changes made to the fields.
   Future<bool> updateDatabase (DatabaseHandler dbh) {
     Completer c = new Completer();
      if (this.isNew) {
@@ -238,8 +247,6 @@ class Customer extends SyncCachable<Customer> {
      return c.future;
   }
 
-
-  // Static Methods
 
   /// Initializes the customers for use by retreiving them from the database
   static Future<bool> init () {

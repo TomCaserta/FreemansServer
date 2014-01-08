@@ -2,7 +2,6 @@ part of FreemansServer;
 
 
 class ProductWeight extends SyncCachable<ProductWeight>  {
-  // Static
   ProductWeight._create(ID, this._description):super(ID);
 
   factory ProductWeight (int ID, String description) {

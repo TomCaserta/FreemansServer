@@ -86,9 +86,9 @@ abstract class SyncCachable<T> {
     return _cache[t];
   }
 
-  static getVals (Type t) {
+  static List getVals (Type t) {
     if (!_cache.containsKey(t)) _cache[t] = new Map<dynamic, SyncCachable>();
-    return _cache[t].values;
+    return _cache[t].values.toList();
   }
 
   Iterable<T> getValsO () {

@@ -1,19 +1,26 @@
 part of FreemansClient;
 
-@NgComponent(
-    selector: 'workbook',
-    templateUrl: '/views/workbook/overview.html',
-    cssUrl: '/views/workbook/overview.css',
-    publishAs: 'ctrl'
+@NgController(
+    selector: '[workbook]',
+    publishAs: 'workbook'
 )
 class Workbook {
-  List<WorkbookDaySheet> currentWeek = new List<WorkbookDaySheet>();
+  List<WorkbookDaySheet> loadedDays = new List<WorkbookDaySheet>();
   int _weekStartTime;
   
   Workbook () {
-    
+    if (FreemansModule.checkLogin()) {
+      print("Component loaded");
+      loadedDays.add(new WorkbookDaySheet());
+      loadedDays.add(new WorkbookDaySheet()..sheetDay = new DateTime.now().add(new Duration(days: 1)));
+      loadedDays.add(new WorkbookDaySheet()..sheetDay = new DateTime.now().add(new Duration(days: 2)));
+      loadedDays.add(new WorkbookDaySheet()..sheetDay = new DateTime.now().add(new Duration(days: 3)));
+      loadedDays.add(new WorkbookDaySheet()..sheetDay = new DateTime.now().add(new Duration(days: 4)));
+      loadedDays.add(new WorkbookDaySheet()..sheetDay = new DateTime.now().add(new Duration(days: 5)));
+      loadedDays.add(new WorkbookDaySheet()..sheetDay = new DateTime.now().add(new Duration(days: 6)));
+      loadedDays.add(new WorkbookDaySheet()..sheetDay = new DateTime.now().add(new Duration(days: 7)));
+    }
   }
-  
   
   void loadPreviousWeek() {
       //Load one week exactly from the week start date
@@ -34,8 +41,41 @@ class Workbook {
 
 class WorkbookDaySheet {
   List<WorkbookProduceLine> produce = new List<WorkbookProduceLine>();
+  DateTime _sheetDay = new DateTime.now();
+  String  formattedDate = "";
+  bool active = false;
+  set sheetDay (DateTime t) {
+    formattedDate = longDateFormat(t);
+    _sheetDay = t;
+  }
+  
+  DateTime get sheetDay {
+    return _sheetDay;
+  }
+  WorkbookDaySheet () {
+    formattedDate = longDateFormat(sheetDay);
+    for (int x = 0; x <= 40; x++) {
+    produce.add(new WorkbookProduceLine()..refID = "$x"
+                                        ..supplier="Test Supplier"
+                                        ..supplierQuantity=500
+                                        ..item="CARROT X 10 KG NET"
+                                        ..costPrice=3
+                                        ..transport="PEARSONS"
+                                        ..transportCost = 34.10
+                                        ..customer = "Test Customer"
+                                        ..deliveryDate = "01/12"
+                                        ..customerQuantity = 500
+                                        ..salePrice = 4
+                                        ..invoiceNumber = 12387
+                                        );
+    }
+                                         
+  }
+  void select () {
+    produce.forEach((E) => E.select());
+  }
   void toggleDay () {
-    // TODO: Implement toggle day
+    active = !active;
   }
 }
 
@@ -53,7 +93,10 @@ class WorkbookProduceLine {
   num customerQuantity = 0;
   num salePrice = 0.00;
   num invoiceNumber = 0;
-  
+  bool selected = false;
+  void select () {
+    selected = !selected;
+  }
   void edit() {
 
     // TODO: Implement workbook edit

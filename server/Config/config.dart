@@ -1,7 +1,7 @@
 part of FreemansServer;
 
 
-Map<String, dynamic> GLOBAL_SETTINGS = { 
+Map<String, dynamic> GLOBAL_CONFIG = { 
                                         /* DATABASE */
                                         
                                         'db_host': 'localhost',

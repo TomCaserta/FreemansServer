@@ -69,7 +69,10 @@ class SalesRow extends SyncCachable<SalesRow> {
   Future<bool> updateDatabase (DatabaseHandler dbh) {
   Completer c = new Completer();
     List<Future<bool>> futures = new List<Future<bool>>();
-    if (_transport != null) futures.add(_transport.updateDatabase(dbh));
+    // Fake completer/future to ensure that we always have atleast one future waiting on.
+    // Whilst its a bit hacky its easier than doing a check.
+    Completer fakeCompleter = new Completer();
+    futures.add(fakeCompleter.future);
     if (_customer != null) futures.add(_customer.updateDatabase(dbh));
     Future.wait(futures).then((List<bool> returnVal )  { 
       bool all = returnVal.every((e) { return e; });
@@ -125,6 +128,7 @@ class SalesRow extends SyncCachable<SalesRow> {
         ffpServerLog.severe("Unspecified error.");
       }
     }).catchError((e) => c.completeError(e));
+    fakeCompleter.complete(true);
     return c.future;
   }
 }
@@ -219,9 +223,7 @@ class PurchaseRow extends SyncCachable<PurchaseRow> {
   }
 
   void addSalesRow (SalesRow row) {
-    row.setNew();
     row.requiresDatabaseSync();
-
   }
 
 
@@ -235,40 +237,56 @@ class PurchaseRow extends SyncCachable<PurchaseRow> {
     if (collectingHaulier != null) {
       haulierID = collectingHaulier.ID;
     }
-    if (this.isNew) {
-      
-      dbh.prepareExecute("INSERT INTO `produce` (`productID`, `supplierID`, `haulageID`, `cost`, `weightID`, `packagingID`, `timeofpurchase`, `insertedBy`, `active`) VALUES (?,?,?,?,?,?,?,?,?)",
-          [product.product.ID, supplierID, haulierID, cost, product.item.ID, product.packaging.ID, purchaseTime.millisecondsSinceEpoch, null, (isActive ? 1 : 0)])
-          .then((Results res) { 
-            if (res.insertId != 0) {
-              this._firstInsert(res.insertId);
-              c.complete(true);
-              ffpServerLog.info("Created new ${this.runtimeType}");
-              
-            }
-            else {
-              c.completeError("Unspecified mysql error");
-              ffpServerLog.severe("Unspecified mysql error");
-            }
-          }).catchError((e) {
-            c.completeError(e);
-            ffpServerLog.severe("Error whilst creating ${this.runtimeType}:", e);
-          });
-    }
-    else {
-      dbh.prepareExecute("UPDATE `produce` SET `productID`=?, `supplierID`=?, `haulageID`=?, `cost`=?, `weightID`=?, `packagingID`=?, `timeofpurchase`=?, `insertedBy`=?, `active`=? WHERE ID=?", 
-          [product.product.ID, supplierID, haulierID, cost, product.item.ID, product.packaging.ID, purchaseTime.millisecondsSinceEpoch, null, (isActive ? 1 : 0), ID]).then((res) {  
-        if (res.affectedRows <= 1) {
-          this.synced();
-          c.complete(true);
-        }
-        else {
-          c.completeError("Tried updating ${this.runtimeType} however ${res.affectedRows} rows affected does not equal one.");
-        }
-      }).catchError((e) {
-        c.completeError(e);
-      });
-    }
+    List<Future<bool>> futures = new List<Future<bool>>();
+    _sales.forEach((SalesRow sr) {
+      futures.add(sr.updateDatabase(dbh));
+    });
+    // Fake completer/future to ensure that we always have atleast one future waiting on.
+    // Whilst its a bit hacky its easier than doing a check.
+    Completer fakeCompleter = new Completer();
+    futures.add(fakeCompleter.future);
+    if (_supplier != null) futures.add(_supplier.updateDatabase(dbh));
+    Future.wait(futures).then((List<bool> returnVal )  { 
+      bool all = returnVal.every((e) { return e; });
+      if (all) {
+      if (this.isNew) {
+        
+        dbh.prepareExecute("INSERT INTO `produce` (`productID`, `supplierID`, `haulageID`, `cost`, `weightID`, `packagingID`, `timeofpurchase`, `insertedBy`, `active`) VALUES (?,?,?,?,?,?,?,?,?)",
+            [product.product.ID, supplierID, haulierID, cost, product.item.ID, product.packaging.ID, purchaseTime.millisecondsSinceEpoch, null, (isActive ? 1 : 0)])
+            .then((Results res) { 
+              if (res.insertId != 0) {
+                this._firstInsert(res.insertId);
+                c.complete(true);
+                ffpServerLog.info("Created new ${this.runtimeType}");
+                
+              }
+              else {
+                c.completeError("Unspecified mysql error");
+                ffpServerLog.severe("Unspecified mysql error");
+              }
+            }).catchError((e) {
+              c.completeError(e);
+              ffpServerLog.severe("Error whilst creating ${this.runtimeType}:", e);
+            });
+      }
+      else {
+        dbh.prepareExecute("UPDATE `produce` SET `productID`=?, `supplierID`=?, `haulageID`=?, `cost`=?, `weightID`=?, `packagingID`=?, `timeofpurchase`=?, `insertedBy`=?, `active`=? WHERE ID=?", 
+            [product.product.ID, supplierID, haulierID, cost, product.item.ID, product.packaging.ID, purchaseTime.millisecondsSinceEpoch, null, (isActive ? 1 : 0), ID]).then((res) {  
+          if (res.affectedRows <= 1) {
+            this.synced();
+            c.complete(true);
+          }
+          else {
+            c.completeError("Tried updating ${this.runtimeType} however ${res.affectedRows} rows affected does not equal one.");
+          }
+        }).catchError((e) {
+          c.completeError(e);
+        });
+      }
+      }
+      else c.completeError("Unknown SalesRow db update error");
+    }).catchError((e) => c.completeError(e));
+    fakeCompleter.complete(true);
     return c.future;
   }
 }
@@ -317,7 +335,7 @@ class TransportRow extends SyncCachable<TransportRow> {
   }
 
   Future<bool> updateDatabase (DatabaseHandler dbh) {
-      
+    ffpServerLog.severe("Transport row does not have its own database table");
   }
 }
 
@@ -334,7 +352,6 @@ class WorkbookRow extends SyncCachable<WorkbookRow> {
       return get(id);
     }
     else return new WorkbookRow._createNew(id, purchaseRow);
-
   }
   static exists (int ID) => SyncCachable.exists(WorkbookRow, ID);
   static get (int ID) => SyncCachable.get(WorkbookRow, ID);
@@ -349,15 +366,50 @@ class WorkbookRow extends SyncCachable<WorkbookRow> {
 
 
   Future<bool> updateDatabase (DatabaseHandler dbh) {
-
+    return _purchase.updateDatabase(dbh);
   }
 }
 
-class WorkbookDay {
 
-  factory WorkbookDay.loadDay (DateTime time) {
-
+class WorkbookDay  extends SyncCachable<WorkbookDay> {
+  static int _auto_inc = 0;
+  List<WorkbookRow> workbook_data = new List<WorkbookRow>();
+  WorkbookDay._loadTimePeriod (DateTime timeFrom, DateTime timeTo):super(_auto_inc, "${timeFrom.millisecondsSinceEpoch};${timeTo.millisecondsSinceEpoch}") {
+    _auto_inc++;
+    
   }
-
+  static exists (DateTime timeFrom, DateTime timeTo) => SyncCachable.exists(WorkbookDay, ("${timeFrom.millisecondsSinceEpoch};${timeTo.millisecondsSinceEpoch}"));
+  static get (DateTime timeFrom, DateTime timeTo) => SyncCachable.get(WorkbookDay, "${timeFrom.millisecondsSinceEpoch};${timeTo.millisecondsSinceEpoch}");
+  
+  factory WorkbookDay (DateTime timeFrom, DateTime timeTo) {
+     if (exists(timeFrom,timeTo)) {
+       return get(timeFrom, timeTo);
+     }
+     else {
+       return new WorkbookDay._loadTimePeriod(timeFrom, timeTo);
+     }
+  }
+  
+  Future<bool> updateDatabase (DatabaseHandler dbh) {
+    Completer c = new Completer();
+    List<Future<bool>> futures = new List<Future<bool>>();
+    // Fake completer/future to ensure that we always have atleast one future waiting on.
+    // Whilst its a bit hacky its easier than doing a check.
+    Completer fakeCompleter = new Completer();
+    futures.add(fakeCompleter.future);
+    workbook_data.forEach((WorkbookRow wr) {
+      futures.add(wr.updateDatabase(dbh));
+    });
+    Future.wait(futures).then((List<bool> returns) { 
+      if (returns.every((e) => e)) {
+        c.complete(true);
+      }
+      else {
+        ffpServerLog.severe("Could not update database.");
+      }
+    }).catchError((e) => c.completeError(e));
+    fakeCompleter.complete(true);
+    return c.future;
+  }
 
 }
