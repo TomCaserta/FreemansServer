@@ -17,6 +17,7 @@ local.properties
 .settings/
 .loadpath
 web/main.dart.js
+*bootstrap*
 
 # External tool builders
 .externalToolBuilders/
