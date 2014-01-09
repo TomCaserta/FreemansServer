@@ -4,3 +4,4 @@ dependencies:
   angular: any
   browser: any
   logging: any
+  uuid: any

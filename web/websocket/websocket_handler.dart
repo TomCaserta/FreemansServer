@@ -2,6 +2,7 @@ part of FreemansClient;
 
 class WebsocketHandler {
   static Logger websocketLogger = new Logger("WebsocketHandler");
+  Map<String, Completer> rrcpCompleters = new Map<String, Completer>();
   WebSocket _socket;
   WebsocketHandler(String socketAddress) {
     _socket = new WebSocket(socketAddress);
@@ -28,5 +29,12 @@ class WebsocketHandler {
     else {
       websocketLogger.severe("Could not send packet as the websocket is not ready for data.");
     }
+  }
+  
+  Future<ServerPacket> sendGetResponse (RequireResponseClientPacket rrcp) {
+    Completer c = new Completer();
+    rrcpCompleters[rrcp.rID] = c;
+    
+    return c.future;
   }
 }

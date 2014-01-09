@@ -2,8 +2,10 @@ library FreemansClient;
 
 import 'dart:html';
 import 'dart:async';
+import 'dart:convert';
 import 'dart:mirrors';
 import 'package:angular/angular.dart';
+import 'package:uuid/uuid.dart';
 import 'package:logging/logging.dart';
 import 'package:intl/intl.dart';
 import 'utilities/date_functions.dart';
@@ -22,6 +24,8 @@ void main() {
   Logger.root.onRecord.listen((LogRecord r) { print("[${new DateFormat("hh:mm:ss").format(r.time)}][${r.level}][${r.loggerName != "" ? r.loggerName : "ROOT"}]: ${r.message}"); });
   ngBootstrap(module: new FreemansModule());
   ServerPacket.init();
+  print(JSON.encode(new AuthenticateClientPacket("Test", "Test2")));
+  
 }
 
 class FreemansModule extends Module {

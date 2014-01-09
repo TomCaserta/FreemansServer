@@ -1,42 +1,37 @@
 part of FreemansServer;
 
 abstract class ServerPacket {
-   static int ID;
-   toJson();
+
+  Map<String, dynamic> toJsonDefault(int ID) {
+    return { "ID": ID };
+  }
+  Map<String, dynamic> toJson();
 }
+
+/// FOR SERVER RESPONSE REQUESTS. NOT CLIENT.
 abstract class ResponsePacket extends ServerPacket {
-  
-}
-
-
-class UserPassIncorrectServerPacket extends ResponsePacket {
-  static int ID = SERVER_PACKET_IDS.USER_PASS_INCORRECT_ID;
-  String responseID;
-  UserPassIncorrectServerPacket (this.responseID);
-  
-  toJson () {
-    return { "ID": ID, "rID": responseID };
+  String rID = new Uuid().v4();
+  Map<String, dynamic> toJsonDefault(int ID) {
+    return super.toJsonDefault(ID)..addAll({ "rID": rID });
   }
 }
 
-
 class DisconnectServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.DISCONNECT_SERVER;
-  
   String reason;
   DisconnectServerPacket(this.reason);
   toJson () {
-    return { "ID": ID, "reason": reason };
+    return super.toJsonDefault(ID)..addAll({ "reason": reason });
   }
 }
 
 class LoggedInServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.LOGGED_IN;
   User user;
-  String responseID;
-  LoggedInServerPacket(this.user, this.responseID);
+  String rID;
+  LoggedInServerPacket(this.rID, this.user);
   toJson () {
-    return { "ID": ID, "rID": responseID, "user": user };
+    return super.toJsonDefault(ID)..addAll({ "user": user, "rID": rID });
   }
 }
 
@@ -48,7 +43,7 @@ class DataChangeServerPacket extends ServerPacket {
   String identifier = "";
   DataChangeServerPacket (this.userID, this.change, this.type, this.identifier);
   toJson () {
-    return {"ID": ID, "uID": userID, "type": type, "identifier": identifier, "data": change};
+    return super.toJsonDefault(ID)..addAll({ "uID": userID, "type": type, "identifier": identifier, "data": change});
   }
 }
 
@@ -58,7 +53,7 @@ class SupplierAddServerPacket extends ServerPacket {
   String supplierName = "";
   SupplierAddServerPacket (this.supplierID, this.supplierName);
   toJson () {
-    return {"ID": ID, "supplierID": supplierID, "supplierName": supplierName };
+    return super.toJsonDefault(ID)..addAll({ "supplierID": supplierID, "supplierName": supplierName });
   }
 }
 
@@ -68,7 +63,7 @@ class CustomerAddServerPacket extends ServerPacket {
    String customerName = "";
    CustomerAddServerPacket(this.customerID, this.customerName);
    toJson () {
-     return {"ID": ID, "customerID": customerID, "customerName": customerName };
+     return super.toJsonDefault(ID)..addAll({ "customerID": customerID, "customerName": customerName });
    }
 }
 
@@ -78,59 +73,32 @@ class TransportAddServerPacket extends ServerPacket {
   String transportName = "";
   TransportAddServerPacket(this.transportID, this.transportName);
   toJson () {
-    return {"ID": ID, "transportID": transportID, "transportName": transportName };
-  }
-}
-
-class FileResponseServerPacket extends ServerPacket {
-  static int ID = SERVER_PACKET_IDS.FILE_RESPONSE;
-  String base64Data = "";
-  String fileName = "";
-  String responseID = "";
-  FileResponseServerPacket (this.fileName, this.base64Data, this.responseID) {
-    
-  }
-  static Future<FileResponseServerPacket> load (String fileName, String responseID) {
-    Completer c = new Completer();
-    File f = new File(fileName);
-    f.exists().then((bool exist) { 
-      if (exist) {
-        f.readAsBytes().then((d) { 
-          c.complete(new FileResponseServerPacket(fileName, CryptoUtils.bytesToBase64(d), responseID));         
-        }).catchError((e) { 
-          c.completeError(e);          
-        });
-      }
-      else {
-       c.completeError("File does not exist");
-      }
-    });
-  }
-  toJson () {
-    return {"ID": ID, "rID": responseID, "data": base64Data, "filename": fileName };
+    return super.toJsonDefault(ID)..addAll({ "transportID": transportID, "transportName": transportName });
   }
 }
 
 class ActionResponseServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.ACTION_RESPONSE;
   bool completeSucessfully = false;
-  String responseID = "";
-  ActionResponseServerPacket (this.completeSucessfully, this.responseID);
+  List<String> errors = new List<String>();
+  String rID = "";
+  ActionResponseServerPacket (this.rID, this.completeSucessfully, [this.errors]);
   toJson () {
-    return {"ID": ID, "rID": responseID, "complete": completeSucessfully };
+    return super.toJsonDefault(ID)..addAll({ "rID": rID, "complete": completeSucessfully, "errors": errors });
   }
 }
 
 class PingPongServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.PING_PONG;
-  String responseID = "";
+  String rID = "";
   bool ping;
-  PingPongServerPacket (this.responseID, this.ping);
+  PingPongServerPacket (this.rID, this.ping);
   toJson () {
-    return { "ID": ID, "rID": responseID, "ping": ping };
+    return toJsonDefault(ID)..addAll({ "rID": rID, "ping": ping });
   }
 }
 
+/*
 class ResponsePacketTimeoutServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.RESPONSE_PACKET_TIMEOUT;
   ResponsePacketTimeoutServerPacket ();
@@ -138,18 +106,18 @@ class ResponsePacketTimeoutServerPacket extends ServerPacket {
     return { "ID": ID };
   }
 }
-
+*/
 
 class SERVER_PACKET_IDS {
-  static const int USER_PASS_INCORRECT_ID = 1;
-  static const int RESPONSE_PACKET_TIMEOUT = 2;
+  //1 - REMOVED PACKET
+  //2
   static const int DISCONNECT_SERVER = 3;
   static const int LOGGED_IN = 4;
   static const int DATA_CHANGE = 5;
   static const int SUPPLIER_ADD = 6;
   static const int CUSTOMER_ADD = 7;
   static const int TRANSPORT_ADD = 7;
-  static const int FILE_RESPONSE = 8;
+  //8
   static const int ACTION_RESPONSE = 9;
   static const int PING_PONG = 10;
 }

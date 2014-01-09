@@ -23,6 +23,10 @@ class Client {
     s.close();
   }
   
+  bool isResponse (String respID) {
+     return responsePacket.containsKey(respID);
+  }
+  
   void foundResponse (String respID, WebsocketHandler handler, ClientPacket packet) {
     if (responsePacket.containsKey(respID)) { 
       if (!responsePacket[respID].isCompleted) {
@@ -40,7 +44,6 @@ class Client {
     String id = u.v4();
     new Timer(new Duration(seconds: 5), () {
       c.completeError("Response timed out. $id");
-      sendPacket(new ResponsePacketTimeoutServerPacket());
       disconnect("Client did not respond in time");
     });
     responsePacket[id] = c;

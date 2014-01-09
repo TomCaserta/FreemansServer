@@ -5,17 +5,17 @@ class AuthenticateClientPacket extends ClientPacket {
   static final int ID = CLIENT_PACKET_IDS.AUTHENTICATE;
   String username;
   String password;
-  String respID;
-  AuthenticateClientPacket.create(this.respID, this.username, this.password);
+  String rID;
+  AuthenticateClientPacket.create(this.rID, this.username, this.password);
   void handlePacket (WebsocketHandler wsh, Client client) {
     if (client.user.isGuest == true) { 
       User temp = User.getUser(this.username, this.password);
        if (temp != null) {
          client.user = temp;
-         client.sendPacket(new LoggedInServerPacket(temp, this.respID));
+         client.sendPacket(new LoggedInServerPacket(this.rID, temp));
        }
        else {
-         client.sendPacket(new UserPassIncorrectServerPacket(this.respID));
+         client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Username or password did not match any records"]));
        }
     }
   }
@@ -24,12 +24,12 @@ class AuthenticateClientPacket extends ClientPacket {
 class PingPongClientPacket extends ClientPacket {
   static final int ID = CLIENT_PACKET_IDS.PING_PONG;
   bool ping;
-  String responseID;
-  PingPongClientPacket.create (this.responseID, this.ping);
+  String rID;
+  PingPongClientPacket.create (this.rID, this.ping);
   
   void handlePacket(WebsocketHandler wsh, Client client) {
      if (ping == true) {
-       client.sendPacket(new PingPongServerPacket(this.responseID, false));
+       client.sendPacket(new PingPongServerPacket(this.rID, false));
      }
   }
 }
@@ -46,10 +46,10 @@ class DataChangeClientPacket extends ClientPacket {
       wsh.clients.values.where((cli) { return cli != client; }).forEach((e) { 
         e.sendPacket(new DataChangeServerPacket(client.user.ID, change, type, identifier));
       });             
-      client.sendPacket(new ActionResponseServerPacket(true, rID));
+      client.sendPacket(new ActionResponseServerPacket(rID, true));
     }
     else {
-      client.sendPacket(new ActionResponseServerPacket(false, rID));      
+      client.sendPacket(new ActionResponseServerPacket(rID, false, ["You do not have permission to change this field."]));      
     }
   }
 }
@@ -88,9 +88,6 @@ class TransportAddClientPacket extends ClientPacket {
   }
 }
 
-class FileRequestClientPacket extends ClientPacket {
-  
-}
 
 class CLIENT_PACKET_IDS {
   static const int AUTHENTICATE = 1;
