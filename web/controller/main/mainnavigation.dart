@@ -7,6 +7,9 @@ part of FreemansClient;
 class MainNavigation {
   Link activeLink = new Link("","");
   List<Link> links = new List<Link>();
+  bool get loaded {
+    return FreemansModule.loaded;
+  }
   MainNavigation() {
     links.add(new Link("Overview", "/overview"));
     links.add(new Link("Workbook", "/workbook"));

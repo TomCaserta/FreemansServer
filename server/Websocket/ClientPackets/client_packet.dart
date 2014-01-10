@@ -1,84 +1,125 @@
 part of FreemansServer;
 
+/// TODO: Work out a better way of doing this.
+String getSymName (Symbol sym) {
+  String str = sym.toString();
+  return str.substring(8, str.length - 2);
+}
 
-abstract class ClientPacket {
-  
-  static final int ID = 0;  
-  
-  /// If [loaded] is true then will contain all client packets that exist in the project
-  static Map<int, ClassMirror> packets = new Map<int, ClassMirror>();
-  
-  /// Once the class has initialized will be set to true.
-  static bool loaded = false;
-  
-  /// Initializes our packets map by filling it with all classes that extend ClientPacket
-  static void initialize () {
-    //  Get our current mirror system
-    MirrorSystem ms = currentMirrorSystem();
-    // Get the current isolate in the mirror system
-    IsolateMirror im = ms.isolate;
-    // Get the root library for the isolate
-    LibraryMirror lm = im.rootLibrary;
-    // Get the current classes in the root library
-    Map<Symbol, DeclarationMirror> declorationmirrormap = lm.declarations;
-    // Loop through all the classes searching for our packet ID
-    declorationmirrormap.forEach((symbol, declarationMirror) { 
-        if (declarationMirror is ClassMirror) {
-          // Check the class has a super class (ie Packet)
-          if (declarationMirror.superclass != null) {
-            ClassMirror superClass = declarationMirror.superclass;
-            // Check the name of the super class has the name we require
-            if (superClass.simpleName == new Symbol("ClientPacket")) {
-              // Get the ID of the packet from the class
-              int ID = declarationMirror.getField(new Symbol("ID")).reflectee;
-              // Insert all our packets into the packets map.
-              packets[ID] = declarationMirror;
+class PacketInstancer {
+  Map<String, Symbol> positional = new Map<String, Symbol>();
+  Map<String, Symbol> optional = new Map<String, Symbol>();
+  Map<String, Symbol> named = new Map<String, Symbol>();
+  ClassMirror cm;
+  PacketInstancer (ClassMirror this.cm) {
+     Map<Symbol, DeclarationMirror> declarations = cm.declarations;
+     Symbol createMethod = new Symbol("${getSymName(cm.simpleName)}.create");
+     if (declarations.containsKey(createMethod)) {
+       DeclarationMirror dm = declarations[createMethod];
+       if (dm is MethodMirror && dm.isConstructor) {
+          List<ParameterMirror> pm = dm.parameters;
+          pm.forEach((ParameterMirror parameter)  {
+            TypeMirror paramType = parameter.type;
+            if (parameter.isNamed) {
+               named[getSymName (parameter.simpleName)] = paramType.simpleName;
             }
-          }
-        }
-    });
-    loaded = true;
-  }
-  
-  /// Constructs a client packet from just the ID and map data from the websocket
-  static ClientPacket constructClientPacket (Client client, int ID, dynamic data) {
-    // If we are not already loaded then we need to initialize our packets array
-    if (loaded == false) initialize();
-    
-    // Check if our packet ID exists in the acceptable packets map.
-    if (packets.containsKey(ID)) {
-      // Compare our packet ID and do further validation to that 
-      try {
-       if (CLIENT_PACKET_IDS.AUTHENTICATE == ID) {
-         // Create a new autentication packet. 
-         var pkt = new AuthenticateClientPacket.create(data["crID"], data["username"], data["password"]);
-         return pkt;
-       }
-       else if (CLIENT_PACKET_IDS.PING_PONG == ID) {
-         var pkt = new PingPongClientPacket.create(data["crID"], data["ping"]);
-         return pkt;
+            else if (parameter.isOptional) {
+               optional[getSymName (parameter.simpleName)] = paramType.simpleName;
+            }
+            else {
+              positional[getSymName(parameter.simpleName)] = paramType.simpleName;
+            }
+          });
        }
        else {
-         ClassMirror pck = packets[ID];
-         // If its a generic packet:
-         var pkt = pck.newInstance(new Symbol("create"), new List<dynamic>()).reflectee;
-         pkt.client = client;
-         return pkt;
+         ClientPacket.clientPacketLogger.severe("Cannot construct PacketInstancer as packets create declaration is not a constructor");
        }
+     }
+     else {
+       ClientPacket.clientPacketLogger.severe("Cannot construct PacketInstancer as packet does not have create method.");
+     }
+  }
+  ClientPacket getPacket (Map params) {
+    List<dynamic> posArguments = new List<dynamic>();
+    positional.forEach((String parameterName, Symbol paramType) { 
+      if (params.containsKey(parameterName)) {
+        dynamic obj = params[parameterName];
+        TypeMirror im = reflectType(obj.runtimeType);
+        if (im.simpleName == paramType) {
+          posArguments.add(obj);
+        }
       }
-      catch (e) {
-        // TODO: PROPER ERROR HANDLING
-        print("Some sort of error.");
+    });
+    Map<Symbol, dynamic> namedParams = new Map<Symbol, dynamic>();
+    named.forEach((String parameterName, Symbol paramType) { 
+      if (params.containsKey(parameterName)) {
+        dynamic obj = params[parameterName];
+        TypeMirror im = reflectType(obj.runtimeType);
+        if (im.simpleName == paramType) {
+          namedParams[new Symbol(parameterName)] = obj;
+        }
       }
+    });
+    if (posArguments.length == positional.length) {
+      return cm.newInstance(const Symbol("create"), posArguments, namedParams).reflectee;
     }
     else {
-      // TODO: PROPER ERROR HANDLING
-      print("Unknown packet ID detected $ID");
+      ClientPacket.clientPacketLogger.warning("Incorrect parameters found.");
     }
   }
+}
+
+abstract class ClientPacket {
+  static Logger clientPacketLogger = new Logger("ClientPacket");
+  static int ID = 0;
+  ClientPacket();
+  ClientPacket.create();
+  void handlePacket (WebsocketHandler wsh, Client client);
   
-  /// Packet
-  void handlePacket (WebsocketHandler wsh, Client client) {
-    
+  static Map<int, PacketInstancer> packets = new Map<int, PacketInstancer>();
+  static Future<bool> init() {
+    clientPacketLogger.info("Initializing");
+    MirrorSystem ms = currentMirrorSystem();
+    // Allows us to refactor the name of the class and not have to update the symbol name
+    TypeMirror tm = reflectType(ClientPacket);
+    Symbol thisSymbol = tm.simpleName;
+    Symbol packetSym = const Symbol("ID");
+    ms.libraries.forEach((Uri libUri, LibraryMirror libM) { 
+      libM.declarations.forEach((Symbol declarationN, DeclarationMirror dm) { 
+        if (dm is ClassMirror) { 
+          ClassMirror superClass = dm.superclass;
+           if (superClass != null)  {
+             if (superClass.simpleName == thisSymbol) {
+               InstanceMirror packetField;
+               try {
+                  packetField = dm.getField(packetSym);
+               }
+               catch (E) { }
+               if (packetField != null) {
+                 int packetID = packetField.reflectee;
+                 if (!packets.containsKey(packetID)) {
+                   packets[packetID] = new PacketInstancer(dm);
+                 }
+                 else {
+                   clientPacketLogger.severe("Could not load packet ${dm.simpleName} as its ID conflicts");
+                 }
+               }
+               else {
+                 clientPacketLogger.severe("Could not load packet ${dm.simpleName} as it does not have a packet ID");
+               }
+             }
+           }
+        }
+      });
+    });
+  }
+  
+  static ClientPacket getPacket (int packetID, Map props) {
+    if (packets.containsKey(packetID)) {
+      return packets[packetID].getPacket(props);
+    }
+    else {
+      clientPacketLogger.warning("Unknown packet ID $packetID received by getPacket");
+    }
   }
 }

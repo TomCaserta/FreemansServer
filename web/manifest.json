@@ -1,0 +1,23 @@
+{
+     "name": "Freemans Software",
+     "version": "1.0",
+     "app": {
+          "background": {
+          	"scripts": ["resources/appStart.js"]
+          }
+     },
+     "icons": {
+          "128": "resources/icon_128.png",
+          "36": "resources/icon_36.png",
+          "64": "resources/icon_64.png",
+          "16": "resources/icon_16.png"
+     },
+     "permissions": [
+          "clipboardRead",
+          "clipboardWrite",
+          "geolocation",
+          "notifications",
+          "unlimitedStorage"
+     ],
+     "manifest_version": 2
+}

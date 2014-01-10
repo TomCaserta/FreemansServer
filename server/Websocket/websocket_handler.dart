@@ -18,36 +18,35 @@ class WebsocketHandler {
         
         // Transform and listen to the stream
         sc.stream.transform(new WebSocketTransformer()).listen((WebSocket conn) {
-
+          print("Websocket transformed!");
           if (!clientExists(conn)) addClient(conn);
           Client cli = getClientFromSocket(conn);
           
           void onMessage(message) {
-            print("Recv Message: $message");
-            // No other ways of handling the error?
             try { 
               // Parse the sent message into JSON
               dynamic obj = decoder.convert(message);
-              if (obj["ID"] != null) {
-                // Construct our client packet
-                ClientPacket c = ClientPacket.constructClientPacket(cli, obj["ID"], obj);
-                // Send the client and websocket handler to the packet and ask it to handle the packet.
-                if (obj["rID"] != null && obj["rID"] is String) {
-                  String rID = obj["rID"];
-                  if (cli.isResponse(rID)) {
-                    cli.foundResponse(obj["rID"], this, c);
+              if (obj is Map) {
+                if (obj.containsKey("ID") && obj["ID"] is int) {
+                  // Construct our client packet
+                  ClientPacket c = ClientPacket.getPacket(obj["ID"], obj);
+                  // Send the client and websocket handler to the packet and ask it to handle the packet.
+                  if (c != null) {
+                    if (obj.containsKey("rID") && obj["rID"] is String) {
+                      String rID = obj["rID"];
+                      if (cli.isResponse(rID)) {
+                        cli.foundResponse(obj["rID"], this, c);
+                      }
+                      else c.handlePacket(this, cli);
+                    }
+                    else c.handlePacket(this, cli);
                   }
-                  else c.handlePacket(this, cli);
                 }
-                else c.handlePacket(this, cli);
-                print("Received packet ${obj.ID}");
               }
-              
             }
             catch (e) {
               print("Error when parsing packet");
             }
-            
           }
           // Listen to the websocket for messages
           conn.listen(onMessage,
@@ -59,7 +58,9 @@ class WebsocketHandler {
       // Listen to normal http connections and upgrade them to a websocket connection
       server.listen((HttpRequest request) { 
         print("Listening for connections");
+        print(request.uri.path);
         if (request.uri.path == "/websocket") {
+          print("Loading");
                sc.add(request);
         }
       });

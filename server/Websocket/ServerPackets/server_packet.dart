@@ -116,8 +116,7 @@ class SERVER_PACKET_IDS {
   static const int DATA_CHANGE = 5;
   static const int SUPPLIER_ADD = 6;
   static const int CUSTOMER_ADD = 7;
-  static const int TRANSPORT_ADD = 7;
-  //8
+  static const int TRANSPORT_ADD = 8;
   static const int ACTION_RESPONSE = 9;
   static const int PING_PONG = 10;
 }

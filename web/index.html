@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html style="overflow-y: auto;">
   <head>
     <meta charset="utf-8">
     <title>Freemans Software</title>
@@ -10,10 +10,17 @@
     
   </head>
   <body ng-app>
+   
+   <section ng-show="loader.loaded" loader>
+      <div class="col-md-10 col-md-offset-1">
+        LOADING APPLICATION...  <span ng-cloak>{{loader.progress}}% Complete</span>
+        <progress value="{{loader.progress}}" style="width: 100%" max="100"></progress> 
+      </div>
+   </section>    
        
-   <nav mainnav ng-cloak class="navbar navbar-default navbar-fixed-top" role="navigation">
+   <nav mainnav ng-show="!main.loaded" ng-cloak class="navbar navbar-default navbar-fixed-top" role="navigation">
       <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="nav-mobile">
+        <button type="button"  data-target="#collapse-nav" class="navbar-toggle" data-toggle="collapse">
           <span class="sr-only">Toggle navigation</span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
@@ -21,7 +28,7 @@
         </button>
         <a class="navbar-brand" href="#">Freemans Software</a>
       </div>
-      <div class="collapse navbar-collapse" id="nav-mobile">
+      <div class="collapse navbar-collapse" id="collapse-nav">
         <ul class="nav navbar-nav">
           <li ng-repeat="link in main.links" ng-class="{'active': main.activeLink == link }"><a href="#{{link.url}}">{{link.name}}</a></li>
         </ul>
@@ -30,7 +37,6 @@
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="settings-cog">Settings </span><span class="glyphicon glyphicon-cog"></span></a>
             <ul role="menu" class="dropdown-menu">
-              <li><a href="#">Logout</a></li>
               <li><a href="#">Logout</a></li>
             </ul>
           </li>
@@ -44,7 +50,7 @@
     </ng-view>
     <noscript>This page requires javascript to run. If you have not got javascript or you have blocked the page from loading then the rest of this page will not work.</noscript>
     <script type="application/dart" src="main.dart"></script>
-    <script src="packages/browser/dart.js"></script>
+    <script src="dart.js"></script>
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/main.js"></script>

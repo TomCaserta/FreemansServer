@@ -1,4 +1,12 @@
 body { padding-top: 70px; }
+.ng-hide, 
+.ng-show {
+   display: none !important;
+}
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
 .form-inline .form-group > label {
  
 }
@@ -9,6 +17,9 @@ body { padding-top: 70px; }
  width: auto;;
  margin-left: 10px; 
  margin-right: 10px;
+}
+
+.navbar {
 }
 
 .splitr {
@@ -29,6 +40,57 @@ body { padding-top: 70px; }
   -ms-user-select: none;
   user-select: none;
 }
+[loader] {
+  
+  position:absolute;
+  top: 0px;
+  left: 0px;
+   display: -moz-box;      /* OLD: Firefox (buggy) */ 
+   display: -ms-flexbox;   /* MID: IE 10 */
+   display: -webkit-flex;  /* NEW, Chrome 21–28, Safari 6.1+ */
+   display: flex;          /* NEW: IE11, Chrome 29+, Opera 12.1+, Firefox 22+ */
+
+   -webkit-box-align: center; -moz-box-align: center; /* OLD… */
+   -ms-flex-align: center; /* You know the drill now… */
+   -webkit-align-items: center;
+   align-items: center;
+
+   -webkit-box-pack: center; -moz-box-pack: center; 
+   -ms-flex-pack: center; 
+   -webkit-justify-content: center;
+   justify-content: center;
+
+   margin: 0;
+   height: 100%;
+   width: 100%;
+   color:#999;
+   z-index: 999;
+}
+progress {
+  background-color: #EDEDED;
+  height: 30px;
+  border-radius: 30px;
+  display: block;
+  -webkit-appearance: none;
+  border: none;
+}
+progress::-webkit-progress-value {
+  background-color: #C1FFAB;
+  border-radius: 5px;
+}
+progress::-moz-progress-value {
+  background-color: #C1FFAB;
+  border-radius: 5px;
+}
+progress::-webkit-progress-bar  { 
+  background-color: #EDEDED;
+  border-radius: 5px;
+}
+progress::-moz-progress-bar {
+  background-color: #EDEDED;
+  border-radius: 5px;
+}
+
 .flex-form {
       display: -webkit-flex;
       -webkit-flex-direction: row;
@@ -54,19 +116,5 @@ body { padding-top: 70px; }
 
 
 @media all and (max-width: 1684px) {
-  .wkbookfinddata {
-  display: block;
   
-clear: right;
-    float: none;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .wkbookfinddata > * {
-  display: block;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-  }
 }
