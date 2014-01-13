@@ -7,7 +7,9 @@ abstract class SyncCachable<T> {
 
   /// ID of the Syncable. Should match the database ID. IS NOT UNIQUE ACROSS OBJECT TYPES.
   int ID = 0;
-
+  String UUID = new Uuid().v4();
+  
+  
   bool _isActive = true;
 
   /// Defines weather a Syncable is new data to be inserted into the database
@@ -127,6 +129,8 @@ abstract class SyncCachable<T> {
       ffpServerLog.severe("firstInsert() called on ${this.runtimeType} ID: $ID however this row is not first time insert.");
     }
   }
+  
+  
 
   /// Called by a syncable object when a database update is required.
   void requiresDatabaseSync ([SyncCachable child = null]) {
@@ -180,6 +184,9 @@ abstract class SyncCachable<T> {
     ffpServerLog.warning("Syncable object ${this.runtimeType} does not implement a database update method.");
     c.complete(false);
     return c.future;
+  }
+  Map<String, dynamic> toJson() { 
+    return { "UUID": UUID, "ID": ID };
   }
 }
 
