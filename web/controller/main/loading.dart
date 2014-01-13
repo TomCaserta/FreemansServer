@@ -5,16 +5,16 @@ part of FreemansClient;
     publishAs: 'loader'
 )
 class Loading {
-  bool loaded = false;
+  StateService service;
+  bool get loaded {
+    return (service != null ? service.loaded : false);
+  }
   num progress = 0.00;
-  Loading () {
+  Loading (StateService this.service) {
     Logger.root.info("Loading ${this.runtimeType}");
     
-    FreemansModule.preloader.startLoad().listen((int prog) { 
+    service.preloader.startLoad().listen((int prog) { 
       progress = prog;
-      if (prog == 100) {
-        loaded = true;
-      }
     });
   }
   

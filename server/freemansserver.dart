@@ -56,6 +56,7 @@ void main() {
   prel.addFuture(new PreloadElement("SupplierInit", Supplier.init));
   prel.addFuture(new PreloadElement("CustomerInit", Customer.init));
   prel.addFuture(new PreloadElement("TransportInit", Transport.init));
+  prel.addMethod(new PreloadElement("PacketInit", ClientPacket.init));
   prel.startLoad(onError: (e) {
     ffpServerLog.severe("$e");
   }).listen((int x) {

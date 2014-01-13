@@ -19,12 +19,14 @@ class WebsocketHandler {
         // Transform and listen to the stream
         sc.stream.transform(new WebSocketTransformer()).listen((WebSocket conn) {
           print("Websocket transformed!");
-          if (!clientExists(conn)) addClient(conn);
-          Client cli = getClientFromSocket(conn);
+          Client cli;
+          if (!clientExists(conn)) cli = addClient(conn);
+          else cli = getClientFromSocket(conn);
           
           void onMessage(message) {
             try { 
               // Parse the sent message into JSON
+              print(message);
               dynamic obj = decoder.convert(message);
               if (obj is Map) {
                 if (obj.containsKey("ID") && obj["ID"] is int) {
@@ -45,7 +47,7 @@ class WebsocketHandler {
               }
             }
             catch (e) {
-              print("Error when parsing packet");
+              print("Error when parsing packet $e");
             }
           }
           // Listen to the websocket for messages

@@ -5,19 +5,11 @@
     <title>Freemans Software</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <link href="css/datepicker.css" rel="stylesheet" media="screen">
     <link href="css/main.css" rel="stylesheet" media="screen">
     
   </head>
   <body ng-app>
    
-   <section ng-show="loader.loaded" loader>
-      <div class="col-md-10 col-md-offset-1">
-        LOADING APPLICATION...  <span ng-cloak>{{loader.progress}}% Complete</span>
-        <progress value="{{loader.progress}}" style="width: 100%" max="100"></progress> 
-      </div>
-   </section>    
-       
    <nav mainnav ng-show="!main.loaded" ng-cloak class="navbar navbar-default navbar-fixed-top" role="navigation">
       <div class="navbar-header">
         <button type="button"  data-target="#collapse-nav" class="navbar-toggle" data-toggle="collapse">
@@ -33,19 +25,22 @@
           <li ng-repeat="link in main.links" ng-class="{'active': main.activeLink == link }"><a href="#{{link.url}}">{{link.name}}</a></li>
         </ul>
         
-        <ul class="nav navbar-nav navbar-right">
+        <ul ng-if="main.service.loggedIn" class="nav navbar-nav navbar-right">
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="settings-cog">Settings </span><span class="glyphicon glyphicon-cog"></span></a>
             <ul role="menu" class="dropdown-menu">
-              <li><a href="#">Logout</a></li>
+              <li><a href="#">Logout {{main.service.currUser.username}}</a></li>
             </ul>
           </li>
         </ul>
       </div>
     </nav>
-
-
-    
+     <section ng-show="loader.loaded" loader>
+        <div class="col-md-10 col-md-offset-1">
+          LOADING APPLICATION...  <span ng-cloak>{{loader.progress}}% Complete</span>
+          <progress value="{{loader.progress}}" style="width: 100%" max="100"></progress> 
+        </div>
+     </section>    
     <ng-view>
     </ng-view>
     <noscript>This page requires javascript to run. If you have not got javascript or you have blocked the page from loading then the rest of this page will not work.</noscript>

@@ -8,9 +8,8 @@ class Workbook {
   List<WorkbookDaySheet> loadedDays = new List<WorkbookDaySheet>();
   int _weekStartTime;
   
-  Workbook () {
-    if (FreemansModule.checkLogin()) {
-      print("Component loaded");
+  Workbook (StateService service) {
+    if (service.checkLogin()) {
       loadedDays.add(new WorkbookDaySheet());
       loadedDays.add(new WorkbookDaySheet()..sheetDay = new DateTime.now().add(new Duration(days: 1)));
       loadedDays.add(new WorkbookDaySheet()..sheetDay = new DateTime.now().add(new Duration(days: 2)));

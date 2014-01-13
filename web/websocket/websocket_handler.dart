@@ -56,7 +56,7 @@ class WebsocketHandler {
   
   void send (ClientPacket packet) {
     if (_socket.readyState == 1) {
-      
+      _socket.send(JSON.encode(packet));
     }
     else {
       websocketLogger.severe("Could not send packet as the websocket is not ready for data.");

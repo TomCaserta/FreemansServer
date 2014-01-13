@@ -122,8 +122,10 @@ file:///C:/Users/Bryan Brown/Downloads/darteditor-STABLE/dart/dart-sdk/lib/typed
 file:///C:/Users/Bryan Brown/Downloads/darteditor-STABLE/dart/dart-sdk/lib/web_audio/dart2js/web_audio_dart2js.dart
 file:///C:/Users/Bryan Brown/Downloads/darteditor-STABLE/dart/dart-sdk/lib/web_gl/dart2js/web_gl_dart2js.dart
 file:///C:/Users/Bryan Brown/Downloads/darteditor-STABLE/dart/dart-sdk/lib/web_sql/dart2js/web_sql_dart2js.dart
+file:///C:/Users/Bryan Brown/dart/FreemansServer/web/class/user.dart
 file:///C:/Users/Bryan Brown/dart/FreemansServer/web/controller/main/contentdropdown.dart
 file:///C:/Users/Bryan Brown/dart/FreemansServer/web/controller/main/loading.dart
+file:///C:/Users/Bryan Brown/dart/FreemansServer/web/controller/main/login.dart
 file:///C:/Users/Bryan Brown/dart/FreemansServer/web/controller/main/mainnavigation.dart
 file:///C:/Users/Bryan Brown/dart/FreemansServer/web/controller/transport/transport.dart
 file:///C:/Users/Bryan Brown/dart/FreemansServer/web/controller/workbook/workbook.dart
@@ -270,6 +272,7 @@ file:///C:/Users/Bryan Brown/dart/FreemansServer/web/packages/unittest/src/strin
 file:///C:/Users/Bryan Brown/dart/FreemansServer/web/packages/unittest/src/utils.dart
 file:///C:/Users/Bryan Brown/dart/FreemansServer/web/packages/uuid/uuid.dart
 file:///C:/Users/Bryan Brown/dart/FreemansServer/web/utilities/date_functions.dart
+file:///C:/Users/Bryan Brown/dart/FreemansServer/web/utilities/permissions.dart
 file:///C:/Users/Bryan Brown/dart/FreemansServer/web/utilities/preloader.dart
 file:///C:/Users/Bryan Brown/dart/FreemansServer/web/websocket/client_packets.dart
 file:///C:/Users/Bryan Brown/dart/FreemansServer/web/websocket/server_packets.dart

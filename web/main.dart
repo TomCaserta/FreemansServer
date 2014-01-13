@@ -10,6 +10,9 @@ import 'package:logging/logging.dart';
 import 'package:intl/intl.dart';
 import 'utilities/date_functions.dart';
 import 'utilities/preloader.dart';
+import 'utilities/permissions.dart';
+
+part 'class/user.dart';
 
 part 'websocket/websocket_handler.dart';
 part 'websocket/server_packets.dart';
@@ -17,6 +20,7 @@ part 'websocket/client_packets.dart';
 
 part 'controller/main/loading.dart';
 part 'controller/main/mainnavigation.dart';
+part 'controller/main/login.dart';
 part 'controller/main/contentdropdown.dart';
 part 'controller/workbook/workbook.dart';
 part 'controller/transport/transport.dart';
@@ -24,29 +28,29 @@ part 'controller/transport/transport.dart';
 void main() {
   Logger.root.level = Level.FINE;
   Logger.root.onRecord.listen((LogRecord r) { print("[${new DateFormat("hh:mm:ss").format(r.time)}][${r.level}][${r.loggerName != "" ? r.loggerName : "ROOT"}]: ${r.message}"); });
-  FreemansModule.preloader.addMethod(new PreloadElement("ServerPacket", ServerPacket.init));
-  for (var x = 0; x<10000; x++) {
-    FreemansModule.preloader.addMethod(new PreloadElement("$x", () { 
-      return true;
-    }));
-  }
+
+
   ngBootstrap(module: new FreemansModule());
 }
 
-class FreemansModule extends Module {
-  static bool loggedIn = false;
-  static WebsocketHandler wsh = new WebsocketHandler("ws://127.0.0.1:1337/websocket");
-  static Preloader preloader = new Preloader();
-  static bool get loaded {
+class StateService {
+  bool loggedIn = false;
+  WebsocketHandler wsh = new WebsocketHandler("ws://127.0.0.1:1337/websocket");
+  Preloader preloader = new Preloader();
+  User currUser;
+  
+  bool get loaded {
     return preloader.loaded;  
   }
-  static bool get webSocketLoaded {
+  
+  bool get webSocketLoaded {
     return wsh.loaded;
   }
   
-  static bool checkLogin () {
+  bool checkLogin () {
     if (loggedIn == false) {
-     // window.location.hash = "/login";
+      
+      window.location.hash = "/login";
       return true;
     }
     else {
@@ -54,16 +58,25 @@ class FreemansModule extends Module {
     }
   }
   
+  StateService () { 
+    preloader.addMethod(new PreloadElement("ServerPacket", ServerPacket.init));
+  }
+
+}
+
+class FreemansModule extends Module {
   
-  FreemansModule () {
+  FreemansModule () {    
     Logger.root.info("Loading ${this.runtimeType}");
     factory(NgRoutingUsePushState,
         (_) => new NgRoutingUsePushState.value(false));
     type(RouteInitializer, implementedBy: FreemansRouteInitializer);
+    type(StateService);
     type(MainNavigation);
     type(Workbook);
     type(ContentDropdown);
     type(Loading);
+    type(Login);
    
   }
 }

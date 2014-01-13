@@ -7,16 +7,18 @@ part of FreemansClient;
 class MainNavigation {
   Link activeLink = new Link("","");
   List<Link> links = new List<Link>();
+  StateService service;
   bool get loaded {
-    return FreemansModule.loaded;
+    return service.loaded;
   }
-  MainNavigation() {
+  MainNavigation(StateService this.service) {
     links.add(new Link("Overview", "/overview"));
     links.add(new Link("Workbook", "/workbook"));
     links.add(new Link("Sales", "/sales"));
     links.add(new Link("Purchases", "/purchases"));
     links.add(new Link("Transport", "/transport"));
     links.add(new Link("Payments", "/payments"));
+    links.add(new Link("Lists", "/Lists"));
   }
 }
 
