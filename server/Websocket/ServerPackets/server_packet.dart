@@ -15,6 +15,20 @@ abstract class ResponsePacket extends ServerPacket {
     return super.toJsonDefault(ID)..addAll({ "rID": rID });
   }
 }
+class InitialDataResponseServerPacket extends ServerPacket {
+  static int ID = SERVER_PACKET_IDS.INITIAL_DATA_RESPONSE;
+  String rID = "";
+  List customerList = new List<Customer>();
+  List productList = new List<Product>();
+  List productWeightsList = new List<ProductWeight>();
+  List productPackagingList = new List<ProductPackaging>();
+  List transportList = new List<Transport>();
+  List userList = new List<User>();
+  InitialDataResponseServerPacket(this.rID, this.customerList, this.productList, this.productWeightsList, this.productPackagingList, this.transportList, this.userList);
+  toJson () {
+    return super.toJsonDefault(ID)..addAll({ "rID": rID, "customerList": customerList, "productList": productList, "productWeightsList": productWeightsList, "productPackagingList": productPackagingList, "transportList": transportList, "userList": userList });
+  }
+}
 
 class DisconnectServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.DISCONNECT_SERVER;
@@ -111,6 +125,7 @@ class ResponsePacketTimeoutServerPacket extends ServerPacket {
 class SERVER_PACKET_IDS {
   //1 - REMOVED PACKET
   //2
+  static const int INITIAL_DATA_RESPONSE = 2;
   static const int DISCONNECT_SERVER = 3;
   static const int LOGGED_IN = 4;
   static const int DATA_CHANGE = 5;
