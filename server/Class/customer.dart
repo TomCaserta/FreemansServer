@@ -44,6 +44,28 @@ class Customer extends SyncCachable<Customer> {
   String get faxNumber => _faxNumber;
   String get phoneNumber => _phoneNumber;
 
+  Map<String, dynamic> toJson () { 
+          return super.toJson()..addAll({ "name": name,
+                                          "quickbooksName": quickbooksName,
+                                          "billto1": billto1,
+                                          "billto2": billto2,
+                                          "billto3": billto3,
+                                          "billto4": billto4,
+                                          "billto5": billto5,
+                                          "shipto1": shipto1,
+                                          "shipto2": shipto2,
+                                          "shipto3": shipto3,
+                                          "shipto4": shipto4,
+                                          "shipto5": shipto5,
+                                          "terms": terms,
+                                          "invoiceEmail": invoiceEmail,
+                                          "isEmailedInvoice": isEmailedInvoice,
+                                          "confirmationEmail": confirmationEmail,
+                                          "isEmailedConfirmation": isEmailedConfirmation,
+                                          "faxNumber": faxNumber,
+                                          "phoneNumber": phoneNumber });
+  }
+  
   set name ( String name) {
     if (name != _name) {
       _name = name;

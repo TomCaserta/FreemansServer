@@ -26,6 +26,21 @@ class Supplier extends SyncCachable<Supplier> {
   String get addressLine5 => _addressLine5;
   String get phoneNumber => _phoneNumber;
   String get faxNumber => _faxNumber;
+
+  Map<String, dynamic> toJson () { 
+          return super.toJson()..addAll({ "name": name,
+                                          "quickbooksName": quickbooksName,
+                                          "addressLine1": addressLine1,
+                                          "addressLine2": addressLine2,
+                                          "addressLine3": addressLine3,
+                                          "addressLine4": addressLine4,
+                                          "addressLine5": addressLine5,
+                                          "terms": terms,
+                                          "remittanceEmail": remittanceEmail,
+                                          "confirmationEmail": confirmationEmail,
+                                          "faxNumber": faxNumber,
+                                          "phoneNumber": phoneNumber });
+  }
   
   
   set name (String name) {

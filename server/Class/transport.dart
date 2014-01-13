@@ -13,6 +13,10 @@ class Surcharge {
   toString () {
     return "${dateToFFPD(dateBefore)}:$surcharge";
   }
+  List toJson () { 
+          return [dateBefore.millisecondsSinceEpoch, surcharge];
+  }
+  
 }
 
 class Transport extends SyncCachable<Transport> {
@@ -21,6 +25,15 @@ class Transport extends SyncCachable<Transport> {
   String _quickbooksName = "";
   String _transportSheetEmail = "";
   String _remittanceEmail = "";
+  
+  Map<String, dynamic> toJson () { 
+          return super.toJson()..addAll({ "name": name,
+                                          "quickbooksName": quickbooksName,
+                                          "transportSheetEmail": transportSheetEmail,
+                                          "remittanceEmail": remittanceEmail 
+                                          });
+  }
+  
 
   String get name => _name;
   String get quickbooksName => _quickbooksName;

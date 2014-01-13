@@ -37,7 +37,10 @@ class ProductWeight extends SyncCachable<ProductWeight>  {
   // Object
 
   String _description;
-
+  Map<String, dynamic> toJson () { 
+          return super.toJson()..addAll({ "description": description });
+  }
+  
   String get description => description;
   
   set description (String description) {
@@ -120,6 +123,13 @@ class ProductPackaging extends SyncCachable<ProductPackaging>  {
   String _description;
   
   String get description => description;
+  
+  
+  Map<String, dynamic> toJson () { 
+          return super.toJson()..addAll({ "description": description });
+  }
+  
+  
   
   set description (String description) {
     if (description != _description) {
@@ -215,6 +225,14 @@ class Product extends SyncCachable<Product> {
   List<int> _validWeights = new List<int>();
   List<int> _validPackaging = new List<int>();
   String _quickbooksName;
+  
+  Map<String, dynamic> toJson () { 
+          return super.toJson()..addAll({ "name": name,
+                                          "quickbooksName": quickbooksName,
+                                          "validWeights":   validWeights,
+                                          "validPackaging": validPackaging });
+  }
+  
   
   String get name => _name;
   List<int> get validWeights => _validWeights;

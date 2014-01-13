@@ -49,6 +49,7 @@ class User extends SyncCachable<User> {
        return get(username);
      }
      else {
+       print("Creating new user $username");
        return new User._create(username, password, ID, permissionBlob);
      }
   }
@@ -86,8 +87,8 @@ class User extends SyncCachable<User> {
     return permissions.hasPermission(perm);
   }
 
-  toJson () {
-    return { "uID": ID, "username": username, "permissions": permissions.toList() };
+  Map<String, dynamic> toJson () {
+    return super.toJson()..addAll({ "username": username, "permissions": permissions.toString() });
   }
   
   /*****************************
@@ -99,7 +100,7 @@ class User extends SyncCachable<User> {
   static Future<bool> init () {
     ffpServerLog.info("Loading users list...");
     Completer c = new Completer();
-    new User("Guest", "", 0, "").isGuest = true;
+    new User("Guest", "", -1, "").._isGuest = true;
     dbHandler.query("SELECT ID, username, password, permissions FROM users").then((res) {
       res.listen((rowData) {
         int uID = rowData[0];
@@ -132,7 +133,11 @@ class User extends SyncCachable<User> {
   /// Password is the plaintext password.
   static User getUser (String username, String password) {
     List users = SyncCachable.getVals(User).toList();
+    users.forEach((User u) { 
+      print(u.username);
+    });
     Iterable<User> u = users.where((e) => e.username == username && e.password == password);
+    print(u.length);
     if (u.length > 0) {
       return u.elementAt(0);
     }
