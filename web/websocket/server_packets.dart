@@ -7,9 +7,9 @@ String getSymName (Symbol sym) {
 }
 
 class PacketInstancer {
-  Map<String, Symbol> positional = new Map<String, Symbol>();
-  Map<String, Symbol> optional = new Map<String, Symbol>();
-  Map<String, Symbol> named = new Map<String, Symbol>();
+  Map<String, String> positional = new Map<String, String>();
+  Map<String, String> optional = new Map<String, String>();
+  Map<String, String> named = new Map<String, String>();
   ClassMirror cm;
   PacketInstancer (ClassMirror this.cm) {
      Map<Symbol, DeclarationMirror> declarations = cm.declarations;
@@ -20,14 +20,20 @@ class PacketInstancer {
           List<ParameterMirror> pm = dm.parameters;
           pm.forEach((ParameterMirror parameter)  {
             TypeMirror paramType = parameter.type;
-            if (parameter.isNamed) {
-               named[getSymName (parameter.simpleName)] = paramType.simpleName;
-            }
-            else if (parameter.isOptional) {
-               optional[getSymName (parameter.simpleName)] = paramType.simpleName;
+            String typeName = getSymName (paramType.simpleName);
+            if (typeName == "String" || typeName == "num" || typeName == "int" || typeName == "bool" || typeName == "double" || typeName == "List" || typeName == "Map") {
+              if (parameter.isNamed) {
+                 named[getSymName (parameter.simpleName)] = typeName;
+              }
+              else if (parameter.isOptional) {
+                 optional[getSymName (parameter.simpleName)] = typeName;
+              }
+              else {
+                positional[getSymName(parameter.simpleName)] = typeName;
+              }
             }
             else {
-              positional[getSymName(parameter.simpleName)] = paramType.simpleName;
+              ServerPacket.serverPacketLogger.severe("Cannot construct PacketInstancer as packet uses a unsuported type: $typeName");
             }
           });
        }
@@ -41,23 +47,28 @@ class PacketInstancer {
   }
   ServerPacket getPacket (Map params) {
     List<dynamic> posArguments = new List<dynamic>();
-    positional.forEach((String parameterName, Symbol paramType) { 
+    positional.forEach((String parameterName, String paramType) { 
       if (params.containsKey(parameterName)) {
         dynamic obj = params[parameterName];
-        TypeMirror im = reflectType(obj.runtimeType);
-        if (im.simpleName == paramType) {
+        if (compareTypes(obj, paramType)) {
           posArguments.add(obj);
         }
       }
     });
     Map<Symbol, dynamic> namedParams = new Map<Symbol, dynamic>();
-    named.forEach((String parameterName, Symbol paramType) { 
+    named.forEach((String parameterName, String paramType) { 
       if (params.containsKey(parameterName)) {
         dynamic obj = params[parameterName];
-        TypeMirror im = reflectType(obj.runtimeType);
-        if (im.simpleName == paramType) {
+                
+        if (compareTypes(obj, paramType)) {
           namedParams[new Symbol(parameterName)] = obj;
         }
+        else {
+          ServerPacket.serverPacketLogger.info("Dropping parameter $parameterName as it doesnt match type == $paramType");
+        }
+      }
+      else {
+        ServerPacket.serverPacketLogger.info("Dropping parameter $parameterName");
       }
     });
     if (posArguments.length == positional.length) {
@@ -67,6 +78,18 @@ class PacketInstancer {
       ServerPacket.serverPacketLogger.warning("Incorrect parameters found.");
     }
   }
+}
+
+bool compareTypes (dynamic obj, String type) {
+///TODO: PROPER REFLECTION AND NOT HARD CODED.
+  String t = obj.runtimeType.toString();
+  if (t == "_LinkedHashMap") { 
+    t = "Map";
+  }
+  else if (t == "_GrowableList") {
+    t = "List";
+  }
+  return t == type; 
 }
 
 abstract class ServerPacket {
@@ -132,6 +155,20 @@ abstract class ServerPacket {
     else {
       serverPacketLogger.warning("Unknown packet ID $packetID received by getPacket");
     }
+  }
+}
+
+class InitialDataResponseServerPacket extends ServerPacket {
+  static int ID = SERVER_PACKET_IDS.INITIAL_DATA_RESPONSE;
+  List customerList = new List();
+  List productList = new List();
+  List productWeightsList = new List();
+  List productPackagingList = new List();
+  List transportList = new List();
+  List userList = new List();
+  InitialDataResponseServerPacket.create(this.customerList, this.productList, this.productWeightsList, this.productPackagingList, this.transportList, this.userList);
+  void handlePacket () {
+    
   }
 }
 
@@ -202,9 +239,9 @@ class TransportAddServerPacket extends ServerPacket {
 
 class ActionResponseServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.ACTION_RESPONSE;
-  bool completeSucessfully = false;
-  List<String> errors = new List<String>();
-  ActionResponseServerPacket.create (this.completeSucessfully, [this.errors]);
+  bool complete = false;
+  List errors = new List();
+  ActionResponseServerPacket.create (this.complete, {this.errors});
   void handlePacket () {
     
   }
@@ -224,6 +261,8 @@ class PingPongServerPacket extends ServerPacket {
 class SERVER_PACKET_IDS {
   //1 - REMOVED PACKET
   //2
+
+  static const int INITIAL_DATA_RESPONSE = 2;
   static const int DISCONNECT_SERVER = 3;
   static const int LOGGED_IN = 4;
   static const int DATA_CHANGE = 5;
