@@ -26,6 +26,14 @@ class AuthenticateClientPacket extends RequireResponseClientPacket {
     return super.toJsonDefault(ID)..addAll({ "username": this.username, "password": this.password });
   }
 }
+class InitialDataRequestClientPacket extends RequireResponseClientPacket {
+  static final int ID = CLIENT_PACKET_IDS.INITIAL_DATA_REQUEST;
+  InitialDataRequestClientPacket();
+  
+  Map<String, dynamic>  toJson () {
+    return super.toJsonDefault(ID);
+  }
+}
 
 class PingPongClientPacket extends RequireResponseClientPacket {
   static final int ID = CLIENT_PACKET_IDS.PING_PONG;
@@ -77,12 +85,14 @@ class TransportAddClientPacket extends RequireResponseClientPacket {
   }
 }
 
+
 class CLIENT_PACKET_IDS {
   static const int AUTHENTICATE = 1;
   static const int PING_PONG = 2;
+  static const int INITIAL_DATA_REQUEST = 3;
   
   static const int DATA_CHANGE = 5;
   static const int SUPPLIER_ADD = 6;
   static const int CUSTOMER_ADD = 7;
-  static const int TRANSPORT_ADD = 7;
+  static const int TRANSPORT_ADD = 8;
 }
