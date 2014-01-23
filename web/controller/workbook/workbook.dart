@@ -7,22 +7,21 @@ part of FreemansClient;
 class Workbook {
   List<WorkbookDaySheet> loadedDays = new List<WorkbookDaySheet>();
   int _weekStartTime;
-  
+  String prevWeek;
+  String nextWeek;
+    
   Workbook (StateService service) {
     if (service.checkLogin()) {
       loadedDays.add(new WorkbookDaySheet());
-      loadedDays.add(new WorkbookDaySheet()..sheetDay = new DateTime.now().add(new Duration(days: 1)));
-      loadedDays.add(new WorkbookDaySheet()..sheetDay = new DateTime.now().add(new Duration(days: 2)));
-      loadedDays.add(new WorkbookDaySheet()..sheetDay = new DateTime.now().add(new Duration(days: 3)));
-      loadedDays.add(new WorkbookDaySheet()..sheetDay = new DateTime.now().add(new Duration(days: 4)));
-      loadedDays.add(new WorkbookDaySheet()..sheetDay = new DateTime.now().add(new Duration(days: 5)));
-      loadedDays.add(new WorkbookDaySheet()..sheetDay = new DateTime.now().add(new Duration(days: 6)));
-      loadedDays.add(new WorkbookDaySheet()..sheetDay = new DateTime.now().add(new Duration(days: 7)));
+      for (int x = 0; x <= 7; x++) loadedDays.add(new WorkbookDaySheet()..sheetDay = new DateTime.now().add(new Duration(days: x)));
+      prevWeek = longDateFormat(new DateTime.now().subtract(new Duration(days: 7)));
+      nextWeek = longDateFormat(new DateTime.now().add(new Duration(days: 7)));
     }
   }
   
   void loadPreviousWeek() {
       //Load one week exactly from the week start date
+    
       loadWeek(_weekStartTime - 604800);
   }
   
@@ -53,23 +52,25 @@ class WorkbookDaySheet {
   }
   WorkbookDaySheet () {
     formattedDate = longDateFormat(sheetDay);
-    for (int x = 0; x <= 40; x++) {
+    for (int x = 0; x <= 50; x++) {
     produce.add(new WorkbookProduceLine()..refID = "$x"
-                                        ..supplier="Test Supplier"
-                                        ..supplierQuantity=500
-                                        ..item="CARROT X 10 KG NET"
-                                        ..costPrice=3
-                                        ..transport="PEARSONS"
-                                        ..transportCost = 34.10
-                                        ..customer = "Test Customer"
-                                        ..deliveryDate = "01/12"
-                                        ..customerQuantity = 500
-                                        ..salePrice = 4
-                                        ..invoiceNumber = 12387
+                                         ..supplier="Test Supplier"
+                                         ..supplierQuantity=500
+                                         ..item="CARROT X 10 KG NET"
+                                         ..costPrice=3
+                                         ..transport="PEARSONS"
+                                         ..transportCost = 34.10
+                                         ..customer = "Test Customer"
+                                         ..deliveryDate = "01/12"
+                                         ..customerQuantity = 500
+                                         ..salePrice = 4
+                                         ..invoiceNumber = 12387
                                         );
     }
                                          
   }
+  
+ 
   void select () {
     produce.forEach((E) => E.select());
   }

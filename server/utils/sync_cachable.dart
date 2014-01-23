@@ -9,7 +9,7 @@ abstract class SyncCachable<T> {
   int ID = 0;
   String UUID = new Uuid().v4();
   
-  
+  /// 
   bool _isActive = true;
 
   /// Defines weather a Syncable is new data to be inserted into the database

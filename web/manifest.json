@@ -3,7 +3,7 @@
      "version": "1.0",
      "app": {
           "background": {
-          	"scripts": ["resources/appStart.js"]
+          	"scripts": ["resource/sappStart.js"]
           }
      },
      "icons": {

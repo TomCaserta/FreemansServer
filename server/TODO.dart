@@ -2,7 +2,7 @@
 /** Add database to Workbook Data * PROGRESS: DONE
  ** Products, Item weights etc * PROGRESS: NOT STARTED * START: 17/12/13 EXP COMPLETION: DEC 13
  ** Front end design ~* PROGRESS: STARTED
- ** Front end websocket handler ~* PROGRESS: STARTED
+ ** Front end websocket handler ~* PROGRESS: DONE
  ** Quickbooks Integration needs completing ~* PROGRESS: STARTED *~ EXP COMPLETION: EARLY FEB 14
  ** Admin Panel * PROGRESS: NOT STARTED * EXP COMPLETION: NOT IMPORTANT
  **  

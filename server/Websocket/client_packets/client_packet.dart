@@ -1,7 +1,6 @@
 part of FreemansServer;
 
 /// TODO: Work out a better way of doing this.
-/// TODO: Work out a better way of doing this.
 String getSymName (Symbol sym) {
   String str = sym.toString();
   return str.substring(8, str.length - 2);
@@ -15,13 +14,16 @@ class PacketInstancer {
   PacketInstancer (ClassMirror this.cm) {
      Map<Symbol, DeclarationMirror> declarations = cm.declarations;
      Symbol createMethod = new Symbol("${getSymName(cm.simpleName)}.create");
+     // Check if our packet has a create constructor
      if (declarations.containsKey(createMethod)) {
        DeclarationMirror dm = declarations[createMethod];
        if (dm is MethodMirror && dm.isConstructor) {
           List<ParameterMirror> pm = dm.parameters;
+          // Loop through the parameters of the packet class
           pm.forEach((ParameterMirror parameter)  {
             TypeMirror paramType = parameter.type;
             String typeName = getSymName (paramType.simpleName);
+            // Check if the parameters match JSON object specified types
             if (typeName == "String" || typeName == "num" || typeName == "int" || typeName == "bool" || typeName == "double" || typeName == "List" || typeName == "Map") {
               if (parameter.isNamed) {
                  named[getSymName (parameter.simpleName)] = typeName;
@@ -48,6 +50,8 @@ class PacketInstancer {
   }
   ClientPacket getPacket (Map params) {
     List<dynamic> posArguments = new List<dynamic>();
+    // Loop through our params map and check the parameter type to the parameter name
+    // and ensure they match what the packet class allows for
     positional.forEach((String parameterName, String paramType) { 
       if (params.containsKey(parameterName)) {
         dynamic obj = params[parameterName];
@@ -73,6 +77,7 @@ class PacketInstancer {
       }
     });
     if (posArguments.length == positional.length) {
+      // return an instance of our packet as the json object matches up.
       return cm.newInstance(const Symbol("create"), posArguments, namedParams).reflectee;
     }
     else {

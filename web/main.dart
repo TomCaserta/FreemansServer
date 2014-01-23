@@ -13,6 +13,9 @@ import 'utilities/preloader.dart';
 import 'utilities/permissions.dart';
 
 part 'class/user.dart';
+part 'class/transport.dart';
+part 'class/product.dart';
+part 'class/customer.dart';
 
 part 'websocket/websocket_handler.dart';
 part 'websocket/server_packets.dart';
@@ -49,7 +52,6 @@ class StateService {
   
   bool checkLogin () {
     if (loggedIn == false) {
-      
       window.location.hash = "/login";
       return true;
     }

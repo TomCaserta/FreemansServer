@@ -7,38 +7,57 @@ import 'package:path/path.dart';
 import 'package:logging/logging.dart';
 import 'package:utf/utf.dart';
 import 'dart:convert';
-import 'package:crypto/crypto.dart';
 import 'dart:mirrors';
 import 'package:uuid/uuid.dart';
-import 'Utilities/permissions.dart';
-import 'Utilities/preloader.dart';
+import 'utils/permissions.dart';
+import 'utils/preloader.dart';
+// TODO: Change this back to package once https://code.google.com/p/dart/issues/detail?id=16205
+// is fixed.
+import 'QBXMLRP2_DART/QBXMLRP2_DART.dart';
+import 'quickbooks_integration/qb_integration.dart';
 
-part 'Class/user.dart';
-part 'Class/supplier.dart';
-part 'Class/customer.dart';
-part 'Class/transport.dart';
-part 'Class/product.dart';
-part 'Utilities/sync_cachable.dart';
-part 'Class/workbook_data.dart';
-part 'Config/config.dart';
-
-part 'Utilities/functions.dart';
-part 'Utilities/database_handler.dart';
-
-part 'Websocket/websocket_handler.dart';
-part 'Websocket/client.dart';
-
-// Packets
-part 'Websocket/ClientPackets/packets.dart';
-part 'Websocket/ClientPackets/client_packet.dart';
-
-part 'Websocket/ServerPackets/server_packet.dart';
+part 'syncables/user.dart';
+part 'syncables/supplier.dart';
+part 'syncables/customer.dart';
+part 'syncables/transport.dart';
+part 'syncables/product.dart';
+part 'utils/sync_cachable.dart';
+part 'syncables/workbook_data.dart';
+part 'config/config.dart';
+part 'utils/functions.dart';
+part 'utils/database_handler.dart';
+part 'websocket/websocket_handler.dart';
+part 'websocket/client.dart';
+part 'websocket/client_packets/packets.dart';
+part 'websocket/client_packets/client_packet.dart';
+part 'websocket/server_packets/server_packet.dart';
 
 
 
 DatabaseHandler dbHandler;
 Logger ffpServerLog = new Logger("FFPServer");
 void main() {
+  
+  QuickbooksConnector qbc = new QuickbooksConnector();
+  String appID = "My Test Application";
+  String appName = "QBXML Test App";
+
+  // Opens a connection
+  qbc.openConnection(appID, appName).then((bool connected) {
+    if (connected) {
+      String companyFileName = ""; // Empty string specifies current open file.
+
+      // QBFileModes: doNotCare, multiUser, singleUser
+      // Begins a session for the specified file name and mode. Quickbooks *will* prompt for authorization
+      qbc.beginSession(companyFileName, QBFileMode.doNotCare).then((String ticketID) {
+        QBSimpleListQuery slq = new QBSimpleListQuery(qbc, ticketID, "Customer", 5);
+        slq.forEach().listen((l) {
+          print(l);
+        });
+      });
+    }
+  });
+  
   
   ConnectionPool handler = new ConnectionPool(host: GLOBAL_CONFIG["db_host"], port: GLOBAL_CONFIG["db_port"], user: GLOBAL_CONFIG["db_user"], password: GLOBAL_CONFIG["db_password"], db: GLOBAL_CONFIG["db_database"], max: 5);
   dbHandler = new DatabaseHandler(handler);

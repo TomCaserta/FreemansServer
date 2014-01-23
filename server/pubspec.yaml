@@ -1,8 +1,8 @@
 name: FreemansServer
 dependencies:
-  crypto: 0.9.0
   logging: any
   path: any
+  sqljocky: 0.9.0
   utf: any
   uuid: any
-  sqljocky: 0.9.0
+  xml: any
