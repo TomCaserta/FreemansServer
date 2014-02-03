@@ -7,6 +7,7 @@ class XMLFileCached {
   File f;
   XMLFileCached._new (String name) { 
     f = new File(name);
+    fileCache[name] = this;
     if (f.existsSync()) {
       f.openSync(mode: FileMode.READ);
       fileData = f.readAsStringSync();

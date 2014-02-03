@@ -5,6 +5,7 @@ import 'package:sqljocky/sqljocky.dart';
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:logging/logging.dart';
+import 'package:xml/xml.dart';
 import 'package:utf/utf.dart';
 import 'dart:convert';
 import 'dart:mirrors';
@@ -50,9 +51,11 @@ void main() {
       // QBFileModes: doNotCare, multiUser, singleUser
       // Begins a session for the specified file name and mode. Quickbooks *will* prompt for authorization
       qbc.beginSession(companyFileName, QBFileMode.doNotCare).then((String ticketID) {
-        QBSimpleListQuery slq = new QBSimpleListQuery(qbc, ticketID, "Customer", 5);
-        slq.forEach().listen((l) {
-          print(l);
+        QBTermsList slq = new QBTermsList(qbc, ticketID, 100);
+        int x = 0;
+        slq.forEach().listen((XmlElement customer) {
+          print(customer);
+          //print(customer.query("Email")[0].text);
         });
       });
     }
