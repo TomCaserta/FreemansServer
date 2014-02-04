@@ -28,7 +28,7 @@ class QBSimpleListQuery {
     }
     else  xml = ResponseBuilder.parseFromFile("list_request", params: { "version": "11.0", "listType": listType, "maxReturned": step.toString() } );  
     print(xml);
-    qbc.processRequest(ticket, xml).then((String resp) {
+    qbc.processRequest(xml).then((String resp) {
       if (resp != null && resp is String) {
         XmlElement xmlFile = XML.parse(resp);
         XmlElement queryResponse = xmlFile.query("QBXML").query("QBXMLMsgsRs").query("${listType}QueryRs").first;

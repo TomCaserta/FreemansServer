@@ -14,9 +14,11 @@ import 'utils/permissions.dart';
 import 'utils/preloader.dart';
 // TODO: Change this back to package once https://code.google.com/p/dart/issues/detail?id=16205
 // is fixed.
-import 'QBXMLRP2_DART/QBXMLRP2_DART.dart';
-import 'quickbooks_integration/qb_integration.dart';
+import 'package:QBXMLRP2_DART/QBXMLRP2_DART.dart';
+import 'quickbooks/quickbooks_integration/qb_integration.dart';
 
+
+part 'quickbooks/quickbooks_initializer.dart';
 part 'syncables/user.dart';
 part 'syncables/supplier.dart';
 part 'syncables/customer.dart';
@@ -36,56 +38,54 @@ part 'websocket/server_packets/server_packet.dart';
 
 
 DatabaseHandler dbHandler;
+QuickbooksConnector qbHandler;
 Logger ffpServerLog = new Logger("FFPServer");
 void main() {
   
-  QuickbooksConnector qbc = new QuickbooksConnector();
-  String appID = "My Test Application";
-  String appName = "QBXML Test App";
+  qbHandler = new QuickbooksConnector();
+  String appID = "FFPSoftware";
+  String appName = "Freemans Farm Produce Software";
 
-  // Opens a connection
-  qbc.openConnection(appID, appName).then((bool connected) {
+  qbHandler.openConnection(GLOBAL_CONFIG["qb_app_ID"], GLOBAL_CONFIG["qb_app_name"]).then((bool connected) {
     if (connected) {
+      ffpServerLog.info("Connected to quickbooks...");
       String companyFileName = ""; // Empty string specifies current open file.
-
-      // QBFileModes: doNotCare, multiUser, singleUser
-      // Begins a session for the specified file name and mode. Quickbooks *will* prompt for authorization
-      qbc.beginSession(companyFileName, QBFileMode.doNotCare).then((String ticketID) {
-        QBTermsList slq = new QBTermsList(qbc, ticketID, 100);
-        int x = 0;
-        slq.forEach().listen((XmlElement customer) {
-          print(customer);
-          //print(customer.query("Email")[0].text);
-        });
+      qbHandler.beginSession(companyFileName, QBFileMode.doNotCare).then((String ticketID) {
+          ffpServerLog.info("Began session with company file...");
+          ConnectionPool handler = new ConnectionPool(host: GLOBAL_CONFIG["db_host"], port: GLOBAL_CONFIG["db_port"], user: GLOBAL_CONFIG["db_user"], password: GLOBAL_CONFIG["db_password"], db: GLOBAL_CONFIG["db_database"], max: 5);
+          dbHandler = new DatabaseHandler(handler);
+          
+          ffpServerLog.onRecord.listen((e) {
+            print(e);
+            if (e.level == Level.SEVERE) {
+              throw e;
+            }
+          });
+          
+          ffpServerLog.info("Initializing database values");
+          Preloader prel = new Preloader();
+          prel.addFuture(new PreloadElement("QuickbooksInit", QuickbooksInitializer.init));
+          prel.addFuture(new PreloadElement("UserInit", User.init));
+          prel.addFuture(new PreloadElement("SupplierInit", Supplier.init));
+          prel.addFuture(new PreloadElement("CustomerInit", Customer.init));
+          prel.addFuture(new PreloadElement("TransportInit", Transport.init));
+          prel.addMethod(new PreloadElement("PacketInit", ClientPacket.init));
+          prel.startLoad(onError: (e) {
+            ffpServerLog.severe("$e");
+          }).listen((int x) {
+            print("[${str_repeat("|",x)}${str_repeat("=",(100-x))}]");
+          }, onDone: () {
+            print("Finished loading!");
+            afterLoading();
+          });
       });
     }
-  });
-  
-  
-  ConnectionPool handler = new ConnectionPool(host: GLOBAL_CONFIG["db_host"], port: GLOBAL_CONFIG["db_port"], user: GLOBAL_CONFIG["db_user"], password: GLOBAL_CONFIG["db_password"], db: GLOBAL_CONFIG["db_database"], max: 5);
-  dbHandler = new DatabaseHandler(handler);
-  
-  ffpServerLog.onRecord.listen((e) {
-    print(e);
-    if (e.level == Level.SEVERE) {
-      throw e;
+    else {
+      ffpServerLog.severe("Could not initialize quickbooks... Is it open?");
     }
-  });
-  
-  ffpServerLog.info("Initializing database values");
-  Preloader prel = new Preloader();
-  prel.addFuture(new PreloadElement("UserInit", User.init));
-  prel.addFuture(new PreloadElement("SupplierInit", Supplier.init));
-  prel.addFuture(new PreloadElement("CustomerInit", Customer.init));
-  prel.addFuture(new PreloadElement("TransportInit", Transport.init));
-  prel.addMethod(new PreloadElement("PacketInit", ClientPacket.init));
-  prel.startLoad(onError: (e) {
-    ffpServerLog.severe("$e");
-  }).listen((int x) {
-    print("[${str_repeat("|",x)}${str_repeat("=",(100-x))}]");
-  }, onDone: () {
-    print("Finished loading!");
-    afterLoading();
+  })
+  .catchError((err) { 
+    ffpServerLog.severe("Could not start up program as quickbooks failed to initialize due to the following error: $err");
   });
 }
 

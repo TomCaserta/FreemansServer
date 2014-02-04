@@ -14,5 +14,9 @@ Map<String, dynamic> GLOBAL_CONFIG = {
                                         
                                         'ws_bind_ip': InternetAddress.ANY_IP_V4,
                                         'ws_bind_port': 1337,
+                                        
+                                        /* QUICKBOOKS INTEGRATION */
+                                        'qb_app_ID': 'FFPSoftware',
+                                        'qb_app_name': 'Freemans Farm Produce Software'
 
 };
