@@ -12,7 +12,7 @@ class QBSimpleListQuery {
   String returnName;
   bool isRequesting = false;
   // Constructs a simple list query with "step" specifying how many objects to request at a time.
-  QBSimpleListQuery(this.qbc, this.ticket, String this.listType, int this.step, { bool this.useIterator: true, String this.returnName: null }) {
+  QBSimpleListQuery(this.qbc, String this.listType, int this.step, { bool this.useIterator: true, String this.returnName: null }) {
      
   }
   
@@ -27,7 +27,6 @@ class QBSimpleListQuery {
       }
     }
     else  xml = ResponseBuilder.parseFromFile("list_request", params: { "version": "11.0", "listType": listType, "maxReturned": step.toString() } );  
-    print(xml);
     qbc.processRequest(xml).then((String resp) {
       if (resp != null && resp is String) {
         XmlElement xmlFile = XML.parse(resp);
@@ -42,7 +41,6 @@ class QBSimpleListQuery {
               iteratorID = queryResponse.attributes["iteratorID"];
               isRequesting = true;
               maxItems = int.parse(queryResponse.attributes["iteratorRemainingCount"]);
-              print(maxItems);
               if (maxItems > 0) { 
                 currentRecord += step;
                 _requestNext(sc);
@@ -67,13 +65,17 @@ class QBSimpleListQuery {
 }
 
 class QBSupplierList extends QBSimpleListQuery {
-  QBSupplierList (qbc, ticket, step):super(qbc, ticket, "Suppliers", step);
+  QBSupplierList (qbc, step):super(qbc, "Supplier", step);
 }
 
 class QBCustomerList extends QBSimpleListQuery {
-  QBCustomerList (qbc, ticket, step):super(qbc, ticket, "Customers", step);
+  QBCustomerList (qbc, step):super(qbc, "Customer", step);
 }
 
 class QBTermsList extends QBSimpleListQuery {
-  QBTermsList (qbc, ticket, step):super(qbc, ticket, "Terms", step, useIterator: false, returnName: "StandardTermsRet");
+  QBTermsList (qbc, step):super(qbc, "Terms", step, useIterator: false, returnName: "StandardTermsRet");
+}
+
+class QBItemsList extends QBSimpleListQuery {
+  QBItemsList (qbc, step):super(qbc, "ItemInventory", step, returnName: "ItemInventoryRet");
 }

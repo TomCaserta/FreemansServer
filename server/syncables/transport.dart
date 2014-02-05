@@ -77,7 +77,7 @@ class Transport extends SyncCachable<Transport> {
   }
 
 
-  Future<bool> updateDatabase (DatabaseHandler dbh) {
+  Future<bool> updateDatabase (DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer();
     String surchargesString = _surcharges.join(",");
     if (this.isNew) {

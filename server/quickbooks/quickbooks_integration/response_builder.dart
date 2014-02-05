@@ -25,7 +25,7 @@ class XMLFileCached {
 class ResponseBuilder {
   
   static String parseFromFile (String fileName, { Map params: const  {} }) {
-    XMLFileCached file = new XMLFileCached("quickbooks_integration/xml/$fileName.xml");
+    XMLFileCached file = new XMLFileCached("quickbooks/quickbooks_integration/xml/$fileName.xml");
     return parse(file.fileData, params: params);
   }
   static String parse (String fileData, { Map params: const {}}) {

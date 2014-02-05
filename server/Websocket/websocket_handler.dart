@@ -2,13 +2,14 @@ part of FreemansServer;
 
 
 class WebsocketHandler {
+  
   // Holds all our clients currently connected
   Map<int, Client> clients = new Map<int, Client>();
   // Decoder used to decode JSON packets
   JsonDecoder decoder = new JsonDecoder(null);
   JsonEncoder encoder = new JsonEncoder(null);
   void start (InternetAddress ipAddress, int port) {
-    print ("Starting HTTP/Websocket server on $ipAddress:$port");
+    ffpServerLog.info ("Starting HTTP/Websocket server on $ipAddress:$port");
     
     // Listen to HTTP Connections on the specified port
     HttpServer.bind(ipAddress, port).then((HttpServer server) {
@@ -18,7 +19,6 @@ class WebsocketHandler {
         
         // Transform and listen to the stream
         sc.stream.transform(new WebSocketTransformer()).listen((WebSocket conn) {
-          print("Websocket transformed!");
           Client cli;
           if (!clientExists(conn)) cli = addClient(conn);
           else cli = getClientFromSocket(conn);
@@ -26,7 +26,6 @@ class WebsocketHandler {
           void onMessage(message) {
             try { 
               // Parse the sent message into JSON
-              print(message);
               dynamic obj = decoder.convert(message);
               if (obj is Map) {
                 if (obj.containsKey("ID") && obj["ID"] is int) {
@@ -59,10 +58,10 @@ class WebsocketHandler {
         
       // Listen to normal http connections and upgrade them to a websocket connection
       server.listen((HttpRequest request) { 
-        print("Listening for connections");
+        ffpServerLog.info ("New connection to server");
         print(request.uri.path);
         if (request.uri.path == "/websocket") {
-          print("Loading");
+          ffpServerLog.info ("Websocket request found... forwarding...");
                sc.add(request);
         }
       });

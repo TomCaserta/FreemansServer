@@ -37,23 +37,30 @@ class ProductWeight extends SyncCachable<ProductWeight>  {
   // Object
 
   String _description;
+  int _kg;
   Map<String, dynamic> toJson () { 
-          return super.toJson()..addAll({ "description": description });
+          return super.toJson()..addAll({ "description": description, "kg": kg });
   }
   
-  String get description => description;
-  
+  String get description => _description;
+  int get kg => _kg;
   set description (String description) {
     if (description != _description) {
       _description = description;
       requiresDatabaseSync();
     }
   }
-
-  Future<bool> updateDatabase (DatabaseHandler dbh) {
+  
+  set kg (int kg) {
+       if (kg != _kg) {
+         _kg = kg;
+         requiresDatabaseSync();
+       }
+  }
+  Future<bool> updateDatabase (DatabaseHandler dbh, QuickbooksConnector qbc) {
       Completer c = new Completer();
       if (this.isNew) {
-       dbh.prepareExecute("INSERT INTO productweights (description) VALUES (?)", [this.description]).then((res) {
+       dbh.prepareExecute("INSERT INTO productweights (description, kg) VALUES (?,?)", [this.description, this.kg]).then((res) {
          if (res.insertId != 0) {
            this._firstInsert(res.insertId);
            c.complete(true);
@@ -70,7 +77,7 @@ class ProductWeight extends SyncCachable<ProductWeight>  {
        });
      }
      else {
-       dbh.prepareExecute("UPDATE productweights SET description=? WHERE ID=?", [this.description,this.ID]).then((res) {  
+       dbh.prepareExecute("UPDATE productweights SET description=?, kg = ? WHERE ID=?", [this.description,this.kg,this.ID]).then((res) {  
          if (res.affectedRows <= 1) {
            this.synced();
            c.complete(true);
@@ -122,7 +129,7 @@ class ProductPackaging extends SyncCachable<ProductPackaging>  {
 
   String _description;
   
-  String get description => description;
+  String get description => _description;
   
   
   Map<String, dynamic> toJson () { 
@@ -139,7 +146,7 @@ class ProductPackaging extends SyncCachable<ProductPackaging>  {
   }
 
 
-  Future<bool> updateDatabase (DatabaseHandler dbh) {
+  Future<bool> updateDatabase (DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer();
     if (this.isNew) {
       dbh.prepareExecute("INSERT INTO packaging (description) VALUES (?)", [this.description]).then((res) {
@@ -196,19 +203,24 @@ class Product extends SyncCachable<Product> {
       results.listen((Row row) {
         List<int> vWeights = new List<int>();
         List<int> vPackaging = new List<int>();
-        String vWeightString = row[2];
-        String vPackagingString = row[3];
-        vWeightString.split(",").forEach((String val) {
-          vWeights.add(int.parse(val));
-        });
-        vPackagingString.split(",").forEach((String val) {
-          vPackaging.add(int.parse(val));
-        });
+        String vWeightString = (row[2] != null ? row[2].toString() : "");
+        String vPackagingString = (row[3] != null ? row[3].toString() : "");
+        if (vWeightString != null && vWeightString.isNotEmpty) {
+          vWeightString.split(",").forEach((String val) {
+            vWeights.add(int.parse(val));
+          });
+        }
+        if (vPackagingString != null && vPackagingString.isNotEmpty) { 
+          vPackagingString.split(",").forEach((String val) {
+            vPackaging.add(int.parse(val));
+          });
+        }
         new Product(row[0], row[1], vWeights, vPackaging, row[4]);
       },
       onDone: () {
-        c.complete(true);
         ffpServerLog.info("List loaded.");
+        c.complete(true);
+        
       },
       onError: (e) {
         c.completeError("Could not load list from database: $e");
@@ -225,6 +237,10 @@ class Product extends SyncCachable<Product> {
   List<int> _validWeights = new List<int>();
   List<int> _validPackaging = new List<int>();
   String _quickbooksName;
+  
+  bool get isQBSyncable { 
+    return _quickbooksName != "" && _quickbooksName != null;
+  }
   
   Map<String, dynamic> toJson () { 
           return super.toJson()..addAll({ "name": name,
@@ -275,10 +291,10 @@ class Product extends SyncCachable<Product> {
       requiresDatabaseSync();
     }
   }
-  Future<bool> updateDatabase (DatabaseHandler dbh) {
+  Future<bool> updateDatabase (DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer();
     if (this.isNew) {
-      dbh.prepareExecute("INSERT INTO prdoucts (productName, validWeights, validPackaging, quickbooksItem) VALUES (?,?,?,?)", [name, validWeights.join(","), validPackaging.join(","), quickbooksName]).then((res) {
+      dbh.prepareExecute("INSERT INTO products (productName, validWeights, validPackaging, quickbooksItem) VALUES (?,?,?,?)", [name, validWeights.join(","), validPackaging.join(","), quickbooksName]).then((res) {
         if (res.insertId != 0) {
           this._firstInsert(res.insertId);
           c.complete(true);
@@ -295,7 +311,7 @@ class Product extends SyncCachable<Product> {
       });
     }
     else {
-      dbh.prepareExecute("UPDATE packaging SET productName=?, validWeights=?, validPackaging=?, quickbooksItem=? WHERE ID=?", [name, validWeights.join(","), validPackaging.join(","), quickbooksName, ID]).then((res) {  
+      dbh.prepareExecute("UPDATE products SET productName=?, validWeights=?, validPackaging=?, quickbooksItem=? WHERE ID=?", [name, validWeights.join(","), validPackaging.join(","), quickbooksName, ID]).then((res) {  
         if (res.affectedRows <= 1) {
           this.synced();
           c.complete(true);

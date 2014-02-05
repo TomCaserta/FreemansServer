@@ -136,7 +136,7 @@ class Supplier extends SyncCachable<Supplier> {
   }
 
 
-  Future<bool> updateDatabase(DatabaseHandler dbh) {
+  Future<bool> updateDatabase(DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer<bool>();
     if (this.isNew) {
       dbh.prepareExecute("INSERT INTO suppliers (supplierName, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
@@ -191,7 +191,7 @@ class Supplier extends SyncCachable<Supplier> {
     sup.addressLine3 = addressLine3;
     sup.addressLine4 = addressLine4;
     sup.addressLine5 = addressLine5;
-    sup.updateDatabase(dbHandler).then((bool done) {
+    sup.updateDatabase(dbHandler, qbHandler).then((bool done) {
       if (done == true) {
         c.complete(sup);
       }

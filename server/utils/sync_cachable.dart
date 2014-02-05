@@ -179,7 +179,7 @@ abstract class SyncCachable<T> {
   }
   
   /// Called when a update to the database is occuring.
-  Future<bool> updateDatabase (DatabaseHandler dbh) {
+  Future<bool> updateDatabase (DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer();
     ffpServerLog.warning("Syncable object ${this.runtimeType} does not implement a database update method.");
     c.complete(false);

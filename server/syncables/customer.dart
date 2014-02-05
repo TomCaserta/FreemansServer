@@ -233,7 +233,7 @@ class Customer extends SyncCachable<Customer> {
 
 
   /// Syncs any changes made to the fields.
-  Future<bool> updateDatabase (DatabaseHandler dbh) {
+  Future<bool> updateDatabase (DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer();
      if (this.isNew) {
         dbh.prepareExecute("INSERT INTO customers (customerName, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2,"

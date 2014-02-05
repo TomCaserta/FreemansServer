@@ -54,7 +54,7 @@ class User extends SyncCachable<User> {
      }
   }
 
-  Future<bool> updateDatabase(DatabaseHandler dbh) {
+  Future<bool> updateDatabase(DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer<bool>();
     if (this.isNew) {
       dbHandler.prepareExecute("INSERT INTO users (username, password, permissions) VALUES (?,?,?)", [username, password, permissions]).then((Results res) {

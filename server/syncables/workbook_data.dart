@@ -66,14 +66,14 @@ class SalesRow extends SyncCachable<SalesRow> {
     }
   }
   
-  Future<bool> updateDatabase (DatabaseHandler dbh) {
+  Future<bool> updateDatabase (DatabaseHandler dbh, QuickbooksConnector qbc) {
   Completer c = new Completer();
     List<Future<bool>> futures = new List<Future<bool>>();
     // Fake completer/future to ensure that we always have atleast one future waiting on.
     // Whilst its a bit hacky its easier than doing a check.
     Completer fakeCompleter = new Completer();
     futures.add(fakeCompleter.future);
-    if (_customer != null) futures.add(_customer.updateDatabase(dbh));
+    if (_customer != null) futures.add(_customer.updateDatabase(dbh, qbc));
     Future.wait(futures).then((List<bool> returnVal )  { 
       bool all = returnVal.every((e) { return e; });
       if (all) {
@@ -227,7 +227,7 @@ class PurchaseRow extends SyncCachable<PurchaseRow> {
   }
 
 
-  Future<bool> updateDatabase (DatabaseHandler dbh) {
+  Future<bool> updateDatabase (DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer();
     int supplierID;
     if (supplier != null) {
@@ -239,13 +239,13 @@ class PurchaseRow extends SyncCachable<PurchaseRow> {
     }
     List<Future<bool>> futures = new List<Future<bool>>();
     _sales.forEach((SalesRow sr) {
-      futures.add(sr.updateDatabase(dbh));
+      futures.add(sr.updateDatabase(dbh, qbc));
     });
     // Fake completer/future to ensure that we always have atleast one future waiting on.
     // Whilst its a bit hacky its easier than doing a check.
     Completer fakeCompleter = new Completer();
     futures.add(fakeCompleter.future);
-    if (_supplier != null) futures.add(_supplier.updateDatabase(dbh));
+    if (_supplier != null) futures.add(_supplier.updateDatabase(dbh, qbc));
     Future.wait(futures).then((List<bool> returnVal )  { 
       bool all = returnVal.every((e) { return e; });
       if (all) {
@@ -334,7 +334,7 @@ class TransportRow extends SyncCachable<TransportRow> {
     }
   }
 
-  Future<bool> updateDatabase (DatabaseHandler dbh) {
+  Future<bool> updateDatabase (DatabaseHandler dbh, QuickbooksConnector qbc) {
     ffpServerLog.severe("Transport row does not have its own database table");
   }
 }
@@ -365,8 +365,8 @@ class WorkbookRow extends SyncCachable<WorkbookRow> {
   get purchaseData => _purchase;
 
 
-  Future<bool> updateDatabase (DatabaseHandler dbh) {
-    return _purchase.updateDatabase(dbh);
+  Future<bool> updateDatabase (DatabaseHandler dbh, QuickbooksConnector qbc) {
+    return _purchase.updateDatabase(dbh, qbc);
   }
 }
 
@@ -390,7 +390,7 @@ class WorkbookDay  extends SyncCachable<WorkbookDay> {
      }
   }
   
-  Future<bool> updateDatabase (DatabaseHandler dbh) {
+  Future<bool> updateDatabase (DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer();
     List<Future<bool>> futures = new List<Future<bool>>();
     // Fake completer/future to ensure that we always have atleast one future waiting on.
@@ -398,7 +398,7 @@ class WorkbookDay  extends SyncCachable<WorkbookDay> {
     Completer fakeCompleter = new Completer();
     futures.add(fakeCompleter.future);
     workbook_data.forEach((WorkbookRow wr) {
-      futures.add(wr.updateDatabase(dbh));
+      futures.add(wr.updateDatabase(dbh, qbc));
     });
     Future.wait(futures).then((List<bool> returns) { 
       if (returns.every((e) => e)) {
