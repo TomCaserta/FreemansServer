@@ -42,12 +42,9 @@ part 'websocket/server_packets/server_packet.dart';
 DatabaseHandler dbHandler;
 QuickbooksConnector qbHandler;
 Logger ffpServerLog = new Logger("FFPServer");
-void main() {
-  
-  print("\x1b[31mjjfoiejf");
-  
+void main() { 
   qbHandler = new QuickbooksConnector();
-  
+  initEnums ();
   ffpServerLog.onRecord.listen((e) {
     print(e);
     if (e.level == Level.SEVERE) {
@@ -75,14 +72,10 @@ void main() {
           prel.addFuture(new PreloadElement("SupplierInit", Supplier.init));
           prel.addFuture(new PreloadElement("CustomerInit", Customer.init));
           prel.addFuture(new PreloadElement("TransportInit", Transport.init));
-          prel.addMethod(new PreloadElement("PacketInit", ClientPacket.init));
+          prel.addFuture(new PreloadElement("QBAccountsInit", Account.init));
           prel.addFuture(new PreloadElement("ProductInit", Product.init));
+          prel.addMethod(new PreloadElement("PacketInit", ClientPacket.init));
           ffpServerLog.info("Beginning load");
-          
-//          QBCustomerList qbl = new QBCustomerList(qbHandler, 10);
-//          qbl.forEach().listen((data) { 
-//                        print(data);
-//          });
           
           prel.startLoad(onError: (e) {
             ffpServerLog.severe("$e");
@@ -93,11 +86,15 @@ void main() {
             afterLoading();
           });
    }).catchError((err) { 
-    ffpServerLog.severe("Could not start up program as quickbooks failed to initialize due to the following error: $err");
+    ffpServerLog.severe("Could not start up program as quickbooks failed to initialize due to the following error: $err\n\n${err.stackTrace}\n\n");
   });
 }
 
 void afterLoading () {
+  
+  SyncCachable.getVals(Account).forEach((Account ac) { 
+    print(ac);
+  });
   WebsocketHandler wsh = new WebsocketHandler ();
   wsh.start(GLOBAL_CONFIG["ws_bind_ip"], GLOBAL_CONFIG["ws_bind_port"]);
 }

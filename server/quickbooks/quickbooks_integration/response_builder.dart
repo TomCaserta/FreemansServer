@@ -51,6 +51,13 @@ class ResponseBuilder {
        int startFor = 0;
        int forStartBefore = 0;
        
+       // If data
+       bool inIf = false;
+       int startIf = 0;
+       int ifNum = 0;
+       String ifParam = "";
+       int ifStartBefore = 0;
+       
        
        // Sections
        Map<String, String> sections = new Map<String, String>();
@@ -141,7 +148,7 @@ class ResponseBuilder {
                                      fileData = _makeReplacement(fileData, forStartBefore, x+1, loopedData.toString());
                                      x = forStartBefore; // We want to reparse the template as the top level.
                                    }
-                                   else throw "forEach parameter is not a Map. ${forParam}";
+                                   else throw "forEach parameter is not a List. ${forParam}";
                                  }
                                  else throw "Cannot use foreach on a null variable ${forParam}";
                                  // Reset
@@ -151,6 +158,41 @@ class ResponseBuilder {
                                }  
                              }
                              else throw "No foreach to end.";
+                             break;
+                           case "IF":
+                             if (!inIf) {
+                              ifStartBefore = tagStart;
+                              startIf = x+1;
+                              ifParam = commandDat[1];
+                             }
+                             ifNum++;
+                             inIf = true;                             
+                             break;
+                           case "ENDIF":
+                             if (inIf) { 
+                               ifNum--;
+                               if (ifNum == 0) {
+                                 List paramDat = _containsParameter(params, ifParam.split("."));
+                                 bool containsKey = paramDat[0];
+                                 if (containsKey) {
+                                  bool val = _getBoolValue(paramDat[1]);
+                                  if (val) {
+                                    String internal = fileData.substring(startIf, tagStart);
+                                    fileData = _makeReplacement(fileData, ifStartBefore, x+1, internal);
+                                   
+                                  }
+                                  else {
+                                    fileData = _makeReplacement(fileData, ifStartBefore, x+1, "");                                                                      
+                                  }
+                                  x = ifStartBefore;
+                                 }
+                                 else throw "IF parameter value is not defined ${ifParam}.";
+                                 
+                                 ifParam = "";
+                                 startIf = 0;
+                                 inIf = false;
+                               }
+                             }
                              break;
                            case "ATRIB":
                              bool optional = _isParameterOptional(commandDat[1]);
@@ -169,7 +211,7 @@ class ResponseBuilder {
                              bool containsKey = paramDat[0];
                              if (containsKey || optional || hasDefault) {
 
-                               String value = (containsKey ? "$parameter=\"${_escape(paramDat[1])}\"" : (hasDefault ? "$parameter=${attribDefault}" : ""));
+                               String value = (containsKey ? "$parameter=\"${_escape(paramDat[1].toString())}\"" : (hasDefault ? "$parameter=${attribDefault}" : ""));
                                fileData = _makeReplacement(fileData, tagStart, x+1, value);
                                x = tagStart + value.length;
                              }
@@ -184,7 +226,7 @@ class ResponseBuilder {
                              bool containsKey = paramDat[0];
                              if (containsKey || optional) {
 
-                               String value = (containsKey ? _escape(paramDat[1]) : "");
+                               String value = (containsKey ? _escape(paramDat[1].toString()) : "");
                                fileData = _makeReplacement(fileData, tagStart, x+1, value);
                                x = tagStart + value.length;
                              }
@@ -215,7 +257,18 @@ class ResponseBuilder {
      });
      return fileData;  
   }
-  
+  /// Checks if the value has some sort of boolean value. Returns true if so. 
+  /// Strings return true if they are not empty
+  /// booleans return true if they are true
+  /// Anything else returns true providing it is not null
+  static bool _getBoolValue (dynamic value) {
+    if (value is bool) return value;
+    if (value is String) return value.isNotEmpty;
+    if (value is num && value != 0) return true;
+    if (value != null) return true;
+    return false;
+  }
+    
   static List _containsParameter (val, List<String> params) {
     if (val is Map) { 
       if (val.containsKey(params[0])) {
