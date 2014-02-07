@@ -9,6 +9,8 @@ part 'response_builder.dart';
 part 'enums.dart';
 part 'list_query.dart';
 part 'data_structures/modifiable.dart';
+part 'data_structures/reference.dart';
+part 'data_structures/address.dart';
 part 'data_structures/customer.dart';
 part 'data_structures/account.dart';
 

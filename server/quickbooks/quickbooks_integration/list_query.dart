@@ -82,34 +82,7 @@ class QBAccountsList extends QBSimpleListQuery {
     
     sc.stream.listen((XmlElement data) { 
          String listID = getXmlElement(data, "ListID").text;
-         QBAccount currAccount = new QBAccount();
-         currAccount.listID = listID;
-         currAccount.timeCreated = DateTime.parse(getXmlElement(data, "TimeCreated").text);
-         currAccount.timeModified = DateTime.parse(getXmlElement(data, "TimeModified").text);
-         currAccount.name = getXmlElement(data, "Name").text;
-         currAccount.fullName = getXmlElement(data, "FullName").text;
-         currAccount.isActive = getXmlElement(data, "IsActive", optional: true).text.toUpperCase() == "TRUE";
-         currAccount.parentID = getXmlElement(getXmlElement(data, "ParentRef", optional: true), "ListID", optional: true).text;
-         currAccount.editSequence = getXmlElement(data, "EditSequence").text;
-         currAccount.subLevel = int.parse(getXmlElement(data, "SubLevel").text, onError: (e) { return 0; });
-         currAccount.accountType = EnumString.get(AccountType, getXmlElement(data, "AccountType").text);
-         currAccount.specialAccountType = EnumString.get(SpecialAccountType, getXmlElement(data, "SpecialAccountType", optional: true).text);
-         currAccount.isTaxAccount = getXmlElement(data, "IsTaxAccount", optional: true).text.toUpperCase() == "TRUE";
-         currAccount.bankNumber = getXmlElement(data, "BankNumber", optional: true).text;
-         currAccount.description = getXmlElement(data, "Desc").text;
-         currAccount.balance = num.parse(getXmlElement(data, "Balance", optional: true).text, (e) { return 0; });
-         currAccount.totalBalance = num.parse(getXmlElement(data, "TotalBalance", optional: true).text, (e) { return 0; });
-         currAccount.salesTaxCodeRefId = getXmlElement(getXmlElement(data, "SalesTaxCodeRef", optional: true), "ListID", optional: true).text;
-         currAccount.cashFlowClassification = EnumString.get(CashFlowClassification, getXmlElement(data, "CashFlowClassification", optional: true).text);
-         currAccount.currencyRef = getXmlElement(getXmlElement(data, "CurrencyRef", optional: true), "ListID", optional: true).text;
-         XmlCollection dataExtRetList = data.query("DataExtRet");
-         dataExtRetList.forEach((XmlElement dataExtEl) { 
-           String dataExtName = getXmlElement(dataExtEl, "DataExtName").text;
-           DataExtType dataExtType = EnumString.get(DataExtType, getXmlElement(dataExtEl, "DataExtType").text);
-           String dataExtValue = getXmlElement(dataExtEl, "DataExtValue").text;
-           String ownerID = getXmlElement(dataExtEl, "OwnerID", optional: true).text;          
-           currAccount.dataExtRet.add(new DataExtRet(dataExtName, dataExtType, dataExtValue, ownerID));
-         });   
+         QBAccount currAccount = new QBAccount.parseFromListXml(data);
          accountStream.add(currAccount);
     },
     onDone: () { 
