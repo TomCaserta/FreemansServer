@@ -2,18 +2,16 @@ part of FreemansServer;
 
 class Account extends SyncCachable<Account> {
   QBAccount account;
-  String listID;
   List<Account> childAccounts = [];
   
   Account(String listID, [bool isNew = false]):super((isNew ? 0 : -1), listID) {
-    this.listID = listID;
   }
   
   String toString () {
     return toJson().toString();
   }
   Map<String, dynamic> toJson () {
- 
+    return { "account": account, "childAccounts": childAccounts };
   }
     
   static Future<bool> init () {

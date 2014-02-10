@@ -1,0 +1,146 @@
+{extends::template}
+{section::CONTENT}
+<CustomerAddRq>
+<CustomerAdd> 
+<Name >{$::name}</Name>
+{if::isActive}<IsActive>{$::isActive}</IsActive>{endIf}
+
+{if::parentRef}
+<ParentRef>
+{if::parentRef.listID}<ListID >{$::parentRef.listID}</ListID>{endIf}
+{if::parentRef.fullName}<FullName >{$::parentRef.fullName}</FullName>{endIf}
+</ParentRef>
+{endIf}
+
+{if::companyName}<CompanyName >{$::companyName}</CompanyName>{endIf}
+{if::salutation}<Salutation >{$::salutation}</Salutation>{endIf}
+{if::firstName}<FirstName >{$::firstName}</FirstName>{endIf}
+{if::middleName}<MiddleName >{$::middleName}</MiddleName>{endIf}
+{if::lastName}<LastName >{$::lastName}</LastName>{endIf}
+
+{if::billAddress}
+<BillAddress>
+{if::billAddress.line1}<Addr1 >{$::billAddress.line1}</Addr1>{endIf}
+{if::billAddress.line2}<Addr1 >{$::billAddress.line2}</Addr2>{endIf}
+{if::billAddress.line3}<Addr1 >{$::billAddress.line3}</Addr3>{endIf}
+{if::billAddress.line4}<Addr1 >{$::billAddress.line4}</Addr4>{endIf}
+{if::billAddress.line5}<Addr1 >{$::billAddress.line5}</Addr5>{endIf}
+{if::billAddress.city}<City >{$::billAddress.city}</City>{endIf}
+{if::billAddress.state}<State >{$::billAddress.state}</State>{endIf}
+{if::billAddress.postalCode}<PostalCode >{$::billAddress.postalCode}</PostalCode>{endIf}
+{if::billAddress.country}<Country >{$::billAddress.country}</Country>{endIf}
+{if::billAddress.note}<Note >{$::billAddress.note}</Note>{endIf}
+</BillAddress>
+{endIf}
+
+{if::shipAddress}
+<ShipAddress>
+{if::shipAddress.line1}<Addr1 >{$::shipAddress.line1}</Addr1>{endIf}
+{if::shipAddress.line2}<Addr1 >{$::shipAddress.line2}</Addr2>{endIf}
+{if::shipAddress.line3}<Addr1 >{$::shipAddress.line3}</Addr3>{endIf}
+{if::shipAddress.line4}<Addr1 >{$::shipAddress.line4}</Addr4>{endIf}
+{if::shipAddress.line5}<Addr1 >{$::shipAddress.line5}</Addr5>{endIf}
+{if::shipAddress.city}<City >{$::shipAddress.city}</City>{endIf}
+{if::shipAddress.state}<State >{$::shipAddress.state}</State>{endIf}
+{if::shipAddress.postalCode}<PostalCode >{$::shipAddress.postalCode}</PostalCode>{endIf}
+{if::shipAddress.country}<Country >{$::shipAddress.country}</Country>{endIf}
+{if::shipAddress.note}<Note >{$::shipAddress.note}</Note>{endIf}
+</ShipAddress>
+{endIf}
+
+{if::phoneNumber}<Phone >{$::phoneNumber}</Phone>{endIf}
+{if::altPhoneNumber}<AltPhone >{$::altPhoneNumber}</AltPhone>{endIf}
+{if::faxNumber}<Fax >{$::faxNumber}</Fax>{endIf}
+{if::email}<Email >{$::email}</Email>{endIf}
+{if::contact}<Contact >{$::contact}</Contact>{endIf}
+{if::altContact}<AltContact >{$::altContact}</AltContact>{endIf}
+
+{if::customerTypeRef}
+<CustomerTypeRef>
+{if::customerTypeRef.listID}<ListID >{$::customerTypeRef.listID}</ListID>{endIf}
+{if::customerTypeRef.fullName}<FullName >{$::customerTypeRef.fullName}</FullName>{endIf}
+</CustomerTypeRef>
+{endIf}
+
+{if::termsRef}
+<TermsRef>
+{if::termsRef.listID}<ListID >{$::termsRef.listID}</ListID>{endIf}
+{if::termsRef.fullName}<FullName >{$::termsRef.fullName}</FullName>{endIf}
+</TermsRef>
+{endIf}
+
+{if::salesRepRef}
+<SalesRepRef>
+{if::salesRepRef.listID}<ListID >{$::salesRepRef.listID}</ListID>{endIf}
+{if::salesRepRef.fullName}<FullName >{$::salesRepRef.fullName}</FullName>{endIf}
+</SalesRepRef>
+{endIf}
+
+{if::openBalance}<OpenBalance >{$::openBalance}</OpenBalance>{endIf}
+{if::openBalanceDate}<OpenBalanceDate >{$::openBalanceDate}</OpenBalanceDate>{endIf}
+
+{if::salesTaxCodeRef}
+<SalesTaxCodeRef>
+{if::salesTaxCodeRef.listID}<ListID >{$::salesTaxCodeRef.listID}</ListID>{endIf}
+{if::salesTaxCodeRef.fullName}<FullName >{$::salesTaxCodeRef.fullName}</FullName>{endIf}
+</SalesTaxCodeRef>
+{endIf}
+
+{if::salesTaxCountry}<SalesTaxCountry >{$::salesTaxCountry}</SalesTaxCountry>{endIf}
+{if::resaleNumber}<ResaleNumber >{$::resaleNumber}</ResaleNumber>{endIf}
+{if::accountNumber}<AccountNumber >{$::accountNumber}</AccountNumber>{endIf}
+{if::creditLimit}<CreditLimit >{$::creditLimit}</CreditLimit>{endIf}
+
+{if::preferredPaymentMethodRef}
+<PreferredPaymentMethodRef>
+{if::preferredPaymentMethodRef.listID}<ListID >{$::preferredPaymentMethodRef.listID}</ListID>{endIf}
+{if::preferredPaymentMethodRef.fullName}<FullName >{$::preferredPaymentMethodRef.fullName}</FullName>{endIf}
+</PreferredPaymentMethodRef>
+{endIf}
+
+{if::creditCardInfo}
+<CreditCardInfo> 
+{if::creditCardInfo.creditCardNumber}<CreditCardNumber >{$::creditCardInfo.creditCardNumber}</CreditCardNumber>{endIf}
+{if::creditCardInfo.expirationMonth}<ExpirationMonth >{$::creditCardInfo.expirationMonth}</ExpirationMonth>{endIf}
+{if::creditCardInfo.expirationYear}<ExpirationYear >{$::creditCardInfo.expirationYear}</ExpirationYear>{endIf}
+{if::creditCardInfo.nameOnCard}<NameOnCard >{$::creditCardInfo.nameOnCard}</NameOnCard>{endIf}
+{if::creditCardInfo.creditCardAddress}<CreditCardAddress >{$::creditCardInfo.creditCardAddress}</CreditCardAddress>{endIf}
+{if::creditCardInfo.creditCardPostalCode}<CreditCardPostalCode >{$::creditCardInfo.creditCardPostalCode}</CreditCardPostalCode>{endIf}
+</CreditCardInfo>
+{endIf}
+
+{if::jobStatus}<JobStatus >{$::jobStatus}</JobStatus>{endIf}
+{if::jobStartDate}<JobStartDate >{$::jobStartDate}</JobStartDate>{endIf}
+{if::jobProjectedEndDate}<JobProjectedEndDate >{$::jobProjectedEndDate}</JobProjectedEndDate>{endIf}
+{if::jobEndDate}<JobEndDate >{$::jobEndDate}</JobEndDate>{endIf}
+{if::jobDesc}<JobDesc >{$::jobDesc}</JobDesc>{endIf}
+
+{if::jobTypeRef}
+<JobTypeRef>
+{if::jobTypeRef.listID}<ListID >{$::jobTypeRef.listID}</ListID>{endIf}
+{if::jobTypeRef.fullName}<FullName >{$::jobTypeRef.fullName}</FullName>{endIf}
+</JobTypeRef>
+{endIf}
+
+{if::notes}<Notes >{$::notes}</Notes>{endIf}
+
+{if::priceLevelRef}
+<PriceLevelRef>
+{if::priceLevelRef.listID}<ListID >{$::priceLevelRef.listID}</ListID>{endIf}
+{if::priceLevelRef.fullName}<FullName >{$::priceLevelRef.fullName}</FullName>{endIf}
+</PriceLevelRef>
+{endIf}
+
+{if::externalGUID}<ExternalGUID >{$::externalGUID}</ExternalGUID>{endIf}
+{if::taxRegistrationNumber}<TaxRegistrationNumber >{$::taxRegistrationNumber}</TaxRegistrationNumber>{endIf}
+
+{if::currencyRef}
+<CurrencyRef>
+{if::currencyRef.listID}<ListID >{$::currencyRef.listID}</ListID>{endIf}
+{if::currencyRef.fullName}<FullName >{$::currencyRef.fullName}</FullName>{endIf}
+</CurrencyRef>
+{endIf}
+
+</CustomerAdd>
+</CustomerAddRq>
+{endSection}

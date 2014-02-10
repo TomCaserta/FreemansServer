@@ -18,38 +18,42 @@ class QBAccount extends QBModifiable {
   String description;
   num balance;
   num totalBalance;
-  QBRef taxLineRef;
   CashFlowClassification cashFlowClassification;
   QBRef currencyRef;
   List<DataExtRet> dataExtRet = new List<DataExtRet>();
   
+  Map toJson () { 
+    return { "listID": listID, "isActive": isActive,  "timeCreated": timeCreated.millisecondsSinceEpoch,  "timeModified": timeModified.millisecondsSinceEpoch,  "editSequence": editSequence, "name": name, "fullName": fullName,  "parentRef": parentRef,  "subLevel": subLevel,  "accountType": accountType,  "specialAccountType": specialAccountType,  "isTaxAccount": isTaxAccount,  "accountNumber": accountNumber,  "bankNumber": bankNumber,  "salesTaxCodeRef": salesTaxCodeRef,  "description": description,  "balance": balance,  "totalBalance": totalBalance, "cashFlowClassification": cashFlowClassification,  "currencyRef": currencyRef };
+  }
+  String toString () {
+    return toJson().toString();
+  }
+  
   QBAccount.parseFromListXml (XmlElement data) {
-    listID = listID;
+    listID = getXmlElement(data, "ListID").text;
+    isActive = getXmlElement(data, "IsActive", optional: true).text.toUpperCase() == "TRUE";
     timeCreated = DateTime.parse(getXmlElement(data, "TimeCreated").text);
     timeModified = DateTime.parse(getXmlElement(data, "TimeModified").text);
+    editSequence = getXmlElement(data, "EditSequence").text;
     name = getXmlElement(data, "Name").text;
     fullName = getXmlElement(data, "FullName").text;
-    isActive = getXmlElement(data, "IsActive", optional: true).text.toUpperCase() == "TRUE";
     parentRef = new QBRef.parseFromListXml(getXmlElement(data, "ParentRef", optional: true));
-    editSequence = getXmlElement(data, "EditSequence").text;
-    subLevel = int.parse(getXmlElement(data, "SubLevel").text, onError: (e) { return 0; });
+    
+    subLevel = int.parse(getXmlElement(data, "SubLevel").text, onError: (e) { return null; });
     accountType = EnumString.get(AccountType, getXmlElement(data, "AccountType").text);
     specialAccountType = EnumString.get(SpecialAccountType, getXmlElement(data, "SpecialAccountType", optional: true).text);
     isTaxAccount = getXmlElement(data, "IsTaxAccount", optional: true).text.toUpperCase() == "TRUE";
+    accountNumber = getXmlElement(data, "AccountNumber", optional: true).text;
     bankNumber = getXmlElement(data, "BankNumber", optional: true).text;
-    description = getXmlElement(data, "Desc").text;
-    balance = num.parse(getXmlElement(data, "Balance", optional: true).text, (e) { return 0; });
-    totalBalance = num.parse(getXmlElement(data, "TotalBalance", optional: true).text, (e) { return 0; });
     salesTaxCodeRef = new QBRef.parseFromListXml(getXmlElement(data, "SalesTaxCodeRef", optional: true));
+    description = getXmlElement(data, "Desc").text;
+    balance = num.parse(getXmlElement(data, "Balance", optional: true).text, (e) { return null; });
+    totalBalance = num.parse(getXmlElement(data, "TotalBalance", optional: true).text, (e) { return null; });
     cashFlowClassification = EnumString.get(CashFlowClassification, getXmlElement(data, "CashFlowClassification", optional: true).text);
     currencyRef = new QBRef.parseFromListXml(getXmlElement(data, "CurrencyRef", optional: true));
     XmlCollection dataExtRetList = data.query("DataExtRet");
-    dataExtRetList.forEach((XmlElement dataExtEl) { 
-      String dataExtName = getXmlElement(dataExtEl, "DataExtName").text;
-      DataExtType dataExtType = EnumString.get(DataExtType, getXmlElement(dataExtEl, "DataExtType").text);
-      String dataExtValue = getXmlElement(dataExtEl, "DataExtValue").text;
-      String ownerID = getXmlElement(dataExtEl, "OwnerID", optional: true).text;          
-      dataExtRet.add(new DataExtRet(dataExtName, dataExtType, dataExtValue, ownerID));
+    dataExtRetList.forEach((XmlElement dataExtEl) {          
+      dataExtRet.add(new DataExtRet.parseFromListXml(dataExtEl));
     });   
   }
   

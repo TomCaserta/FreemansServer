@@ -6,7 +6,7 @@ import 'dart:mirrors';
 import 'package:QBXMLRP2_DART/QBXMLRP2_DART.dart';
 
 part 'response_builder.dart';
-part 'enums.dart';
+part 'data_structures/enums.dart';
 part 'list_query.dart';
 part 'data_structures/modifiable.dart';
 part 'data_structures/reference.dart';

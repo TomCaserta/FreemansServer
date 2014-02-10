@@ -29,7 +29,6 @@ class DatabaseHandler {
   Future<Query> prepare (String sql) {
     Completer c = new Completer();
     if (!_queryCache.containsKey(sql)) {
-      print("NOT USING PREPARE CACHE");
       _connectionPool.prepare(sql).then((Query E) {
         _queryCache[sql] = E;
         _processQueue(E, sql);
@@ -37,7 +36,6 @@ class DatabaseHandler {
       });
     }
     else {
-      print("Using prepared cache");
       c.complete(_queryCache[sql]);
      
     }
@@ -48,7 +46,6 @@ class DatabaseHandler {
        int qL = _queue[sql].parameters.length;
        QueryQueue curr = _queue[sql];
        for (int x = 0; x < qL; x++) {
-         print("Processing queue <--------------------------- ");
          q.execute(curr.parameters[x]).then((v) => curr.c[x].complete(v)).catchError((e) => curr.c[x].completeError(e));
        }
        _queue.remove(sql);
@@ -63,14 +60,12 @@ class DatabaseHandler {
     // query doesnt get prepared before theyre all sent through
     // So we end up essentially having a useless cache
     if (!_queue.containsKey(sql) || _queryCache.containsKey(sql)) {
-      print("NOT USING QUEUE");
       _queue[sql] = new QueryQueue ();
       this.prepare(sql).then((Query q) {
         q.execute(parameters).then((E)  => c.complete(E)).catchError((e) => c.completeError(e));
       }).catchError((e) { c.completeError(e); });
     }
     else {
-      print("DATABASE: USING QUEUE : $sql");
       _queue[sql].add(parameters, c);
     }
     return c.future;

@@ -61,11 +61,15 @@ class QBSimpleListQuery {
    //qbc.processRequest(ticket, ); 
   }
   
-  Stream forEach () {
+  Stream<XmlElement> forEachRaw () {
     StreamController<XmlElement> sc = new StreamController<XmlElement>();
     _requestNext(sc);
     // qbc.processRequest(ticket, );
     return sc.stream;
+  }
+  
+  Stream forEach () {
+    return forEachRaw();
   }
 }
 
@@ -75,7 +79,7 @@ class QBSupplierList extends QBSimpleListQuery {
 
 class QBAccountsList extends QBSimpleListQuery {
   QBAccountsList (qbc):super(qbc, "Account", useIterator: false);
-  Stream forEach () {
+  Stream<QBAccount> forEach () {
     StreamController<XmlElement> sc = new StreamController<XmlElement>();
     StreamController<QBAccount> accountStream = new StreamController<QBAccount>();
     _requestNext(sc);
@@ -95,6 +99,21 @@ class QBAccountsList extends QBSimpleListQuery {
 
 class QBCustomerList extends QBSimpleListQuery {
   QBCustomerList (qbc, step):super(qbc, "Customer", step: step);
+  Stream<QBCustomer> forEach () {
+      StreamController<XmlElement> sc = new StreamController<XmlElement>();
+      StreamController<QBCustomer> customerStream = new StreamController<QBCustomer>();
+      _requestNext(sc);
+      
+      sc.stream.listen((XmlElement data) { 
+           String listID = getXmlElement(data, "ListID").text;
+           QBCustomer currCustomer = new QBCustomer.parseFromListXml(data);
+           customerStream.add(currCustomer);
+      },
+      onDone: () { 
+        customerStream.close();
+      });  
+      return customerStream.stream;
+    }
 }
 
 class QBTermsList extends QBSimpleListQuery {

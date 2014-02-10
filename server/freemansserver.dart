@@ -92,8 +92,10 @@ void main() {
 
 void afterLoading () {
   
-  SyncCachable.getVals(Account).forEach((Account ac) { 
-    print(ac);
+    print(JSON.encode(SyncCachable.getVals(Account)));
+  QBCustomerList qbQuery = new QBCustomerList(qbHandler, 10);
+  qbQuery.forEach().listen((QBCustomer customer) { 
+    print(JSON.encode(customer));
   });
   WebsocketHandler wsh = new WebsocketHandler ();
   wsh.start(GLOBAL_CONFIG["ws_bind_ip"], GLOBAL_CONFIG["ws_bind_port"]);

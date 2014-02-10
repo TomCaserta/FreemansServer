@@ -7,6 +7,14 @@ class DataExtRet {
   DataExtType dataExtType;
   String dataExtValue = "";
   DataExtRet (this.dataExtName, this.dataExtType, this.dataExtValue, [this.ownerID]);
+  
+  DataExtRet.parseFromListXml (XmlElement dataExtEl) { 
+    dataExtName = getXmlElement(dataExtEl, "DataExtName").text;
+    dataExtType = EnumString.get(DataExtType, getXmlElement(dataExtEl, "DataExtType").text);
+    dataExtValue = getXmlElement(dataExtEl, "DataExtValue").text;
+    ownerID = getXmlElement(dataExtEl, "OwnerID", optional: true).text;          
+  }
+  
   String toString() {
     return toJson().toString();
   }
