@@ -389,20 +389,22 @@
               <div class="panel panel-default">
                 <div class="panel-heading"><h4>Surcharges</h4></div>
                 <div class="panel-body">
-                  <fieldset>   
-                    <div class="row">
-                      <div class="col-sm-3">
-                        <div class="form-group">
+                  <fieldset class="row">   
+                      <div class="col-sm-3 surcharge-container">
+                        <div class="form-group col-sm-12">
                           <ul class="two-column-multi-select">
-                            <li><div><Strong>Date</Strong></div><div><Strong>Surcharge</Strong></div></li>
+                            <li class="multi-select-header"><div><Strong>Date</Strong></div><div><Strong>Surcharge</Strong></div></li>
                             <li><div>24/12/2013</div><div>10%</div></li>
                             <li><div>24/12/2013</div><div>10%</div></li>
                             <li><div>24/12/2013</div><div>10%</div></li>
                             <li><div>24/12/2013</div><div>10%</div></li>
                           </ul>
-                        </div> 
+                          <button class="btn btn-block btn-danger">
+                            Remove Selected Surcharge
+                          </button>
+                        </div>
                       </div>
-                      <div class="col-sm-7 col-sm-offset-2">
+                      <div class="col-sm-8 col-sm-offset-1">
                         <div class="form-group">
                             <label for="surchargeBefore" class="col-sm-2">Date Before</label>
                             <div class="col-sm-10">
@@ -428,7 +430,6 @@
                         </div>
                       </div>
                             
-                    </div>
                   </fieldset>
                 </div>
               </div>
