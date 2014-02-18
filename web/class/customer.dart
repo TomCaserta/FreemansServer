@@ -15,6 +15,7 @@ class Customer {
   String shipto3 = "";
   String shipto4 = "";
   String shipto5 = "";
+  String termsRef;
   int terms = 0;
   String invoiceEmail = "";
   bool isEmailedInvoice = true;
@@ -36,6 +37,7 @@ class Customer {
       "shipto3": shipto3,
       "shipto4": shipto4,
       "shipto5": shipto5,
+      "termsRef": termsRef,
       "terms": terms,
       "invoiceEmail": invoiceEmail,
       "isEmailedInvoice": isEmailedInvoice,

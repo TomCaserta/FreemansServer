@@ -4,6 +4,7 @@ part of FreemansClient;
 class Supplier {
   String name;
   String quickbooksName;
+  String termsRef;
   int terms;
   String remittanceEmail;
   String confirmationEmail;
@@ -19,6 +20,7 @@ class Supplier {
     return {
       "name": name,
       "quickbooksName": quickbooksName,
+      "termsRef": termsRef,
       "terms": terms,
       "remittanceEmail": remittanceEmail,
       "confirmationEmail": confirmationEmail,

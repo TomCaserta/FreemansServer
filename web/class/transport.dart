@@ -17,5 +17,18 @@ class Transport {
   String quickbooksName = "";
   String transportSheetEmail = "";
   String remittanceEmail = "";
+  int terms;
+  String termsRef;
   
+  Map<String, dynamic> toJson () {
+    return {
+      "surcharges": surcharges, 
+      "name": name,
+      "quickbooksName": quickbooksName,
+      "transportSheetEmail": transportSheetEmail,
+      "remittanceEmail": remittanceEmail,
+      "terms": terms,
+      "termsRef": termsRef
+    };
+  }
 }
