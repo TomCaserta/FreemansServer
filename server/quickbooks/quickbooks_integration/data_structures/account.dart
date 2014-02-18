@@ -30,27 +30,26 @@ class QBAccount extends QBModifiable {
   }
   
   QBAccount.parseFromListXml (XmlElement data) {
-    listID = getXmlElement(data, "ListID").text;
-    isActive = getXmlElement(data, "IsActive", optional: true).text.toUpperCase() == "TRUE";
-    timeCreated = DateTime.parse(getXmlElement(data, "TimeCreated").text);
-    timeModified = DateTime.parse(getXmlElement(data, "TimeModified").text);
-    editSequence = getXmlElement(data, "EditSequence").text;
-    name = getXmlElement(data, "Name").text;
-    fullName = getXmlElement(data, "FullName").text;
-    parentRef = new QBRef.parseFromListXml(getXmlElement(data, "ParentRef", optional: true));
-    
-    subLevel = int.parse(getXmlElement(data, "SubLevel").text, onError: (e) { return null; });
-    accountType = EnumString.get(AccountType, getXmlElement(data, "AccountType").text);
-    specialAccountType = EnumString.get(SpecialAccountType, getXmlElement(data, "SpecialAccountType", optional: true).text);
-    isTaxAccount = getXmlElement(data, "IsTaxAccount", optional: true).text.toUpperCase() == "TRUE";
-    accountNumber = getXmlElement(data, "AccountNumber", optional: true).text;
-    bankNumber = getXmlElement(data, "BankNumber", optional: true).text;
-    salesTaxCodeRef = new QBRef.parseFromListXml(getXmlElement(data, "SalesTaxCodeRef", optional: true));
-    description = getXmlElement(data, "Desc").text;
-    balance = num.parse(getXmlElement(data, "Balance", optional: true).text, (e) { return null; });
-    totalBalance = num.parse(getXmlElement(data, "TotalBalance", optional: true).text, (e) { return null; });
-    cashFlowClassification = EnumString.get(CashFlowClassification, getXmlElement(data, "CashFlowClassification", optional: true).text);
-    currencyRef = new QBRef.parseFromListXml(getXmlElement(data, "CurrencyRef", optional: true));
+    listID = getQbxmlContainer(data, "ListID").text;
+    isActive = getQbxmlContainer(data, "IsActive", optional: true).boolean;
+    timeCreated = getQbxmlContainer(data, "TimeCreated").date;
+    timeModified = getQbxmlContainer(data, "TimeModified").date;
+    editSequence = getQbxmlContainer(data, "EditSequence").text;
+    name = getQbxmlContainer(data, "Name").text;
+    fullName = getQbxmlContainer(data, "FullName").text;
+    parentRef = new QBRef.parseFromListXml(getQbxmlContainer(data, "ParentRef", optional: true));
+    subLevel = getQbxmlContainer(data, "SubLevel").integer;
+    accountType = EnumString.get(AccountType, getQbxmlContainer(data, "AccountType").text);
+    specialAccountType = EnumString.get(SpecialAccountType, getQbxmlContainer(data, "SpecialAccountType", optional: true).text);
+    isTaxAccount = getQbxmlContainer(data, "IsTaxAccount", optional: true).boolean;
+    accountNumber = getQbxmlContainer(data, "AccountNumber", optional: true).text;
+    bankNumber = getQbxmlContainer(data, "BankNumber", optional: true).text;
+    salesTaxCodeRef = new QBRef.parseFromListXml(getQbxmlContainer(data, "SalesTaxCodeRef", optional: true));
+    description = getQbxmlContainer(data, "Desc").text;
+    balance = getQbxmlContainer(data, "Balance", optional: true).number;
+    totalBalance = getQbxmlContainer(data, "TotalBalance", optional: true).number;
+    cashFlowClassification = EnumString.get(CashFlowClassification, getQbxmlContainer(data, "CashFlowClassification", optional: true).text);
+    currencyRef = new QBRef.parseFromListXml(getQbxmlContainer(data, "CurrencyRef", optional: true));
     XmlCollection dataExtRetList = data.query("DataExtRet");
     dataExtRetList.forEach((XmlElement dataExtEl) {          
       dataExtRet.add(new DataExtRet.parseFromListXml(dataExtEl));

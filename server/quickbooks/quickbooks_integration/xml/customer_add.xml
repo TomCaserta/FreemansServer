@@ -21,10 +21,10 @@
 {if::billAddress}
 <BillAddress>
 {if::billAddress.line1}<Addr1 >{$::billAddress.line1}</Addr1>{endIf}
-{if::billAddress.line2}<Addr1 >{$::billAddress.line2}</Addr2>{endIf}
-{if::billAddress.line3}<Addr1 >{$::billAddress.line3}</Addr3>{endIf}
-{if::billAddress.line4}<Addr1 >{$::billAddress.line4}</Addr4>{endIf}
-{if::billAddress.line5}<Addr1 >{$::billAddress.line5}</Addr5>{endIf}
+{if::billAddress.line2}<Addr2 >{$::billAddress.line2}</Addr2>{endIf}
+{if::billAddress.line3}<Addr3 >{$::billAddress.line3}</Addr3>{endIf}
+{if::billAddress.line4}<Addr4 >{$::billAddress.line4}</Addr4>{endIf}
+{if::billAddress.line5}<Addr5 >{$::billAddress.line5}</Addr5>{endIf}
 {if::billAddress.city}<City >{$::billAddress.city}</City>{endIf}
 {if::billAddress.state}<State >{$::billAddress.state}</State>{endIf}
 {if::billAddress.postalCode}<PostalCode >{$::billAddress.postalCode}</PostalCode>{endIf}
@@ -36,10 +36,10 @@
 {if::shipAddress}
 <ShipAddress>
 {if::shipAddress.line1}<Addr1 >{$::shipAddress.line1}</Addr1>{endIf}
-{if::shipAddress.line2}<Addr1 >{$::shipAddress.line2}</Addr2>{endIf}
-{if::shipAddress.line3}<Addr1 >{$::shipAddress.line3}</Addr3>{endIf}
-{if::shipAddress.line4}<Addr1 >{$::shipAddress.line4}</Addr4>{endIf}
-{if::shipAddress.line5}<Addr1 >{$::shipAddress.line5}</Addr5>{endIf}
+{if::shipAddress.line2}<Addr2 >{$::shipAddress.line2}</Addr2>{endIf}
+{if::shipAddress.line3}<Addr3 >{$::shipAddress.line3}</Addr3>{endIf}
+{if::shipAddress.line4}<Addr4 >{$::shipAddress.line4}</Addr4>{endIf}
+{if::shipAddress.line5}<Addr5 >{$::shipAddress.line5}</Addr5>{endIf}
 {if::shipAddress.city}<City >{$::shipAddress.city}</City>{endIf}
 {if::shipAddress.state}<State >{$::shipAddress.state}</State>{endIf}
 {if::shipAddress.postalCode}<PostalCode >{$::shipAddress.postalCode}</PostalCode>{endIf}
@@ -100,7 +100,7 @@
 
 {if::creditCardInfo}
 <CreditCardInfo> 
-{if::creditCardInfo.creditCardNumber}<CreditCardNumber >{$::creditCardInfo.creditCardNumber}</CreditCardNumber>{endIf}
+{if::creditCardInfo.cardNumber}<CreditCardNumber >{$::creditCardInfo.cardNumber}</CreditCardNumber>{endIf}
 {if::creditCardInfo.expirationMonth}<ExpirationMonth >{$::creditCardInfo.expirationMonth}</ExpirationMonth>{endIf}
 {if::creditCardInfo.expirationYear}<ExpirationYear >{$::creditCardInfo.expirationYear}</ExpirationYear>{endIf}
 {if::creditCardInfo.nameOnCard}<NameOnCard >{$::creditCardInfo.nameOnCard}</NameOnCard>{endIf}
@@ -113,7 +113,7 @@
 {if::jobStartDate}<JobStartDate >{$::jobStartDate}</JobStartDate>{endIf}
 {if::jobProjectedEndDate}<JobProjectedEndDate >{$::jobProjectedEndDate}</JobProjectedEndDate>{endIf}
 {if::jobEndDate}<JobEndDate >{$::jobEndDate}</JobEndDate>{endIf}
-{if::jobDesc}<JobDesc >{$::jobDesc}</JobDesc>{endIf}
+{if::jobDescription}<JobDesc >{$::jobDescription}</JobDesc>{endIf}
 
 {if::jobTypeRef}
 <JobTypeRef>

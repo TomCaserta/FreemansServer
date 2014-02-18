@@ -7,12 +7,12 @@ class DataExtRet {
   DataExtType dataExtType;
   String dataExtValue = "";
   DataExtRet (this.dataExtName, this.dataExtType, this.dataExtValue, [this.ownerID]);
-  
+
   DataExtRet.parseFromListXml (XmlElement dataExtEl) { 
-    dataExtName = getXmlElement(dataExtEl, "DataExtName").text;
-    dataExtType = EnumString.get(DataExtType, getXmlElement(dataExtEl, "DataExtType").text);
-    dataExtValue = getXmlElement(dataExtEl, "DataExtValue").text;
-    ownerID = getXmlElement(dataExtEl, "OwnerID", optional: true).text;          
+    dataExtName = getQbxmlContainer(dataExtEl, "DataExtName").text;
+    dataExtType = EnumString.get(DataExtType, getQbxmlContainer(dataExtEl, "DataExtType").text);
+    dataExtValue = getQbxmlContainer(dataExtEl, "DataExtValue").text;
+    ownerID = getQbxmlContainer(dataExtEl, "OwnerID", optional: true).text;          
   }
   
   String toString() {
@@ -127,8 +127,8 @@ class SalesTaxCountry extends EnumString<SalesTaxCountry> {
   SalesTaxCountry(String eN,[ bool isDefault = false ]):super(eN, isDefault);
 
   static SalesTaxCountry AUSTRALIA = new SalesTaxCountry("Australia");
-  static SalesTaxCountry CANADA = new SalesTaxCountry("Canada", true);
-  static SalesTaxCountry UK = new SalesTaxCountry("UK");
+  static SalesTaxCountry CANADA = new SalesTaxCountry("Canada");
+  static SalesTaxCountry UK = new SalesTaxCountry("UK", true);
   static SalesTaxCountry US = new SalesTaxCountry("US");
 }
 

@@ -3,13 +3,16 @@ part of QuickbooksIntegration;
 class QBRef {
   String fullName; 
   String listID;
-  QBRef.parseFromListXml(XmlElement ref) { 
-    fullName = getXmlElement(ref, "FullName", optional: true).text;
-    listID = getXmlElement(ref, "ListID", optional: true).text;
+  QBRef ();
+  factory QBRef.parseFromListXml(QBXmlContainer ref) {
+    if (ref.exists) {
+      QBRef refer = new QBRef();
+      refer.fullName = getQbxmlContainer(ref, "FullName", optional: true).text;
+      refer.listID = getQbxmlContainer(ref, "ListID", optional: true).text;
+    }
   }
-  
   Map toJson () {
-    return { "fullName": fullName, "listID": listID };
+    return (fullName != null || listID != null ? { "fullName": fullName, "listID": listID } : null);
   }
   String toString () {
     return toJson().toString();

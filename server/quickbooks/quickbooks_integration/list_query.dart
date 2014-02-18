@@ -20,13 +20,13 @@ class QBSimpleListQuery {
     String xml = "";
     if (useIterator) { 
       if (isRequesting) { 
-         xml = ResponseBuilder.parseFromFile("list_request", params: { "version": "11.0", "listType": listType, "iterator": "Continue", "iteratorID": iteratorID, "maxReturned": (step != null ? step.toString() : null) } );
+         xml = ResponseBuilder.parseFromFile("list_request", params: { "version": QB_VERSION, "listType": listType, "iterator": "Continue", "iteratorID": iteratorID, "maxReturned": (step != null ? step.toString() : null) } );
       }    
       else {
-        xml = ResponseBuilder.parseFromFile("list_request", params: { "version": "11.0", "listType": listType, "iterator": "Start", "maxReturned": (step != null ? step.toString() : null) } );  
+        xml = ResponseBuilder.parseFromFile("list_request", params: { "version": QB_VERSION, "listType": listType, "iterator": "Start", "maxReturned": (step != null ? step.toString() : null) } );  
       }
     }
-    else  xml = ResponseBuilder.parseFromFile("list_request", params: { "version": "11.0", "listType": listType, "maxReturned": (step != null ? step.toString() : null) } );  
+    else  xml = ResponseBuilder.parseFromFile("list_request", params: { "version": QB_VERSION, "listType": listType, "maxReturned": (step != null ? step.toString() : null) } );  
   
     qbc.processRequest(xml).then((String resp) {
       if (resp != null && resp is String) {
@@ -85,7 +85,7 @@ class QBAccountsList extends QBSimpleListQuery {
     _requestNext(sc);
     
     sc.stream.listen((XmlElement data) { 
-         String listID = getXmlElement(data, "ListID").text;
+         String listID = getQbxmlContainer(data, "ListID").text;
          QBAccount currAccount = new QBAccount.parseFromListXml(data);
          accountStream.add(currAccount);
     },
@@ -105,7 +105,7 @@ class QBCustomerList extends QBSimpleListQuery {
       _requestNext(sc);
       
       sc.stream.listen((XmlElement data) { 
-           String listID = getXmlElement(data, "ListID").text;
+           String listID = getQbxmlContainer(data, "ListID").text;
            QBCustomer currCustomer = new QBCustomer.parseFromListXml(data);
            customerStream.add(currCustomer);
       },

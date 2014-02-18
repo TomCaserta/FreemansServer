@@ -23,7 +23,7 @@ class Account extends SyncCachable<Account> {
         tempAccount.account = data;
     }, onDone: () { 
       SyncCachable.getVals(Account).forEach((Account a) {
-         if (a.account != null && a.account.parentRef.listID.isNotEmpty) {
+         if (a.account != null && a.account.parentRef != null && a.account.parentRef.listID != null) {
            Account parent = SyncCachable.get(Account, a.account.parentRef.listID);
            parent.childAccounts.add(a);
          }

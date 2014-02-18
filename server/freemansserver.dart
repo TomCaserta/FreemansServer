@@ -43,6 +43,11 @@ DatabaseHandler dbHandler;
 QuickbooksConnector qbHandler;
 Logger ffpServerLog = new Logger("FFPServer");
 void main() { 
+  
+  QBExpression parsedExp = new QBExpression("== ");
+  parsedExp.parse();
+  print(parsedExp);
+  
   qbHandler = new QuickbooksConnector();
   initEnums ();
   ffpServerLog.onRecord.listen((e) {
@@ -91,11 +96,12 @@ void main() {
 }
 
 void afterLoading () {
-  
     print(JSON.encode(SyncCachable.getVals(Account)));
   QBCustomerList qbQuery = new QBCustomerList(qbHandler, 10);
+  int x = 0;
   qbQuery.forEach().listen((QBCustomer customer) { 
-    print(JSON.encode(customer));
+   print(JSON.encode(customer));
+    x= 1;
   });
   WebsocketHandler wsh = new WebsocketHandler ();
   wsh.start(GLOBAL_CONFIG["ws_bind_ip"], GLOBAL_CONFIG["ws_bind_port"]);

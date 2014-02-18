@@ -8,25 +8,32 @@ class QBAddress {
   String country;
   String note;
   QBAddress addressBlock;//?
-  
-  QBAddress.parseFromListXml (XmlElement addressData, [XmlElement blockData]) {
-    lines[0] = getXmlElement(addressData, "Addr1", optional: true).text;
-    lines[1] = getXmlElement(addressData, "Addr2", optional: true).text;
-    lines[2] = getXmlElement(addressData, "Addr3", optional: true).text;
-    lines[3] = getXmlElement(addressData, "Addr4", optional: true).text;
-    lines[4] = getXmlElement(addressData, "Addr5", optional: true).text;
-    city = getXmlElement(addressData, "City", optional:true).text;
-    state = getXmlElement(addressData, "State", optional:true).text;
-    postalCode = getXmlElement(addressData, "postalCode", optional:true).text;
-    country = getXmlElement(addressData, "Country", optional:true).text;
-    note = getXmlElement(addressData, "Note", optional:true).text;   
-    if (blockData != null) {
-      addressBlock = new QBAddress.parseFromListXml(blockData);
+  QBAddress();
+  factory QBAddress.parseFromListXml (QBXmlContainer addressData, [QBXmlContainer blockData]) {
+    if (addressData.exists) { 
+      QBAddress address = new QBAddress();
+      address.lines[0] = getQbxmlContainer(addressData, "Addr1", optional: true).text;
+      address.lines[1] = getQbxmlContainer(addressData, "Addr2", optional: true).text;
+      address.lines[2] = getQbxmlContainer(addressData, "Addr3", optional: true).text;
+      address.lines[3] = getQbxmlContainer(addressData, "Addr4", optional: true).text;
+      address.lines[4] = getQbxmlContainer(addressData, "Addr5", optional: true).text;
+      address.city = getQbxmlContainer(addressData, "City", optional:true).text;
+      address.state = getQbxmlContainer(addressData, "State", optional:true).text;
+      address.postalCode = getQbxmlContainer(addressData, "postalCode", optional:true).text;
+      address.country = getQbxmlContainer(addressData, "Country", optional:true).text;
+      address.note = getQbxmlContainer(addressData, "Note", optional:true).text;   
+      if (blockData != null) {
+        address.addressBlock = new QBAddress.parseFromListXml(blockData);
+      } 
+      return address;
+    }
+    else {
+      return null;
     }
   }
   
   Map toJson () {
-    return { "lines": lines, "city": city, "state": state, "postalCode": postalCode, "country": country, "note": note, "addressBlock": addressBlock };
+    return { "line1": lines[0], "line2": lines[1], "line3": lines[2], "line4": lines[3], "line5": lines[4], "city": city, "state": state, "postalCode": postalCode, "country": country, "note": note, "addressBlock": addressBlock };
   }
   
   String toString () {

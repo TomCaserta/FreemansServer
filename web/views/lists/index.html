@@ -1,0 +1,391 @@
+<section class="col-md-10 col-md-offset-1 well row" listoverview>
+  <div class="col-md-2">
+    <ul class="listbox large">
+      <!--- LEAVE NO GAP BETWEEN BUTTON AND DIV OTHERWISE IT WILL THROW IT ONTO A NEW LINE --->
+      <li ng-repeat="list in listoverview.lists">
+          <div ng-click="listoverview.changeView(list.name)">{{list.name}}</div><button class="btn-default btn" ng-click="listoverview.changeView(list.name,true)"><span class="glyphicon glyphicon-plus"></span></button>
+      </li>
+    </ul>
+  </div>
+  <div class="col-md-10 listbox-results row">
+      <div class="form-group">
+        <select class="form-control">
+          <option ng-repeat="names in listoverview.activeList.names" ng-click="listoverview.activeList.edit(names.name)">{{names.name}}</option>
+        </select>            
+      </div>
+     
+      
+      
+      <!---- WOULD HAVE DONE THIS DIFFERENTLY HOWEVER CANT REFRESH ANGULAR VIEWS TO INSERT A NEW TEMPLATE --->
+      <!--- TODO: Do this properly --->
+      <section> 
+        <div class="modal fade" id="saveChangesModal" tabindex="-1" role="dialog" aria-labelledby="confirmChanges" aria-hidden="{{listoverview.isSaveDialogShown}}">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="confirmChanges">Your changes have not been saved...</h4>
+              </div>
+              <div class="modal-body">
+                Do you wish to save your changes?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close / Edit</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="listoverview.confirmedViewChange(listoverview.listNameUnconfirmed,listoverview.isAddUnconfirmed)">Discard Changes</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>      
+      
+      
+      <section ng-if="listoverview.activeList.name == 'Customer'">
+             <form role="form" class="form-horizontal">
+               <div class="panel panel-default">
+                  <div class="panel-heading"><h4>General Information</h4></div>
+                  <div class="panel-body">
+                  <fieldset>
+                      <div ng-hide="listoverview.isAdd" class="form-group">
+                        <label for="globalID" class="col-sm-2">Global ID:</label>
+                        <div class="col-sm-10">
+                        <input type="text" class="form-control" id="globalID" disabled placeholder="{XXXX99-XXXX-XXX-XX99}">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="name" class="col-sm-2">Name</label>
+                        <div class="col-sm-10">
+                          <input type="email" class="form-control" id="name" placeholder="Name">
+                        </div>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label for="terms" class="col-sm-2">Terms</label>
+                        <div class="col-sm-10">
+                        <select class="form-control">
+                        <option>Terms</option>
+                        </select>
+                        </div>
+                      </div>
+                    </fieldset>
+                  </div>
+                </div> 
+                <div class="row">
+                  <div class="col-sm-6">
+                    <div class="panel panel-default">
+                      <div class="panel-heading"><h4>Bill Address</h4></div>
+                      <div class="panel-body">
+                        <fieldset>              
+                          <div class="form-group">
+                            <label for="billAddressLine1" class="sr-only">Line 1:</label>
+                            <div class="col-sm-12">
+                              <input type="text" class="form-control" id="billAddressLine1" placeholder="Line 1">
+                            </div>
+                          </div>              
+                          <div class="form-group">
+                            <label for="billAddressLine2" class="sr-only">Line 2:</label>
+                            <div class="col-sm-12">
+                              <input type="text" class="form-control" id="billAddressLine2" placeholder="Line 2">
+                            </div>
+                          </div>              
+                          <div class="form-group">
+                            <label for="billAddressLine3" class="sr-only">Line 3:</label>
+                            <div class="col-sm-12">
+                              <input type="text" class="form-control" id="billAddressLine3" placeholder="Line 3">
+                            </div>
+                          </div>              
+                          <div class="form-group">
+                            <label for="billAddressLine4" class="sr-only">Line 4:</label>
+                            <div class="col-sm-12">
+                              <input type="text" class="form-control" id="billAddressLine4" placeholder="Line 4">
+                            </div>
+                          </div>              
+                          <div class="form-group">
+                            <label for="billAddressLine5" class="sr-only">Line 5:</label>
+                            <div class="col-sm-12">
+                              <input type="text" class="form-control" id="billAddressLine5" placeholder="Line 5">
+                            </div>
+                          </div>
+                        </fieldset>
+                      </div>
+                     </div>
+                   </div>
+                  <div class="col-sm-6">
+                    <div class="panel panel-default">
+                      <div class="panel-heading"><h4>Shipping Address</h4></div>
+                      <div class="panel-body">
+                        <fieldset>              
+                          <div class="form-group">
+                            <label for="billAddressLine1" class="sr-only">Line 1:</label>
+                            <div class="col-sm-12">
+                              <input type="text" class="form-control" id="billAddressLine1" placeholder="Line 1">
+                            </div>
+                          </div>              
+                          <div class="form-group">
+                            <label for="billAddressLine2" class="sr-only">Line 2:</label>
+                            <div class="col-sm-12">
+                              <input type="text" class="form-control" id="billAddressLine2" placeholder="Line 2">
+                            </div>
+                          </div>              
+                          <div class="form-group">
+                            <label for="billAddressLine3" class="sr-only">Line 3:</label>
+                            <div class="col-sm-12">
+                              <input type="text" class="form-control" id="billAddressLine3" placeholder="Line 3">
+                            </div>
+                          </div>              
+                          <div class="form-group">
+                            <label for="billAddressLine4" class="sr-only">Line 4:</label>
+                            <div class="col-sm-12">
+                              <input type="text" class="form-control" id="billAddressLine4" placeholder="Line 4">
+                            </div>
+                          </div>              
+                          <div class="form-group">
+                            <label for="billAddressLine5" class="sr-only">Line 5:</label>
+                            <div class="col-sm-12">
+                              <input type="text" class="form-control" id="billAddressLine5" placeholder="Line 5">
+                            </div>
+                          </div>
+                        </fieldset>
+                      </div>
+                    </div>
+                 </div>
+                </div>
+                <div class="panel panel-default">
+                  <div class="panel-heading"><h4>Contact Information</h4></div>
+                  <div class="panel-body">
+                  <fieldset>
+                      <div class="form-group">
+                        <label for="invoiceEmail" class="col-sm-2">Invoice Email:</label>
+                        <div class="col-sm-10">
+                          <div class="input-group">
+                            <span class="input-group-addon">
+                              <input type="checkbox">
+                            </span>
+                            <input type="text" class="form-control" id="invoiceEmail" placeholder="invoicing@customersite.com">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="confirmationEmail" class="col-sm-2">Confirmation Email:</label>
+                        <div class="col-sm-10">
+                          <div class="input-group">
+                            <span class="input-group-addon">
+                              <input type="checkbox">
+                            </span>
+                            <input type="text" class="form-control" id="confirmationEmail" placeholder="confirmations@customersite.com">
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label for="fax" class="col-sm-2">Fax Number:</label>
+                        <div class="col-sm-10">
+                            <input type="tel" class="form-control" id="fax" placeholder="02077204444">
+                        </div>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label for="phone" class="col-sm-2">Phone Number:</label>
+                        <div class="col-sm-10">
+                            <input type="tel" class="form-control" id="phone" placeholder="02077204444">
+                        </div>
+                      </div>
+                                            
+                    </fieldset>
+                  </div>
+                  
+                </div>               
+            
+                <div class="panel panel-default">
+                <div class="panel-body">
+                    <fieldset class="button-group-right">                    
+                      <div class="form-group">
+                        <button ng-hide="listoverview.isAdd" class="btn btn-lg btn-danger col-sm-3">
+                        Delete
+                        </button>
+                        <button ng-hide="listoverview.isAdd" class="btn btn-lg btn-primary col-sm-offset-1 col-sm-8">
+                        Update
+                        </button>
+                        <button ng-hide="!listoverview.isAdd" class="btn btn-lg btn-default col-sm-3">
+                        Cancel
+                        </button>
+                        <button ng-hide="!listoverview.isAdd" class="btn btn-lg btn-success col-sm-offset-1 col-sm-8">
+                        Add Customer
+                        </button>
+                      </div>
+                    </fieldset>
+                    </div>
+                </div>
+            
+            </form>
+            
+      </section>           
+      
+      <section ng-if="listoverview.activeList.name == 'Suppliers'">
+         <form role="form" class="form-horizontal">
+               <div class="panel panel-default">
+                  <div class="panel-heading"><h4>General Information</h4></div>
+                  <div class="panel-body">
+                  <fieldset>   
+                    <div ng-hide="listoverview.isAdd" class="form-group">
+                          <label for="globalID" class="col-sm-2">Global ID:</label>
+                          <div class="col-sm-10">
+                          <input type="text" class="form-control" id="globalID" disabled placeholder="{XXXX99-XXXX-XXX-XX99}">
+                          </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="globalID" class="col-sm-2">Name:</label>
+                        <div class="col-sm-10">
+                        <input type="text" class="form-control" id="name" placeholder="Supplier Name">
+                        </div>
+                      </div>
+                  </fieldset>
+                  <div class="form-group">
+                        <label for="terms" class="col-sm-2">Terms</label>
+                        <div class="col-sm-10">
+                        <select class="form-control">
+                        <option>Terms</option>
+                        </select>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+                <div class="panel panel-default">
+                  <div class="panel-heading"><h4>Address</h4></div>
+                  <div class="panel-body">
+                    <fieldset>              
+                      <div class="form-group">
+                        <label for="addressLine1" class="sr-only">Line 1:</label>
+                        <div class="col-sm-12">
+                          <input type="text" class="form-control" id="addressLine1" placeholder="Line 1">
+                        </div>
+                      </div>              
+                      <div class="form-group">
+                        <label for="addressLine2" class="sr-only">Line 2:</label>
+                        <div class="col-sm-12">
+                          <input type="text" class="form-control" id="addressLine2" placeholder="Line 2">
+                        </div>
+                      </div>              
+                      <div class="form-group">
+                        <label for="addressLine3" class="sr-only">Line 3:</label>
+                        <div class="col-sm-12">
+                          <input type="text" class="form-control" id="addressLine3" placeholder="Line 3">
+                        </div>
+                      </div>              
+                      <div class="form-group">
+                        <label for="addressLine4" class="sr-only">Line 4:</label>
+                        <div class="col-sm-12">
+                          <input type="text" class="form-control" id="addressLine4" placeholder="Line 4">
+                        </div>
+                      </div>              
+                      <div class="form-group">
+                        <label for="addressLine5" class="sr-only">Line 5:</label>
+                        <div class="col-sm-12">
+                          <input type="text" class="form-control" id="addressLine5" placeholder="Line 5">
+                        </div>
+                      </div>
+                    </fieldset>
+                  </div>
+                </div>
+                
+                 <div class="panel panel-default">
+                  <div class="panel-heading"><h4>Contact Information</h4></div>
+                  <div class="panel-body">
+                  <fieldset>
+                      <div class="form-group">
+                        <label for="remittanceEmail" class="col-sm-2">Remittance Email:</label>
+                        <div class="col-sm-10">
+                          <div class="input-group">
+                            <span class="input-group-addon">
+                              <input type="checkbox">
+                            </span>
+                            <input type="text" class="form-control" id="remittanceEmail" placeholder="accounts@suppliersite.com">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="confirmationEmail" class="col-sm-2">Confirmation Email:</label>
+                        <div class="col-sm-10">
+                          <div class="input-group">
+                            <span class="input-group-addon">
+                              <input type="checkbox">
+                            </span>
+                            <input type="text" class="form-control" id="confirmationEmail" placeholder="confirmations@suppliersite.com">
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label for="fax" class="col-sm-2">Fax Number:</label>
+                        <div class="col-sm-10">
+                            <input type="tel" class="form-control" id="fax" placeholder="02077204444">
+                        </div>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label for="phone" class="col-sm-2">Phone Number:</label>
+                        <div class="col-sm-10">
+                            <input type="tel" class="form-control" id="phone" placeholder="02077204444">
+                        </div>
+                      </div>
+                                            
+                    </fieldset>
+                  </div>
+                  
+                </div>               
+                
+                 <div class="panel panel-default">
+                <div class="panel-body">
+                    <fieldset class="button-group-right">                    
+                      <div class="form-group">
+                        <button ng-hide="listoverview.isAdd" class="btn btn-lg btn-danger col-sm-3">
+                        Delete
+                        </button>
+                        <button ng-hide="listoverview.isAdd" class="btn btn-lg btn-primary col-sm-offset-1 col-sm-8">
+                        Update
+                        </button>
+                        <button ng-hide="!listoverview.isAdd" class="btn btn-lg btn-default col-sm-3">
+                        Cancel
+                        </button>
+                        <button ng-hide="!listoverview.isAdd" class="btn btn-lg btn-success col-sm-offset-1 col-sm-8">
+                        Add Supplier
+                        </button>
+                      </div>
+                    </fieldset>
+                    </div>
+                </div>
+            
+        </form>
+        
+      </section>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+  </div>
+</section>

@@ -1,3 +1,7 @@
+/*
+* BASE STYLES
+*/
+
 body { padding-top: 70px; }
 .ng-hide, 
 .ng-show {
@@ -40,6 +44,10 @@ body { padding-top: 70px; }
   -ms-user-select: none;
   user-select: none;
 }
+
+/*
+* LOADING SCREEN
+*/
 [loader] {
   
   position:absolute;
@@ -91,6 +99,10 @@ progress::-moz-progress-bar {
   border-radius: 5px;
 }
 
+/*
+* WORKBOOK
+*/
+
 .flex-form {
       display: -webkit-flex;
       -webkit-flex-direction: row;
@@ -98,22 +110,109 @@ progress::-moz-progress-bar {
       display: flex;
       flex-direction: row;
 }
-.fullwidth {
-  width: 100%;
-}
-
-@media all and (max-width: 831px) and (min-width: 766px) {
-
-  #settings-cog {
-    display: none;
-  }
-}
 
 .wkb.checkbox {
   margin-top: 0px;
   margin-bottom: 0px;
 }
 
+.fullwidth {
+  width: 100%;
+}
+
+/* 
+ * LISTS
+ */
+
+ul.listbox {
+  font-weight: bold;
+  padding: 0px;
+  margin: 0;
+  list-style: none;
+  width: 100%;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  -webkit-box-shadow: -1px 1px 30px 0px rgba(50, 50, 50, 0.06);
+  -moz-box-shadow:    -1px 1px 30px 0px rgba(50, 50, 50, 0.06);
+  box-shadow:         -1px 1px 30px 0px rgba(50, 50, 50, 0.06);
+}
+.listbox li {
+  margin: 0;
+  width: 100%;
+}
+.listbox li > div {
+  position: relative;
+  display: inline-block;
+  padding:0;
+  margin: 0;
+  width: 80%;
+  height: 60px;
+  padding-left: 20px;
+}
+.listbox li:first-of-type {
+  -webkit-border-top-left-radius: 2px;
+  -webkit-border-top-right-radius: 2px;
+  -moz-border-radius-topleft: 2px;
+  -moz-border-radius-topright: 2px;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+}
+.listbox li:last-of-type {
+  -webkit-border-bottom-right-radius: 2px;
+  -webkit-border-bottom-left-radius: 2px;
+  -moz-border-radius-bottomright: 2px;
+  -moz-border-radius-bottomleft: 2px;
+  border-bottom-right-radius: 2px;
+  border-bottom-left-radius: 2px;
+}
+.listbox li:nth-child(odd) {
+  background-color: #F0F0F0;
+}
+.listbox li:nth-child(even) {
+  background-color: #EDEDED;
+}
+.listbox li:hover {
+  cursor: pointer;
+  background-color: #FAFAFA;
+}
+.listbox li > .btn > span {
+  width: 100%;
+  text-align: center;
+}
+.listbox li > .btn {
+  display: inline-block;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
+  color: #4D4D4D;
+  text-align: left;
+  padding:0;
+  margin: 0;
+  border: 0;
+  margin-top: -2px; 
+  width: 20%;
+  height: 100%;
+}
+.button-group-right {
+  padding-right: 15px; width: 30%; float: right;
+}
+.listbox.large li {
+  line-height: 60px;
+  height: 60px;
+}
+
+
+/* 
+ * MEDIA QUERIES 
+ */
+ 
+@media all and (max-width: 831px) and (min-width: 766px) {
+
+  #settings-cog {
+    display: none;
+  }
+}
 
 @media all and (max-width: 1684px) {
   

@@ -18,7 +18,7 @@ class MainNavigation {
     links.add(new Link("Purchases", "/purchases"));
     links.add(new Link("Transport", "/transport"));
     links.add(new Link("Payments", "/payments"));
-    links.add(new Link("Lists", "/Lists"));
+    links.add(new Link("Lists", "/lists"));
   }
 }
 

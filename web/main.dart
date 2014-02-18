@@ -3,6 +3,7 @@ library FreemansClient;
 import 'dart:html';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:js';
 import 'dart:mirrors';
 import 'package:angular/angular.dart';
 import 'package:uuid/uuid.dart';
@@ -16,6 +17,7 @@ part 'class/user.dart';
 part 'class/transport.dart';
 part 'class/product.dart';
 part 'class/customer.dart';
+part 'class/supplier.dart';
 
 part 'websocket/websocket_handler.dart';
 part 'websocket/server_packets.dart';
@@ -28,6 +30,13 @@ part 'controller/main/contentdropdown.dart';
 part 'controller/workbook/workbook.dart';
 part 'controller/transport/transport.dart';
 
+/*
+ * LIST EDITOR
+ */
+part 'controller/lists/overview.dart';
+part 'controller/lists/customer.dart';
+
+
 void main() {
   Logger.root.level = Level.FINE;
   Logger.root.onRecord.listen((LogRecord r) { print("[${new DateFormat("hh:mm:ss").format(r.time)}][${r.level}][${r.loggerName != "" ? r.loggerName : "ROOT"}]: ${r.message}"); });
@@ -38,7 +47,7 @@ void main() {
 
 class StateService {
   bool loggedIn = false;
-  WebsocketHandler wsh = new WebsocketHandler("ws://127.0.0.1:1337/websocket");
+  WebsocketHandler wsh = new WebsocketHandler("ws://192.168.1.87:1337/websocket");
   Preloader preloader = new Preloader();
   User currUser;
   
@@ -79,6 +88,8 @@ class FreemansModule extends Module {
     type(ContentDropdown);
     type(Loading);
     type(Login);
+    type(ListEditor);
+    type(CustomerList);
    
   }
 }
@@ -98,6 +109,11 @@ class FreemansRouteInitializer implements RouteInitializer {
               path: '/workbook',
               enter: view('views/workbook/index.html')
           )
+          ..addRoute(
+                        name: 'lists',
+                        path: '/lists',
+                        enter: view('views/lists/index.html')
+                    )
           ..addRoute(
               name: 'login',
               path: '/login',
