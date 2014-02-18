@@ -56,7 +56,7 @@ class ListContainer {
   ListItem activeItem;
   ListItem _oldActiveItem;
 
-  bool saved = false;
+  bool saved = true;
   ListContainer (this.name) {
     
   }

@@ -34,7 +34,6 @@ part 'controller/transport/transport.dart';
  * LIST EDITOR
  */
 part 'controller/lists/overview.dart';
-part 'controller/lists/customer.dart';
 
 
 void main() {
@@ -89,7 +88,6 @@ class FreemansModule extends Module {
     type(Loading);
     type(Login);
     type(ListEditor);
-    type(CustomerList);
    
   }
 }
