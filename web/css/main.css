@@ -226,12 +226,12 @@ ul.multi-select {
   transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
 }
 ul.multi-select li {
+  line-height: 34px;
+  text-align: center;
   height: 34px;
 }
 
 ul.two-column li > div {
-  line-height: 34px;
-  text-align: center;
   display: inline-block;
   width: 50%;
 }
@@ -243,6 +243,7 @@ ul.multi-select li:hover {
 }
 li.multi-select-header > div {
  color:black;
+ font-weight: bold;
 }
 li.multi-select-header:hover {
  /* Using important, please dont hurt me */
@@ -253,11 +254,27 @@ li.multi-select-header:hover {
 .surcharge-container {
   padding-left: 15px !important;
 }
+
+.btn-upleft:after {
+  content: "<<";
+}
+.btn-downright:after {
+  content: ">>";
+}
   
   
 /* 
  * MEDIA QUERIES 
  */
+ 
+@media (max-width: 992px) {
+  .btn-upleft:after {
+    content: "ADD";
+  }
+  .btn-downright:after {
+    content: "REMOVE";
+  }
+}
  
 @media all and (max-width: 831px) and (min-width: 766px) {
 
