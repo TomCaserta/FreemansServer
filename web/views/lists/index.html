@@ -392,7 +392,7 @@
                   <fieldset class="row">   
                       <div class="col-sm-3 surcharge-container">
                         <div class="form-group col-sm-12">
-                          <ul class="two-column-multi-select">
+                          <ul class="two-column multi-select">
                             <li class="multi-select-header"><div><Strong>Date</Strong></div><div><Strong>Surcharge</Strong></div></li>
                             <li><div>24/12/2013</div><div>10%</div></li>
                             <li><div>24/12/2013</div><div>10%</div></li>
@@ -478,7 +478,67 @@
             </form>
           </section>
                  
-    
+          <section ng-if="listoverview.activeList.name == 'Products'">
+               <form role="form" class="form-horizontal">
+                 <div class="panel panel-default">
+                      <div class="panel-heading"><h4>Product</h4></div>
+                      <div class="panel-body">
+                      <fieldset>   
+                        <div ng-hide="listoverview.isAdd" class="form-group">
+                              <label for="globalID" class="col-sm-2">Global ID:</label>
+                              <div class="col-sm-10">
+                              <input type="text" class="form-control" id="globalID" disabled placeholder="{XXXX99-XXXX-XXX-XX99}">
+                              </div>
+                              
+                        </div>
+                        <div ng-hide="listoverview.isAdd" class="form-group">
+                              <label for="globalID" class="col-sm-2">Quickbooks Item Code:</label>
+                              <div class="col-sm-10">
+                                <select class="form-control">
+                                  <option>Quickbooks Code</option>
+                                </select>
+                              </div>
+                              
+                        </div>
+                        <div class="form-group">
+                            <label for="globalID" class="col-sm-2">Product:</label>
+                            <div class="col-sm-10">
+                            <input type="text" class="form-control" id="name" placeholder="Product Name">
+                            </div>
+                        </div>
+                      </fieldset>
+                    </div>
+                </div>
+                 <div class="row">
+                  <div class="col-sm-6">
+                    <div class="panel panel-default">
+                      <div class="panel-heading"><h4>Weights</h4></div>
+                      <div class="panel-body">
+                        <ul class="multi-select">
+                          <li class="multi-select-header"><div></div></li>
+                          <li><div>1 TONNE</div></li>
+                          <li><div>10 KG</div></li>
+                          <li><div>25 KG</div></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="panel panel-default">
+                      <div class="panel-heading"><h4>Packaging</h4></div>
+                      <div class="panel-body">
+                        <ul class="multi-select">
+                            <li class="multi-select-header"><div></div></li>
+                            <li><div>10 F/P</div></li>
+                            <li><div>10 P/P</div></li>
+                            <li><div>BULK BAG</div></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+          </section>
     
       
       

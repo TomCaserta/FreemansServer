@@ -204,7 +204,7 @@ ul.listbox {
   height: 60px;
 }
 
-ul.two-column-multi-select {
+ul.multi-select {
   list-style: none;
   padding: 0;
   margin:0;
@@ -225,18 +225,17 @@ ul.two-column-multi-select {
   -webkit-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
   transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
 }
-
-ul.two-column-multi-select li {
-   
+ul.multi-select li {
   height: 34px;
 }
-ul.two-column-multi-select li > div {
+
+ul.two-column li > div {
   line-height: 34px;
   text-align: center;
   display: inline-block;
   width: 50%;
 }
-ul.two-column-multi-select li:hover {
+ul.multi-select li:hover {
   border-radius: 4px;
   cursor: pointer;
   border: 1px solid border-bottom-color: rgb(102, 175, 233);
