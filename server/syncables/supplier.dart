@@ -148,7 +148,7 @@ class Supplier extends SyncCachable<Supplier> {
   Future<bool> updateDatabase(DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer<bool>();
     if (this.isNew) {
-      dbh.prepareExecute("INSERT INTO suppliers (supplierName, quickbooksName, termsRef, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+      dbh.prepareExecute("INSERT INTO suppliers (supplierName, quickbooksName, termsRef, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
           [name, quickbooksName, termsRef, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5]).then((Results res) {
               if (res.insertId != 0) {
                 c.complete(true);
