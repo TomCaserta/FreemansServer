@@ -3,8 +3,8 @@
 packages:
   QBXMLRP2_DART:
     description:
-      path: "C:\\Users\\Bryan Brown\\Documents\\GitHub\\QuickbooksDesktopConnectorDartlang\\package\\QBXMLRP2_DART"
-      relative: false
+      path: "..\\..\\QuickbooksDesktopConnectorDartlang\\package\\QBXMLRP2_DART"
+      relative: true
     source: path
     version: "0.0.1"
   browser:

@@ -16,6 +16,7 @@ class Customer extends SyncCachable<Customer> {
   String _shipto3;
   String _shipto4;
   String _shipto5;
+  String _termsRef;
   int _terms;
   String _invoiceEmail;
   bool _isEmailedInvoice = true;
@@ -36,6 +37,7 @@ class Customer extends SyncCachable<Customer> {
   String get shipto3 => _shipto3;
   String get shipto4 => _shipto4;
   String get shipto5 => _shipto5;
+  String get termsRef => _termsRef;
   int get terms => _terms;
   String get invoiceEmail => _invoiceEmail;
   bool get isEmailedInvoice => _isEmailedInvoice;
@@ -57,6 +59,7 @@ class Customer extends SyncCachable<Customer> {
                                           "shipto3": shipto3,
                                           "shipto4": shipto4,
                                           "shipto5": shipto5,
+                                          "termsRef": termsRef,
                                           "terms": terms,
                                           "invoiceEmail": invoiceEmail,
                                           "isEmailedInvoice": isEmailedInvoice,
@@ -148,6 +151,12 @@ class Customer extends SyncCachable<Customer> {
       _shipto5 = shipto5;
       requiresDatabaseSync();
     }
+  }  
+  set termsRef (String termsRef) {
+    if (termsRef != _termsRef) {
+      _termsRef = termsRef;
+      requiresDatabaseSync();
+    }
   }
 
   set terms ( int terms) {
@@ -237,8 +246,8 @@ class Customer extends SyncCachable<Customer> {
     Completer c = new Completer();
      if (this.isNew) {
         dbh.prepareExecute("INSERT INTO customers (customerName, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2,"
-                            "shipto3, shipto4, shipto5, terms, faxNumber, phoneNumber, isEmailedInvoice, isEmailedConfirmation, active) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                            [name, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2, shipto3, shipto4, shipto5,
+                            "shipto3, shipto4, shipto5, termsRef, terms, faxNumber, phoneNumber, isEmailedInvoice, isEmailedConfirmation, active) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                            [name, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2, shipto3, shipto4, shipto5, termsRef,
                              terms, faxNumber, phoneNumber, (isEmailedInvoice ? 1 : 0), (isEmailedConfirmation ? 1 : 0), (isActive ? 1 : 0)])
            .then((Results res) {
              if (res.insertId != 0) {
@@ -252,8 +261,8 @@ class Customer extends SyncCachable<Customer> {
      }
      else {
        dbh.prepareExecute("UPDATE customers SET customerName=?, invoiceEmail=?, confirmationEmail=?, quickbooksName=?, billto1=?, billto2=?, billto3=?, billto4=?, billto5=?, shipto1=?, shipto2=?,"
-           "shipto3=?, shipto4=?, shipto5=?, terms=?, faxNumber=?, phoneNumber=?, isEmailedInvoice=?, isEmailedConfirmation=?, active=? WHERE ID=?",
-           [name, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2, shipto3, shipto4, shipto5,
+           "shipto3=?, shipto4=?, shipto5=?, termsRef=?, terms=?, faxNumber=?, phoneNumber=?, isEmailedInvoice=?, isEmailedConfirmation=?, active=? WHERE ID=?",
+           [name, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2, shipto3, shipto4, shipto5, termsRef,
             terms, faxNumber, phoneNumber, (isEmailedInvoice ? 1 : 0), (isEmailedConfirmation ? 1 : 0), (isActive ? 1 : 0), ID])
            .then((Results res) { 
              if (res.affectedRows <= 1) {
@@ -274,7 +283,7 @@ class Customer extends SyncCachable<Customer> {
   static Future<bool> init () {
     Completer c = new Completer();
     ffpServerLog.info("Loading customer list...");
-    dbHandler.query("SELECT ID, customerName, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2, shipto3, shipto4, shipto5, terms, faxNumber, phoneNumber, isEmailedInvoice, isEmailedConfirmation, active FROM customers").then((Results results){
+    dbHandler.query("SELECT ID, customerName, invoiceEmail, confirmationEmail, quickbooksName, billto1, billto2, billto3, billto4, billto5, shipto1, shipto2, shipto3, shipto4, shipto5, terms, faxNumber, phoneNumber, isEmailedInvoice, isEmailedConfirmation, active, termsRef FROM customers").then((Results results){
       results.listen((Row row) {
         Customer cust = new Customer(row[0], row[1], row[15]);
         cust._invoiceEmail = row[2];
@@ -295,6 +304,7 @@ class Customer extends SyncCachable<Customer> {
         cust._isEmailedInvoice = (row[18] != 0 ? true : false);
         cust._isEmailedConfirmation = (row[19] != 0 ? true : false);
         cust._isActive = (row[20] != 0 ? true : false);
+        cust._termsRef = row[21];
       },
       onDone: () {
         c.complete(true);
