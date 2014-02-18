@@ -3,6 +3,7 @@ part of FreemansServer;
 class Supplier extends SyncCachable<Supplier> {
   String _name;
   String _quickbooksName;
+  String _termsRef;
   int _terms;
   String _remittanceEmail;
   String _confirmationEmail;
@@ -16,6 +17,7 @@ class Supplier extends SyncCachable<Supplier> {
   
   String get name => _name;
   String get quickbooksName => _quickbooksName;
+  String get termsRef => _termsRef;
   int get terms => _terms;
   String get remittanceEmail => _remittanceEmail;
   String get confirmationEmail => _confirmationEmail;
@@ -35,6 +37,7 @@ class Supplier extends SyncCachable<Supplier> {
                                           "addressLine3": addressLine3,
                                           "addressLine4": addressLine4,
                                           "addressLine5": addressLine5,
+                                          "termsRef": termsRef,
                                           "terms": terms,
                                           "remittanceEmail": remittanceEmail,
                                           "confirmationEmail": confirmationEmail,
@@ -52,6 +55,12 @@ class Supplier extends SyncCachable<Supplier> {
   set quickbooksName (String quickbooksName) {
     if (quickbooksName != _quickbooksName) {
       _quickbooksName = quickbooksName;
+      requiresDatabaseSync();
+    }
+  }
+  set termsRef (String termsRef) {
+    if (termsRef != _termsRef) {
+      _termsRef = termsRef;
       requiresDatabaseSync();
     }
   }
@@ -139,8 +148,8 @@ class Supplier extends SyncCachable<Supplier> {
   Future<bool> updateDatabase(DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer<bool>();
     if (this.isNew) {
-      dbh.prepareExecute("INSERT INTO suppliers (supplierName, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-          [name, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5]).then((Results res) {
+      dbh.prepareExecute("INSERT INTO suppliers (supplierName, quickbooksName, termsRef, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+          [name, quickbooksName, termsRef, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5]).then((Results res) {
               if (res.insertId != 0) {
                 c.complete(true);
                 this._firstInsert(res.insertId);
@@ -157,8 +166,8 @@ class Supplier extends SyncCachable<Supplier> {
           });
     }
     else {
-      dbh.prepareExecute("UPDATE suppliers SET supplierName=?, quickbooksName=?, terms=?, remittanceEmail=?, confirmationEmail=?, phoneNumber=?, faxNumber=?, addressLine1=?, addressLine2=?, addressLine3=?, addressLine4=?, addressLine5=? WHERE ID=?",
-          [name, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5, ID]).then((Results res) {
+      dbh.prepareExecute("UPDATE suppliers SET supplierName=?, quickbooksName=?, termsRef=?, terms=?, remittanceEmail=?, confirmationEmail=?, phoneNumber=?, faxNumber=?, addressLine1=?, addressLine2=?, addressLine3=?, addressLine4=?, addressLine5=? WHERE ID=?",
+          [name, quickbooksName, termsRef, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5, ID]).then((Results res) {
             if (res.affectedRows <= 1) {
               this.synced();
                c.complete(true);
@@ -205,7 +214,7 @@ class Supplier extends SyncCachable<Supplier> {
   static Future<bool> init () {
     Completer c = new Completer();
     ffpServerLog.info("Loading supplier list...");
-    dbHandler.query("SELECT ID, supplierName, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5 FROM suppliers").then((Results results){
+    dbHandler.query("SELECT ID, supplierName, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5, termsRef FROM suppliers").then((Results results){
       results.listen((Row row) {
         Supplier sup = new Supplier(row[0], row[1]);
         sup._quickbooksName = row[2];
@@ -219,6 +228,7 @@ class Supplier extends SyncCachable<Supplier> {
         sup._addressLine3 = row[10];
         sup._addressLine4 = row[11];
         sup._addressLine5 = row[12];
+        sup._termsRef = row[13];
       },
       onDone: () {
         c.complete(true);
