@@ -81,6 +81,13 @@ class ResponseBuilder {
                  if (inTag && tagLength == 0) {
                    tagIsComment = true;
                  }
+                 else {
+                   if (inTag) {
+                     tagLength++;
+                     currentTagData.write(curChar);
+                   }
+                   escapeTag = false;
+                 }
                  break;
                case "}":
                  if (inTag && !escapeTag) {
@@ -129,6 +136,7 @@ class ResponseBuilder {
                                  ifStartBefore = tagStart;
                                  startIf = x+1;
                                  ifParam = commandDat[1];
+                                  print(currentTagData.toString());
                                 }
                                 ifNum++;
                                 inIf = true;                             
@@ -137,22 +145,21 @@ class ResponseBuilder {
                                 if (inIf) { 
                                   ifNum--;
                                   if (ifNum == 0) {
-                                    List paramDat = _containsParameter(params, ifParam.split("."));
-                                    bool containsKey = paramDat[0];
-                                    if (containsKey) {
-                                     bool val = _getBoolValue(paramDat[1]);
-                                     if (val) {
+                                     dynamic data = new QBExpression(ifParam).exec(params);
+                                     if (!(data is bool)) {
+                                       data = _getBoolValue (data);
+                                     }
+                                    if (data is bool) {
+                                     if (data) {
                                        String internal = fileData.substring(startIf, tagStart);
                                        fileData = _makeReplacement(fileData, ifStartBefore, x+1, internal);
-                                      
                                      }
                                      else {
-                                       
                                        fileData = _makeReplacement(fileData, ifStartBefore, x+1, "");                                                                      
                                      }
                                      x = ifStartBefore;
                                     }
-                                    else throw "IF parameter value is not defined ${ifParam}.";
+                                    else throw new ArgumentError("'${data.runtimeType}' is not a valid subtype of 'bool' for if parameter: $ifParam");
                                     
                                     ifParam = "";
                                     startIf = 0;
@@ -174,22 +181,19 @@ class ResponseBuilder {
                                  break;
                                case "ENDFOREACH":
                                  if (inForEach) {
-                                   
                                    forNum--;
                                    if (forNum == 0) {
-                                     if (params.containsKey(forParam)) {
-                                       if (params[forParam] is List) {
-                                         String loopInternals = fileData.substring(startFor, tagStart);
-                                         StringBuffer loopedData = new StringBuffer();
-                                         params[forParam].forEach((Map data) { 
-                                           loopedData.write(parse(loopInternals, params: data));
-                                         });
-                                         fileData = _makeReplacement(fileData, forStartBefore, x+1, loopedData.toString());
-                                         x = forStartBefore; // We want to reparse the template as the top level.
-                                       }
-                                       else throw "forEach parameter is not a List. ${forParam}";
+                                     dynamic data = new QBExpression(forParam).exec(params);
+                                     if (data is List) {
+                                       String loopInternals = fileData.substring(startFor, tagStart);
+                                       StringBuffer loopedData = new StringBuffer();
+                                       data.forEach((Map data) { 
+                                         loopedData.write(parse(loopInternals, params: data));
+                                       });
+                                       fileData = _makeReplacement(fileData, forStartBefore, x+1, loopedData.toString());
+                                       x = forStartBefore; // We want to reparse the template as the top level.
                                      }
-                                     else throw "Cannot use foreach on a null variable ${forParam}";
+                                     else throw new ArgumentError("'${data.runtimeType}' is not a valid subtype of 'List' on for each parameter $data");
                                      // Reset
                                      forParam = "";
                                      startFor = 0;
@@ -201,40 +205,48 @@ class ResponseBuilder {
                                
                                case "ATRIB":
                                  if (!inIf && !inForEach) {
-                                   bool optional = _isParameterOptional(commandDat[1]);
-                                   List attributeValue = commandDat[1].split("=");
-                                   
-                                   String fullVariable = attributeValue[0];
-                                   String attribDefault = "";
+                                   String fullVariable = "";
                                    bool hasDefault = false;
-                                   if (attributeValue.length >= 2) {
-                                     hasDefault = true;
-                                     attribDefault = attributeValue.getRange(1, attributeValue.length).join("=");
+                                   String attribDefault = "";
+                                   bool optional = false;
+                                   if (commandDat.length == 2) {
+                                     fullVariable = commandDat[1];
+                                   }
+                                   else {
+                                     fullVariable = commandDat[2]; 
+                                     hasDefault = commandDat[1] != "?";
+                                     optional = !hasDefault;
+                                     attribDefault = (!hasDefault ? "" : commandDat[1]);
                                    }
                                    
-                                   String parameter = (optional ? fullVariable.substring(0, fullVariable.length-1) : fullVariable); 
-                                   List paramDat = _containsParameter(params, parameter.split("."));
-                                   bool containsKey = paramDat[0];
-                                   if (containsKey || optional || hasDefault) {
-      
-                                     String value = (containsKey ? "$parameter=\"${_convertToString(paramDat[1], false)}\"" : (hasDefault ? "$parameter=${attribDefault}" : ""));
+                                   dynamic paramDat = new QBExpression(fullVariable).exec(params, false);
+                                   if (paramDat == null && hasDefault) paramDat = attribDefault;
+                                   
+                                   if (paramDat != null || hasDefault || optional) {
+                                     String value = (paramDat != null ? "$fullVariable=\"${_convertToString(paramDat, false)}\"" : (hasDefault ? "$fullVariable=${attribDefault}" : ""));
                                      fileData = _makeReplacement(fileData, tagStart, x+1, value);
                                      x = tagStart + value.length;
                                    }
-                                   else throw "Non optional parameter value was omitted: $parameter";
+                                   else throw new ArgumentError("Parameter value does not exist or is null however no default value is supplied.");
                                  }
                                  break;
                                case r"$":
                                  if (!inIf && !inForEach) {
-                                   bool optional = _isParameterOptional(commandDat[1]);
-                                   String fullVariable = commandDat[1];
-                                   
-                                   String parameter = (optional ? fullVariable.substring(0, fullVariable.length-1) : fullVariable); 
-                                   List paramDat = _containsParameter(params, parameter.split("."));
-                                   bool containsKey = paramDat[0];
-                                   if (containsKey || optional) {
-      
-                                     String value = (containsKey ? _convertToString(paramDat[1]) : "");
+                                   String parameter;
+                                   dynamic paramVal;
+                                   if (commandDat.length == 2) { 
+                                      parameter = commandDat[1]; 
+                                      paramVal = new QBExpression(parameter).exec(params);
+                                   }
+                                   else {
+                                        parameter = commandDat[2]; 
+                                        paramVal = new QBExpression(parameter).exec(params, false);
+                                        if (paramVal == null) {
+                                          paramVal = (commandDat[1] == "?" ? "" : commandDat[1]);
+                                        }
+                                   }
+                                   if (paramVal != null) {
+                                     String value = paramVal != null ? _convertToString(paramVal) : "";
                                      fileData = _makeReplacement(fileData, tagStart, x+1, value);
                                      x = tagStart + value.length;
                                    }
@@ -260,6 +272,7 @@ class ResponseBuilder {
                  escapeTag = false;
                  break;
              }
+             
      }
       
      sections.forEach((String secName, String data) {
@@ -290,6 +303,7 @@ class ResponseBuilder {
     }
     return false;
   }
+  
   static String _convertToString(dynamic val, [bool encode = true]) {
     if (val is int) {
       return val.toString();
@@ -300,26 +314,6 @@ class ResponseBuilder {
     else  return (encode ? _escape(val.toString()) : val.toString());
   }
   
-    
-  static List _containsParameter (val, List<String> params) {
-    if (!(val is Map)) {
-      try {
-      val = val.toJson();
-      }
-      catch (e) {
-        return [false];
-      }
-    }
-    
-    if (val is Map) { 
-      if (val.containsKey(params[0])) {
-        if (params.length > 1) return _containsParameter(val[params.removeAt(0)], params); 
-        else return [true,val[params[0]]];
-      }
-      else return [false];
-    }
-    else return [false];
-  }
   
   static String _escape (String str) {
     int i = str.length;
@@ -338,161 +332,5 @@ class ResponseBuilder {
      return "${input.substring(0, startX)}${data}${input.substring(endX,input.length)}";
   }
   
-  static bool _isParameterOptional (String parameter) {
-    if (parameter[parameter.length - 1] == "?") return true;
-    else return false;
-  }
 }
 
-
-class QBExpression {
- static Map<String, Function> OPERATORS = {
-      'null': ()  => null,
-      'true': ()  => true,
-      'false': () => false,
-      '+': (self, locals, a,b){
-       
-        },
-      '-':(self, locals, a,b){
-           
-          },
-      '*':(self, locals, a,b){return a(self, locals)*b(self, locals);},
-      '/':(self, locals, a,b){return a(self, locals)/b(self, locals);},
-      '%':(self, locals, a,b){return a(self, locals)%b(self, locals);},
-      '^':(self, locals, a,b){return a(self, locals)^b(self, locals);},
-      '=': () { },
-      '==':(self, locals, a,b){return a(self, locals)==b(self, locals);},
-      '!=':(self, locals, a,b){return a(self, locals)!=b(self, locals);},
-      '<':(self, locals, a,b){return a(self, locals)<b(self, locals);},
-      '>':(self, locals, a,b){return a(self, locals)>b(self, locals);},
-      '<=':(self, locals, a,b){return a(self, locals)<=b(self, locals);},
-      '>=':(self, locals, a,b){return a(self, locals)>=b(self, locals);},
-      '&&':(self, locals, a,b){return a(self, locals)&&b(self, locals);},
-      '||':(self, locals, a,b){return a(self, locals)||b(self, locals);},
-      '&':(self, locals, a,b){return a(self, locals)&b(self, locals);},
-      '|':(self, locals, a,b){return b(self, locals)(self, locals, a(self, locals));},
-      '!':(self, locals, a){return !a(self, locals);}
- };
- 
- static isValidIdentifierStart (int charCode) {
-   return (charCode >= 65 && charCode <= 90) || (charCode >= 97 && charCode <= 122);
- }
- static isValidIdentifierBody (int charCode) {
-   return isValidIdentifierStart(charCode) || charCode == 46 || charCode == 137 || (charCode >= 48 && charCode <= 57);
- }
- static List<String> OPERATOR_STARTS = ["n","t","f","+","-","*","/","%","^","=","!",">","<","&","|"];
- static isValidOperatorStart (String character) { 
-   return OPERATOR_STARTS.contains(character);
- }
- static List<String> OPERATOR_BODY = ["u","l","r","e","a","s","=","&","|"];
- static isValidOperatorBody (String character) { 
-   return OPERATOR_BODY.contains(character);
- }
- 
- static isValidOperator (String character) {
-   return OPERATORS.containsKey("character");
- }
-
- static bool isWhitespace (String inp) {
-   return inp == " " || inp.codeUnitAt(0) == 0;
- }
- 
- 
- String input = "";
-
- int i = 0;
-  
- String peekAhead () {
-   return (i+1 < input.length ? input[i+1] : new String.fromCharCode(0));
- }
- String get (int chNum) { 
-   return (chNum < input.length ? input[chNum] : new String.fromCharCode(0));
- }
- bool eof (int num) {
-   return num+1 == input.length;
- }
-
- List parsedExpression = new List();
- String parse () {
-   String prev = "";
-   String char = "";
-   List<String> opBuffer = [];
-   List<String> identifierBuffer = [];
-   List<String> otherBuffer = [];
-   int charCode = 0;
-   for (i = 0; i < input.length; i++) {
-     char = input[i];
-     charCode = char.codeUnitAt(0);
-     print("$char => ${charCode}");
-     if (!isWhitespace(char)) {
-       
-       if (isValidOperatorStart(char)) {
-
-           opBuffer.add(char);
-         for (int x = i; x < input.length; x++) {
-           
-           if ((eof(x) && isValidOperator(opBuffer.join())) || !isValidOperatorBody(get(x))) {
-             print("Added valid operator");
-             parsedExpression.add(new QBOperator(opBuffer.join()));
-             opBuffer.clear();
-             i = x;
-             break;
-           }
-           else {
-             opBuffer.add(input[x]);
-           }
-         }
-         if (opBuffer.length > 0) throw "Invalid operator: ${opBuffer.join()}";
-         continue;
-       }
-       if (isValidIdentifierStart(charCode)) {
-         print("Could be a identifier");
-         for (int x = i; x < input.length; x++) {
-           print("= ${get(x+1)} => ${get(x+1).codeUnitAt(0)}");
-           identifierBuffer.add(get(x)); 
-           if (!isValidIdentifierBody(get(x+1).codeUnitAt(0)) || eof(x)) {
-              String identifier = identifierBuffer.join();
-              identifierBuffer.clear();
-              parsedExpression.add(new QBIdentifier(identifier));
-              i = x;
-              break;
-           }
-         }
-         continue;
-       }
-       otherBuffer.add(char); 
-       if (!isWhitespace(peekAhead()) && isValidIdentifierStart(peekAhead().codeUnitAt(0))) {
-         throw "Unexpexted Identifier start at: ${otherBuffer.join()}${peekAhead()}";
-       }
-       else {
-         bool isValOpStart = isValidOperatorStart(peekAhead());
-         if (isValOpStart || isWhitespace(peekAhead())) {
-           num t = num.parse(otherBuffer.join(), (e) { throw "$e is not an operator, identifier or numeric"; });
-           print("Added valid numeric");
-           parsedExpression.add(t); 
-           otherBuffer.clear();
-         }
-       }
-       
-     }
-     prev = char;
-   }
- }
- 
- QBExpression (String this.input) {
-   
- } 
- toString () => parsedExpression.toString();
- 
-}
-class QBIdentifier { 
-  String identifier;
-  QBIdentifier(this.identifier);
-  String toString() => identifier;
-}
-
-class QBOperator {
-  String op;
-  QBOperator(String this.op);
-  String toString() => op;
-}

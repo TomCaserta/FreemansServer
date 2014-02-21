@@ -8,6 +8,6 @@ class QBCustomerAddQuery {
   
   Future<bool> execute (QuickbooksConnector qbc) { 
     String xml = ResponseBuilder.parseFromFile("customer_add", params: { "version": QB_VERSION }..addAll(customer.toJson()) );
-    
+    print(xml);
   }
 }

@@ -85,7 +85,6 @@ class QBAccountsList extends QBSimpleListQuery {
     _requestNext(sc);
     
     sc.stream.listen((XmlElement data) { 
-         String listID = getQbxmlContainer(data, "ListID").text;
          QBAccount currAccount = new QBAccount.parseFromListXml(data);
          accountStream.add(currAccount);
     },
@@ -105,7 +104,6 @@ class QBCustomerList extends QBSimpleListQuery {
       _requestNext(sc);
       
       sc.stream.listen((XmlElement data) { 
-           String listID = getQbxmlContainer(data, "ListID").text;
            QBCustomer currCustomer = new QBCustomer.parseFromListXml(data);
            customerStream.add(currCustomer);
       },
@@ -116,8 +114,23 @@ class QBCustomerList extends QBSimpleListQuery {
     }
 }
 
-class QBTermsList extends QBSimpleListQuery {
-  QBTermsList (qbc):super(qbc, "Terms", useIterator: false, returnName: "StandardTermsRet");
+class QBStandardTermsList extends QBSimpleListQuery {
+  QBStandardTermsList (qbc):super(qbc, "StandardTerms", useIterator: false, returnName: "StandardTermsRet");
+  
+  Stream<QBStandardTerms> forEach () {
+     StreamController<XmlElement> sc = new StreamController<XmlElement>();
+     StreamController<QBStandardTerms> termsStream = new StreamController<QBStandardTerms>();
+     _requestNext(sc);
+     
+     sc.stream.listen((XmlElement data) { 
+          QBStandardTerms currTerms = new QBStandardTerms.parseFromListXml(data);
+          termsStream.add(currTerms);
+     },
+     onDone: () { 
+       termsStream.close();
+     });  
+     return termsStream.stream;
+  }
 }
 
 class QBItemsList extends QBSimpleListQuery {

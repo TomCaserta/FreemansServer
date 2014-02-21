@@ -38,14 +38,14 @@ class QBAccount extends QBModifiable {
     name = getQbxmlContainer(data, "Name").text;
     fullName = getQbxmlContainer(data, "FullName").text;
     parentRef = new QBRef.parseFromListXml(getQbxmlContainer(data, "ParentRef", optional: true));
-    subLevel = getQbxmlContainer(data, "SubLevel").integer;
+    subLevel = getQbxmlContainer(data, "Sublevel").integer;
     accountType = EnumString.get(AccountType, getQbxmlContainer(data, "AccountType").text);
     specialAccountType = EnumString.get(SpecialAccountType, getQbxmlContainer(data, "SpecialAccountType", optional: true).text);
     isTaxAccount = getQbxmlContainer(data, "IsTaxAccount", optional: true).boolean;
     accountNumber = getQbxmlContainer(data, "AccountNumber", optional: true).text;
     bankNumber = getQbxmlContainer(data, "BankNumber", optional: true).text;
     salesTaxCodeRef = new QBRef.parseFromListXml(getQbxmlContainer(data, "SalesTaxCodeRef", optional: true));
-    description = getQbxmlContainer(data, "Desc").text;
+    description = getQbxmlContainer(data, "Desc", optional: true).text;
     balance = getQbxmlContainer(data, "Balance", optional: true).number;
     totalBalance = getQbxmlContainer(data, "TotalBalance", optional: true).number;
     cashFlowClassification = EnumString.get(CashFlowClassification, getQbxmlContainer(data, "CashFlowClassification", optional: true).text);

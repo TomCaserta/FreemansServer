@@ -1,7 +1,8 @@
 name: FreemansServer
 dependencies:
   QBXMLRP2_DART:
-    path: ..\..\QuickbooksDesktopConnectorDartlang\package\QBXMLRP2_DART
+    path: ..\..\..\Documents\GitHub\QuickbooksDesktopConnectorDartlang\package\QBXMLRP2_DART
+  intl: any
   logging: any
   path: any
   sqljocky: 0.9.0

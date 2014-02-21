@@ -50,12 +50,17 @@ class ListEditor {
   }
 }
 
+
 class ListContainer {
   String name = "";
   List<ListItem> names;
   ListItem activeItem;
   ListItem _oldActiveItem;
-
+  
+  List<String> colHeader = ["Date","Surcharge"];
+  List<List<String>> colData = [["Test","19"],["Test 2","20"],["Test 3","34"],["Test 2","20"],["Test 3","34"],["Test 2","20"],["Test 3","34"],["Test 2","20"],["Test 3","34"]];
+  
+  
   bool saved = true;
   ListContainer (this.name) {
     

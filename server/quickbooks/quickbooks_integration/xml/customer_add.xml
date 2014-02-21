@@ -3,7 +3,7 @@
 <CustomerAddRq>
 <CustomerAdd> 
 <Name >{$::name}</Name>
-{if::isActive}<IsActive>{$::isActive}</IsActive>{endIf}
+{if::isActive != null}<IsActive>{$::isActive}</IsActive>{endIf}
 
 {if::parentRef}
 <ParentRef>

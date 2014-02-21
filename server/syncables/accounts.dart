@@ -7,6 +7,16 @@ class Account extends SyncCachable<Account> {
   Account(String listID, [bool isNew = false]):super((isNew ? 0 : -1), listID) {
   }
   
+  Future<bool> updateDatabase (DatabaseHandler dbh, QuickbooksConnector qbc) {
+    if (isNew) {
+      // TODO: Account insert
+    }
+    else {
+      // TODO: Account Update
+      return;
+    }
+  }
+  
   String toString () {
     return toJson().toString();
   }

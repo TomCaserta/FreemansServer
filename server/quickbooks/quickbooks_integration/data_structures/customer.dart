@@ -62,14 +62,14 @@ class QBCustomer extends QBModifiable {
     listID = getQbxmlContainer(customerData, "ListID").text;
     timeCreated = getQbxmlContainer(customerData, "TimeCreated").date;
     timeModified = getQbxmlContainer(customerData, "TimeModified").date;
-    editSequence = getQbxmlContainer(customerData, "editSequence").text;
+    editSequence = getQbxmlContainer(customerData, "EditSequence").text;
     name = getQbxmlContainer(customerData, "Name").text;
     fullName = getQbxmlContainer(customerData, "FullName").text;
     isActive = getQbxmlContainer(customerData, "IsActive").boolean;
     parentRef = new QBRef.parseFromListXml(getQbxmlContainer(customerData, "ParentRef", optional: true));
     
 
-    subLevel = getQbxmlContainer(customerData, "SubLevel").integer;
+    subLevel = getQbxmlContainer(customerData, "Sublevel").integer;
 
     companyName = getQbxmlContainer(customerData, "CompanyName", optional: true).text;
     salutation = getQbxmlContainer(customerData, "Salutation", optional: true).text;

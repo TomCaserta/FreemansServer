@@ -27,6 +27,7 @@ part 'controller/main/loading.dart';
 part 'controller/main/mainnavigation.dart';
 part 'controller/main/login.dart';
 part 'controller/main/contentdropdown.dart';
+part 'controller/main/multilistselectbox.dart';
 part 'controller/workbook/workbook.dart';
 part 'controller/transport/transport.dart';
 
@@ -88,6 +89,7 @@ class FreemansModule extends Module {
     type(Loading);
     type(Login);
     type(ListEditor);
+    type(MultiListSelectBox);
    
   }
 }

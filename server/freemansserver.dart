@@ -1,14 +1,15 @@
 library FreemansServer;
 
 import 'dart:io';
-import 'package:sqljocky/sqljocky.dart';
 import 'dart:async';
+import 'dart:convert';
+import 'dart:mirrors';
+import 'package:sqljocky/sqljocky.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:logging/logging.dart';
 import 'package:xml/xml.dart';
 import 'package:utf/utf.dart';
-import 'dart:convert';
-import 'dart:mirrors';
 import 'package:uuid/uuid.dart';
 import 'utils/permissions.dart';
 import 'utils/preloader.dart';
@@ -18,7 +19,6 @@ import 'package:QBXMLRP2_DART/QBXMLRP2_DART.dart';
 import 'quickbooks/quickbooks_integration/qb_integration.dart';
 
 
-part 'quickbooks/quickbooks_initializer.dart';
 part 'syncables/terms.dart';
 part 'syncables/accounts.dart';
 part 'syncables/user.dart';
@@ -43,17 +43,14 @@ DatabaseHandler dbHandler;
 QuickbooksConnector qbHandler;
 Logger ffpServerLog = new Logger("FFPServer");
 void main() { 
-  
-  QBExpression parsedExp = new QBExpression("== ");
-  parsedExp.parse();
-  print(parsedExp);
+    
   
   qbHandler = new QuickbooksConnector();
   initEnums ();
-  ffpServerLog.onRecord.listen((e) {
-    print(e);
-    if (e.level == Level.SEVERE) {
-      throw e;
+  ffpServerLog.onRecord.listen((r) {
+    print("[${new DateFormat("hh:mm:ss").format(r.time)}][${r.level}][${r.loggerName != "" ? r.loggerName : "ROOT"}]: ${r.message}"); 
+    if (r.level == Level.SEVERE) {
+      throw r;
     }
   });
   
@@ -96,11 +93,13 @@ void main() {
 }
 
 void afterLoading () {
-    print(JSON.encode(SyncCachable.getVals(Account)));
-  QBCustomerList qbQuery = new QBCustomerList(qbHandler, 10);
+  QBCustomerList qbQuery = new QBCustomerList(qbHandler,10);
   int x = 0;
-  qbQuery.forEach().listen((QBCustomer customer) { 
-   print(JSON.encode(customer));
+  qbQuery.forEach().listen((QBCustomer t) { 
+    if (x == 0) {
+      QBCustomerAddQuery caq = new QBCustomerAddQuery(t);
+      caq.execute(qbHandler);
+    }
     x= 1;
   });
   WebsocketHandler wsh = new WebsocketHandler ();

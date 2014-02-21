@@ -1,8 +1,7 @@
 part of FreemansClient;
 
 @NgDirective (
- selector: "input[auto-completer]",   
- publishAs: "autocompleter"
+ selector: "input[auto-completer]"
 )
 class ContentDropdown {
   String fieldType = "";

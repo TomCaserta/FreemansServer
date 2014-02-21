@@ -5,15 +5,19 @@ import 'package:xml/xml.dart';
 import 'dart:mirrors';
 import 'package:QBXMLRP2_DART/QBXMLRP2_DART.dart';
 
+part 'expression_parser.dart';
 part 'response_builder.dart';
 part 'list_query.dart';
 part 'customer_add.dart';
-part 'data_structures/enums.dart';
+part 'types/percent.dart';
+part 'types/enum.dart';
 part 'data_structures/modifiable.dart';
 part 'data_structures/reference.dart';
 part 'data_structures/address.dart';
 part 'data_structures/customer.dart';
 part 'data_structures/account.dart';
+part 'data_structures/terms.dart';
+
 String QB_VERSION;
 void initEnums ([String version = "11.0"]) {
   QB_VERSION = version;
@@ -92,9 +96,16 @@ class QBXmlContainer {
     if (exists) {
       return htmlspecialchars_decode(nodeValue.text);
     }
+    return null;
   }
   
-  
+  /// Gets a percent type (Initial value * 10)
+  QBPercent get percent {
+    if (exists && nodeValue.text != "") { 
+      return new QBPercent(double.parse(nodeValue.text, (e) => 0.0) * 10);
+    }
+    else return null;
+  }
   
   int get integer {
     if (exists && nodeValue.text != "") {
@@ -108,6 +119,7 @@ class QBXmlContainer {
       else if (nodeValue.text.toUpperCase() == "FALSE") return false;
       else throw new Exception("Unknown value given for Quickbooks boolean conversion: ${nodeValue.text}");
     }
+    return null;
   }
   num get number {
     if (exists && nodeValue.text != "") {
@@ -119,6 +131,7 @@ class QBXmlContainer {
     if (exists && nodeValue.text != "") {
       return DateTime.parse(nodeValue.text);
     }
+    return null;
   }
   
   QBXmlContainer ([this.nodeValue]) {
@@ -129,14 +142,15 @@ class QBXmlContainer {
     if (exists) {
       return nodeValue.query(selector);
     }
+    return null;
   }
 }
-QBXmlContainer getQbxmlContainer (dynamic xml, String selector, { optional: true }) { 
+QBXmlContainer getQbxmlContainer (dynamic xml, String selector, { optional: false }) { 
    XmlCollection el = xml.query(selector);
+   
    if ( el != null && el.length == 1) {
      return new QBXmlContainer(el[0]);
-   }
- 
+   } 
    if (optional) return new QBXmlContainer();
-   else throw new Exception("Tag does not have a required element.");
+   else throw new Exception("Tag does not have a required element: $selector");
 }
