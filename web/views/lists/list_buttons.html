@@ -1,0 +1,16 @@
+<fieldset class="button-group-right">                    
+  <div class="form-group">
+    <button ng-click="button.clickDelete()" ng-hide="button.isAdd" class="btn btn-lg btn-danger col-md-3">
+    Delete
+    </button>
+    <button ng-click="button.clickUpdate()" ng-hide="button.isAdd" class="btn btn-lg btn-primary col-md-offset-1 col-md-8">
+    Update {{button.name}}
+    </button>
+    <button ng-click="button.clickCancel()" ng-hide="!button.isAdd" class="btn btn-lg btn-default col-md-3">
+    Cancel
+    </button>
+    <button ng-click="button.clickAdd()" ng-hide="!button.isAdd" class="btn btn-lg btn-success col-md-offset-1 col-md-8">
+    Add {{button.name}}
+    </button>
+  </div>
+</fieldset>

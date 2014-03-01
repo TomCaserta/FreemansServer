@@ -1,11 +1,19 @@
-part of FreemansClient;
+part of DataObjects;
 
-class User {
-  String UUID;
-  int userID;
+class User extends Syncable {
+  final int type = SyncableTypes.USER;
   String username;
-  Permissions perm;
-  User (this.UUID, this.userID, this.username, String permBlob) {
-    perm = new Permissions.create(permBlob);
+  Permissions permissions;
+  String password;
+  User();
+  User.fromJson (Map jsonMap):super.fromJson(jsonMap) {
+  }
+  void mergeJson (Map jsonMap) {
+    this.username = jsonMap["username"];
+    this.permissions =  new Permissions.create(jsonMap["permissions"]);
+    super.mergeJson(jsonMap);
+  }
+  Map<String, dynamic> toJson () {
+    return super.toJson()..addAll({  "username": username, "permissions": permissions.toString(), "password": password });
   }
 }

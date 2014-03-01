@@ -1,7 +1,8 @@
-part of FreemansClient;
+part of DataObjects;
 
 
-class Supplier {
+class Supplier extends Syncable {
+  final int type = SyncableTypes.SUPPLIER;
   String name;
   String quickbooksName;
   String termsRef;
@@ -16,8 +17,28 @@ class Supplier {
   String phoneNumber;
   String faxNumber;
   
+  Supplier();
+  
+  Supplier.fromJson(Map jsonMap):super.fromJson(jsonMap) {
+  }
+  void mergeJson (Map jsonMap) {
+    this.name = jsonMap["name"];
+    this.quickbooksName = jsonMap["quickbooksName"];
+    this.termsRef = jsonMap["termsRef"];
+    this.terms = jsonMap["terms"];
+    this.remittanceEmail = jsonMap["remittanceEmail"];
+    this.confirmationEmail = jsonMap["confirmationEmail"];
+    this.addressLine1 = jsonMap["addressLine1"];
+    this.addressLine2 = jsonMap["addressLine2"];
+    this.addressLine3 = jsonMap["addressLine3"];
+    this.addressLine4 = jsonMap["addressLine4"];
+    this.addressLine5 = jsonMap["addressLine5"];
+    this.phoneNumber = jsonMap["phoneNumber"];
+    this.faxNumber = jsonMap["faxNumber"];
+    super.mergeJson(jsonMap);    
+  }
   Map<String, dynamic> toJson () {
-    return {
+    return super.toJson()..addAll({
       "name": name,
       "quickbooksName": quickbooksName,
       "termsRef": termsRef,
@@ -31,7 +52,7 @@ class Supplier {
       "addressLine5": addressLine5,
       "phoneNumber": phoneNumber,
       "faxNumber": faxNumber
-    };
+    });
   }
   
 }

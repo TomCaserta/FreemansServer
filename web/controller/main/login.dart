@@ -32,23 +32,18 @@ class Login {
       errors = new List<String>();
       service.wsh.sendGetResponse(new AuthenticateClientPacket(this.username, this.password)).then((ServerPacket packet) { 
         if (packet is ActionResponseServerPacket) { 
-          packet.errors.forEach((e) {
+          packet.payload.forEach((e) {
             if (e is String) addError(e);
           });
         }
         else if (packet is LoggedInServerPacket) {
              loggingin = true;  
              service.loggedIn = true;
-             service.currUser = new User(packet.user["UUID"], packet.user["ID"], packet.user["username"], packet.user["permissions"]);  
+             service.currUser = new User.fromJson(packet.user); 
              service.wsh.sendGetResponse(new InitialDataRequestClientPacket()).then((ServerPacket packet) {
                if (packet is InitialDataResponseServerPacket) {
-                print(packet.userList); 
-                print(packet.customerList); 
-                print(packet.productList); 
-                print(packet.productPackagingList); 
-                print(packet.productWeightsList); 
-                print(packet.transportList); 
-               }               
+                  service.parseInitializationPacket(packet);
+                }               
              });
         }
       });

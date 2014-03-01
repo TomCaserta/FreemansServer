@@ -1,0 +1,88 @@
+@import "bootstrap";
+@import "_mixins";
+@import "_navbar";
+@import "_loader";
+@import "_table";
+@import "_workbook";
+@import "_lists";
+@import "_sales";
+
+
+/*
+* BASE STYLES
+*/
+
+body { padding-top: 70px; }
+.ng-hide, 
+.ng-show {
+  display: none !important;
+}
+
+[ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
+.form-inline .form-group input,
+.form-inline .form-group select {
+  width: auto;
+  margin-left: 10px; 
+  margin-right: 10px;
+}
+
+.control-label.small {
+  font-size: 12px;
+  text-transform: uppercase;
+}
+[ng-click] {  
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.flat {
+  @extend .btn-default;
+  @extend .btn;
+  height: 40px;
+  width: 100%;
+  border-radius: 0px;
+}
+
+.table input:focus,
+ .table select:focus,
+  .table button:focus {
+  z-index: 2;
+}
+
+input[type="color"] {
+  padding: 0;
+}
+.no-gutter {
+  padding:0;
+  margin: 0;
+}
+
+  
+/* 
+ * MEDIA QUERIES 
+ */
+ 
+@media (max-width: 992px) {
+  .btn-upleft:after {
+    content: "ADD";
+  }
+  .btn-downright:after {
+    content: "REMOVE";
+  }
+  
+}
+ 
+@media all and (max-width: 862px) and (min-width: 766px) {
+
+  #settings-cog {
+    display: none;
+  }
+}

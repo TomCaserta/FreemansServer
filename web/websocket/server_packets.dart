@@ -1,4 +1,4 @@
-part of FreemansClient;
+part of WebsocketHandler;
 
 /// TODO: Work out a better way of doing this.
 String getSymName (Symbol sym) {
@@ -75,7 +75,8 @@ class PacketInstancer {
       return cm.newInstance(const Symbol("create"), posArguments, namedParams).reflectee;
     }
     else {
-      ServerPacket.serverPacketLogger.warning("Incorrect parameters found.");
+      
+      ServerPacket.serverPacketLogger.warning("Incorrect parameters found");
     }
   }
 }
@@ -160,13 +161,17 @@ abstract class ServerPacket {
 
 class InitialDataResponseServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.INITIAL_DATA_RESPONSE;
+  
+  List accountList = new List();
   List customerList = new List();
   List productList = new List();
   List productWeightsList = new List();
   List productPackagingList = new List();
+  List productCategoryList = new List();
   List transportList = new List();
   List userList = new List();
-  InitialDataResponseServerPacket.create(this.customerList, this.productList, this.productWeightsList, this.productPackagingList, this.transportList, this.userList);
+  List supplierList = new List();
+  InitialDataResponseServerPacket.create(this.accountList, this.customerList, this.productList, this.productWeightsList, this.productPackagingList, this.productCategoryList, this.transportList, this.userList, this.supplierList);
   void handlePacket () {
     
   }
@@ -240,8 +245,8 @@ class TransportAddServerPacket extends ServerPacket {
 class ActionResponseServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.ACTION_RESPONSE;
   bool complete = false;
-  List errors = new List();
-  ActionResponseServerPacket.create (this.complete, {this.errors});
+  List payload = new List();
+  ActionResponseServerPacket.create (this.complete, {this.payload});
   void handlePacket () {
     
   }

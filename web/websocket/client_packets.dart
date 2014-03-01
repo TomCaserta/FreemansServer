@@ -1,4 +1,4 @@
-part of FreemansClient;
+part of WebsocketHandler;
 
 
 
@@ -45,7 +45,7 @@ class PingPongClientPacket extends RequireResponseClientPacket {
   }
 }
 
-class DataChangeClientPacket extends ClientPacket {
+class DataChangeClientPacket extends RequireResponseClientPacket {
   static final int ID = CLIENT_PACKET_IDS.DATA_CHANGE;
   String change = "";
   int type = 0;
@@ -57,42 +57,39 @@ class DataChangeClientPacket extends ClientPacket {
   }
 }
 
-class SupplierAddClientPacket extends RequireResponseClientPacket {
-  static final int ID = CLIENT_PACKET_IDS.SUPPLIER_ADD;
-  String supplierName = "";
-  SupplierAddClientPacket (this.supplierName);
-  Map<String, dynamic>  toJson () {
-    return super.toJsonDefault(ID)..addAll({ "supplierName": this.supplierName });
-  }
-}
-
-class CustomerAddClientPacket extends RequireResponseClientPacket {
-  static final int ID = CLIENT_PACKET_IDS.CUSTOMER_ADD;
-  String customerName = "";
-  CustomerAddClientPacket (this.customerName);
-  Map<String, dynamic>  toJson () {
-    return super.toJsonDefault(ID)..addAll({ "customerName": this.customerName });
-  }
-}
 
 
-class TransportAddClientPacket extends RequireResponseClientPacket {
-  static final int ID = CLIENT_PACKET_IDS.TRANSPORT_ADD;
-  String transportName = "";
-  TransportAddClientPacket (this.transportName);   
+class SyncableModifyClientPacket extends RequireResponseClientPacket {
+  static int ID = CLIENT_PACKET_IDS.SYNCABLE_MODIFY;
+
+  bool add;
+  int type;
+  Map payload;
+  
+  SyncableModifyClientPacket (this.add, this.type, this.payload);  
   Map<String, dynamic>  toJson () {
-    return super.toJsonDefault(ID)..addAll({ "transportName": this.transportName });
+    return super.toJsonDefault(ID)..addAll({ "add": add, "type": type, "payload": payload });
   }
+
 }
+
+class SyncableTypes {
+  static const int CUSTOMER = 1;
+  static const int SUPPLIER = 2;
+  static const int PRODUCT_WEIGHT = 3;
+  static const int PRODUCT_PACKAGING = 4;
+  static const int PRODUCT_CATEGORY = 5;
+  static const int PRODUCT = 6;
+  static const int TRANSPORT = 7;
+  static const int USER = 8;
+}
+
 
 
 class CLIENT_PACKET_IDS {
   static const int AUTHENTICATE = 1;
   static const int PING_PONG = 2;
   static const int INITIAL_DATA_REQUEST = 3;
-  
+  static const int SYNCABLE_MODIFY = 4;
   static const int DATA_CHANGE = 5;
-  static const int SUPPLIER_ADD = 6;
-  static const int CUSTOMER_ADD = 7;
-  static const int TRANSPORT_ADD = 8;
 }

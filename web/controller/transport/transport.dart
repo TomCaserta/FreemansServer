@@ -1,11 +1,11 @@
 part of FreemansClient;
-
-@NgComponent(
-    selector: 'transport',
-    templateUrl: '/views/transport/transport.html',
-    cssUrl: '/views/transport/transport.css',
-    publishAs: 'ctrl'
-)
+//
+//@NgComponent(
+//    selector: 'transport',
+//    templateUrl: '/views/transport/transport.html',
+//    cssUrl: '/views/transport/transport.css',
+//    publishAs: 'ctrl'
+//)
 class TransportSheets {
   Map<String, TransportDay> selectedDay = new Map<String, TransportDay>();
   DateTime currentDate = new DateTime.now();

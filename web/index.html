@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html style="overflow-y: auto;">
   <head>
-    <meta charset="utf-8">
     <title>Freemans Software</title>
     
     <meta charset="utf-8">
@@ -13,14 +12,12 @@
     
     <link rel="icon" href="resources/icon_16.png" />
     
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="css/main.css" rel="stylesheet" media="screen">
     
   </head>
   <body ng-app>
-   
-   <nav mainnav ng-show="!main.loaded" ng-cloak class="navbar navbar-default navbar-fixed-top" role="navigation">
+   <nav mainnav ng-show="main.loaded" ng-cloak class="navbar navbar-default navbar-fixed-top" role="navigation">
+      
       <div class="navbar-header">
         <button type="button"  data-target="#collapse-nav" class="navbar-toggle" data-toggle="collapse">
           <span class="sr-only">Toggle navigation</span>
@@ -45,7 +42,7 @@
         </ul>
       </div>
     </nav>
-     <section ng-show="loader.loaded" loader>
+     <section ng-show="!loader.loaded" loader>
         <div class="col-md-10 col-md-offset-1">
           LOADING APPLICATION...  <span ng-cloak>{{loader.progress}}% Complete</span>
           <progress value="{{loader.progress}}" style="width: 100%" max="100"></progress> 
@@ -57,6 +54,7 @@
     <script type="application/dart" src="main.dart"></script>
     <script src="dart.js"></script>
     <script src="js/jquery.min.js"></script>
+    <script src="http://jquery-textfill.github.io/jquery-textfill/jquery.textfill.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/main.js"></script>
   </body>

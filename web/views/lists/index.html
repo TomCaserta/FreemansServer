@@ -1,7 +1,7 @@
 <section class="col-md-10 col-md-offset-1 well-sm well row" listoverview>
   <div class="row col-md-2">
     <ul class="listbox large">
-      <!--- LEAVE NO GAP BETWEEN BUTTON AND DIV OTHERWISE IT WILL THROW IT ONTO A NEW LINE --->
+      <!--- LEAVE NO GAP BETWEEN BUTTON AND DIV OTHERWISE IT WILL THROW IT ONTO A NEW LINE -->
       <li ng-repeat="list in listoverview.lists">
           <div ng-click="listoverview.changeView(list.name)">{{list.name}}</div><button class="btn-default btn" ng-click="listoverview.changeView(list.name,true)"><span class="glyphicon glyphicon-plus"></span></button>
       </li>
@@ -10,15 +10,20 @@
   <div class="col-md-10 listbox-results row">
       <br class="hidden-lg"/>
       <div class="form-group col-lg-12">
-        <select class="form-control">
-          <option ng-repeat="names in listoverview.activeList.names" ng-click="listoverview.activeList.edit(names.name)">{{names.name}}</option>
+        <select class="form-control" ng-model="listoverview.activeList.activeItem">
+          <option ng-value="names" ng-repeat="names in listoverview.activeList.names">{{names.name}}</option>
         </select>            
       </div>
-     
+      <div  class="col-lg-12" ng-if="listoverview.activeList.name != null">
+        <div ng-if="listoverview.activeList.notifications.length > 0" ng-class="{ 'alert-success': !listoverview.activeList.isError, 'alert-danger': listoverview.activeList.isError }" class="alert">
+          <div ng-repeat="notification in listoverview.activeList.notifications">{{notification}}</div>          
+        </div>
+
+      </div>
       
       
-      <!---- WOULD HAVE DONE THIS DIFFERENTLY HOWEVER CANT REFRESH ANGULAR VIEWS TO INSERT A NEW TEMPLATE --->
-      <!--- TODO: Do this properly --->
+      <!-- WOULD HAVE DONE THIS DIFFERENTLY HOWEVER CANT REFRESH ANGULAR VIEWS TO INSERT A NEW TEMPLATE -->
+      <!-- TODO: Do this properly -->
       <section> 
         <div class="modal fade" id="saveChangesModal" tabindex="-1" role="dialog" aria-labelledby="confirmChanges" aria-hidden="{{listoverview.isSaveDialogShown}}">
           <div class="modal-dialog">
@@ -47,16 +52,16 @@
                   <div class="panel-heading"><h4>General Information</h4></div>
                   <div class="panel-body">
                   <fieldset>
-                      <div ng-hide="listoverview.isAdd" class="form-group">
+                      <div ng-hide="listoverview.activeList.isAdd" class="form-group">
                         <label for="globalID" class="col-md-2">Global ID:</label>
                         <div class="col-md-10">
-                        <input type="text" class="form-control" id="globalID" disabled placeholder="{XXXX99-XXXX-XXX-XX99}">
+                        <input type="text" class="form-control" id="globalID" disabled placeholder="{XXXX99-XXXX-XXX-XX99}" ng-model="listoverview.activeList.activeItem.quickbooksName">
                         </div>
                       </div>
                       <div class="form-group">
                         <label for="name" class="col-md-2">Name:</label>
                         <div class="col-md-10">
-                          <input type="email" class="form-control" id="name" placeholder="Name">
+                          <input type="email" class="form-control" id="name"  ng-model="listoverview.activeList.activeItem.name" placeholder="Name">
                         </div>
                       </div>
                       
@@ -80,31 +85,31 @@
                           <div class="form-group">
                             <label for="billAddressLine1" class="sr-only">Line 1:</label>
                             <div class="col-md-12">
-                              <input type="text" class="form-control" id="billAddressLine1" placeholder="Line 1">
+                              <input type="text" ng-model="listoverview.activeList.activeItem.billto1" class="form-control" id="billAddressLine1" placeholder="Line 1">
                             </div>
                           </div>              
                           <div class="form-group">
                             <label for="billAddressLine2" class="sr-only">Line 2:</label>
                             <div class="col-md-12">
-                              <input type="text" class="form-control" id="billAddressLine2" placeholder="Line 2">
+                              <input type="text"  ng-model="listoverview.activeList.activeItem.billto2" class="form-control" id="billAddressLine2" placeholder="Line 2">
                             </div>
                           </div>              
                           <div class="form-group">
                             <label for="billAddressLine3" class="sr-only">Line 3:</label>
                             <div class="col-md-12">
-                              <input type="text" class="form-control" id="billAddressLine3" placeholder="Line 3">
+                              <input type="text" class="form-control" ng-model="listoverview.activeList.activeItem.billto3" id="billAddressLine3" placeholder="Line 3">
                             </div>
                           </div>              
                           <div class="form-group">
                             <label for="billAddressLine4" class="sr-only">Line 4:</label>
                             <div class="col-md-12">
-                              <input type="text" class="form-control" id="billAddressLine4" placeholder="Line 4">
+                              <input type="text" ng-model="listoverview.activeList.activeItem.billto4" class="form-control" id="billAddressLine4" placeholder="Line 4">
                             </div>
                           </div>              
                           <div class="form-group">
                             <label for="billAddressLine5" class="sr-only">Line 5:</label>
                             <div class="col-md-12">
-                              <input type="text" class="form-control" id="billAddressLine5" placeholder="Line 5">
+                              <input type="text" ng-model="listoverview.activeList.activeItem.billto5" class="form-control" id="billAddressLine5" placeholder="Line 5">
                             </div>
                           </div>
                         </fieldset>
@@ -119,31 +124,31 @@
                           <div class="form-group">
                             <label for="billAddressLine1" class="sr-only">Line 1:</label>
                             <div class="col-md-12">
-                              <input type="text" class="form-control" id="billAddressLine1" placeholder="Line 1">
+                              <input type="text" class="form-control" ng-model="listoverview.activeList.activeItem.shipto1" id="billAddressLine1" placeholder="Line 1">
                             </div>
                           </div>              
                           <div class="form-group">
                             <label for="billAddressLine2" class="sr-only">Line 2:</label>
                             <div class="col-md-12">
-                              <input type="text" class="form-control" id="billAddressLine2" placeholder="Line 2">
+                              <input type="text" ng-model="listoverview.activeList.activeItem.shipto2" class="form-control" id="billAddressLine2" placeholder="Line 2">
                             </div>
                           </div>              
                           <div class="form-group">
                             <label for="billAddressLine3" class="sr-only">Line 3:</label>
                             <div class="col-md-12">
-                              <input type="text" class="form-control" id="billAddressLine3" placeholder="Line 3">
+                              <input type="text" ng-model="listoverview.activeList.activeItem.shipto3" class="form-control" id="billAddressLine3" placeholder="Line 3">
                             </div>
                           </div>              
                           <div class="form-group">
                             <label for="billAddressLine4" class="sr-only">Line 4:</label>
                             <div class="col-md-12">
-                              <input type="text" class="form-control" id="billAddressLine4" placeholder="Line 4">
+                              <input type="text" ng-model="listoverview.activeList.activeItem.shipto4" class="form-control" id="billAddressLine4" placeholder="Line 4">
                             </div>
                           </div>              
                           <div class="form-group">
                             <label for="billAddressLine5" class="sr-only">Line 5:</label>
                             <div class="col-md-12">
-                              <input type="text" class="form-control" id="billAddressLine5" placeholder="Line 5">
+                              <input type="text" ng-model="listoverview.activeList.activeItem.shipto5" class="form-control" id="billAddressLine5" placeholder="Line 5">
                             </div>
                           </div>
                         </fieldset>
@@ -160,9 +165,9 @@
                         <div class="col-md-10">
                           <div class="input-group">
                             <span class="input-group-addon">
-                              <input type="checkbox">
+                              <input ng-model="listoverview.activeList.activeItem.isEmailedInvoice" type="checkbox">
                             </span>
-                            <input type="text" class="form-control" id="invoiceEmail" placeholder="invoicing@customersite.com">
+                            <input type="text" ng-model="listoverview.activeList.activeItem.invoiceEmail" class="form-control" id="invoiceEmail" placeholder="invoicing@customersite.com">
                           </div>
                         </div>
                       </div>
@@ -171,9 +176,9 @@
                         <div class="col-md-10">
                           <div class="input-group">
                             <span class="input-group-addon">
-                              <input type="checkbox">
+                              <input ng-model="listoverview.activeList.activeItem.isEmailedConfirmation" type="checkbox">
                             </span>
-                            <input type="text" class="form-control" id="confirmationEmail" placeholder="confirmations@customersite.com">
+                            <input type="text" ng-model="listoverview.activeList.activeItem.confirmationEmail" class="form-control" id="confirmationEmail" placeholder="confirmations@customersite.com">
                           </div>
                         </div>
                       </div>
@@ -181,14 +186,14 @@
                       <div class="form-group">
                         <label for="fax" class="col-md-2">Fax Number:</label>
                         <div class="col-md-10">
-                            <input type="tel" class="form-control" id="fax" placeholder="02077204444">
+                            <input type="tel" class="form-control" ng-model="listoverview.activeList.activeItem.faxNumber" id="fax" placeholder="02077204444">
                         </div>
                       </div>
                       
                       <div class="form-group">
                         <label for="phone" class="col-md-2">Phone Number:</label>
                         <div class="col-md-10">
-                            <input type="tel" class="form-control" id="phone" placeholder="02077204444">
+                            <input type="tel" ng-model="listoverview.activeList.activeItem.phoneNumber" class="form-control" id="phone" placeholder="02077204444">
                         </div>
                       </div>
                                             
@@ -198,24 +203,9 @@
                 </div>               
             
                 <div class="panel panel-default">
-                <div class="panel-body">
-                    <fieldset class="button-group-right">                    
-                      <div class="form-group">
-                        <button ng-hide="listoverview.isAdd" class="btn btn-lg btn-danger col-md-3">
-                        Delete
-                        </button>
-                        <button ng-hide="listoverview.isAdd" class="btn btn-lg btn-primary col-md-offset-1 col-md-8">
-                        Update
-                        </button>
-                        <button ng-hide="!listoverview.isAdd" class="btn btn-lg btn-default col-md-3">
-                        Cancel
-                        </button>
-                        <button ng-hide="!listoverview.isAdd" class="btn btn-lg btn-success col-md-offset-1 col-md-8">
-                        Add Customer
-                        </button>
-                      </div>
-                    </fieldset>
-                    </div>
+                  <div class="panel-body">
+                    <listbuttons controller="listoverview.activeList" name="Customer"></listbuttons>
+                  </div>
                 </div>
             
             </form>
@@ -228,7 +218,7 @@
                   <div class="panel-heading"><h4>General Information</h4></div>
                   <div class="panel-body">
                   <fieldset>   
-                    <div ng-hide="listoverview.isAdd" class="form-group">
+                    <div ng-hide="listoverview.activeList.isAdd" class="form-group">
                           <label for="globalID" class="col-md-2">Global ID:</label>
                           <div class="col-md-10">
                           <input type="text" class="form-control" id="globalID" disabled placeholder="{XXXX99-XXXX-XXX-XX99}">
@@ -335,36 +325,21 @@
                   
                 </div>               
                 
-                 <div class="panel panel-default">
-                <div class="panel-body">
-                    <fieldset class="button-group-right">                    
-                      <div class="form-group">
-                        <button ng-hide="listoverview.isAdd" class="btn btn-lg btn-danger col-md-3">
-                        Delete
-                        </button>
-                        <button ng-hide="listoverview.isAdd" class="btn btn-lg btn-primary col-md-offset-1 col-md-8">
-                        Update
-                        </button>
-                        <button ng-hide="!listoverview.isAdd" class="btn btn-lg btn-default col-md-3">
-                        Cancel
-                        </button>
-                        <button ng-hide="!listoverview.isAdd" class="btn btn-lg btn-success col-md-offset-1 col-md-8">
-                        Add Supplier
-                        </button>
-                      </div>
-                    </fieldset>
-                    </div>
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                    <listbuttons controller="listoverview.activeList" name="Supplier"></listbuttons>
+                  </div>
                 </div>
             
         </form>
-        </section>
+      </section>
       <section class="col-lg-12" ng-if="listoverview.activeList.name == 'Transport'">
            <form role="form" class="form-horizontal">
              <div class="panel panel-default">
                 <div class="panel-heading"><h4>General Information</h4></div>
                 <div class="panel-body">
                 <fieldset>   
-                  <div ng-hide="listoverview.isAdd" class="form-group">
+                  <div ng-hide="listoverview.activeList.isAdd" class="form-group">
                         <label for="globalID" class="col-md-2">Global ID:</label>
                         <div class="col-md-10">
                         <input type="text" class="form-control" id="globalID" disabled placeholder="{XXXX99-XXXX-XXX-XX99}">
@@ -455,25 +430,11 @@
                 
               </div>               
               
+              
              <div class="panel panel-default">
-              <div class="panel-body">
-                  <fieldset class="button-group-right">                    
-                    <div class="form-group">
-                      <button ng-hide="listoverview.isAdd" class="btn btn-lg btn-danger col-md-3">
-                      Delete
-                      </button>
-                      <button ng-hide="listoverview.isAdd" class="btn btn-lg btn-primary col-md-offset-1 col-md-8">
-                      Update
-                      </button>
-                      <button ng-hide="!listoverview.isAdd" class="btn btn-lg btn-default col-md-3">
-                      Cancel
-                      </button>
-                      <button ng-hide="!listoverview.isAdd" class="btn btn-lg btn-success col-md-offset-1 col-md-8">
-                      Add Haulier
-                      </button>
-                    </div>
-                  </fieldset>
-                  </div>
+                <div class="panel-body">
+                    <listbuttons controller="listoverview.activeList" name="Haulier"></listbuttons> 
+                </div>
               </div>
             </form>
           </section>
@@ -484,14 +445,14 @@
                       <div class="panel-heading"><h4>Product</h4></div>
                       <div class="panel-body">
                       <fieldset>   
-                        <div ng-hide="listoverview.isAdd" class="form-group">
+                        <div ng-hide="listoverview.activeList.isAdd" class="form-group">
                               <label for="globalID" class="col-md-2">Global ID:</label>
                               <div class="col-md-10">
                               <input type="text" class="form-control" id="globalID" disabled placeholder="{XXXX99-XXXX-XXX-XX99}">
                               </div>
                               
                         </div>
-                        <div ng-hide="listoverview.isAdd" class="form-group">
+                        <div ng-hide="listoverview.activeList.isAdd" class="form-group">
                               <label for="globalID" class="col-md-2">Quickbooks Item Code:</label>
                               <div class="col-md-10">
                                 <select class="form-control">
@@ -559,27 +520,41 @@
                 </div>
                 <div class="panel panel-default">
                   <div class="panel-body">
-                      <fieldset class="button-group-right">                    
-                        <div class="form-group">
-                          <button ng-hide="listoverview.isAdd" class="btn btn-lg btn-danger col-md-3">
-                          Delete
-                          </button>
-                          <button ng-hide="listoverview.isAdd" class="btn btn-lg btn-primary col-md-offset-1 col-md-8">
-                          Update
-                          </button>
-                          <button ng-hide="!listoverview.isAdd" class="btn btn-lg btn-default col-md-3">
-                          Cancel
-                          </button>
-                          <button ng-hide="!listoverview.isAdd" class="btn btn-lg btn-success col-md-offset-1 col-md-8">
-                          Add Product
-                          </button>
-                        </div>
-                      </fieldset>
+                    <listbuttons controller="listoverview.activeList" name="Product"></listbuttons>
                       </div>
                   </div>
               </form>
           </section>
-    
+  
+         
+       <section list-category class="col-lg-12" ng-if="listoverview.activeList.name == 'Product Categories'">
+         <form role="form" class="form-horizontal">
+           <div class="panel panel-default">
+                <div class="panel-heading"><h4>Product Category</h4></div>
+                <div class="panel-body">
+                <fieldset>   
+                  <div class="form-group">
+                      <label for="categoryName" class="col-md-2">Category Name:</label>
+                      <div class="col-md-10">
+                      <input type="text" class="form-control" id="categoryName" ng-model="listoverview.activeList.activeItem.categoryName" maxlength="64" placeholder="Category Name">
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="colour" class="col-md-2">Label Colour:</label>
+                      <div class="col-md-10">
+                          <input type="color" class="form-control" id="colour" ng-model="listoverview.activeList.activeItem.categoryColour" placeholder="#FFFFFF">
+                      </div>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+             <div class="panel panel-default">
+                    <div class="panel-body">
+                      <listbuttons controller="listoverview.activeList" name="Product Category"></listbuttons>
+                    </div>
+                  </div>
+          </form>
+        </section>
       
       
       
@@ -609,24 +584,9 @@
             </div>
              <div class="panel panel-default">
                   <div class="panel-body">
-                      <fieldset class="button-group-right">                    
-                        <div class="form-group">
-                          <button ng-hide="listoverview.isAdd" class="btn btn-lg btn-danger col-md-3">
-                          Delete
-                          </button>
-                          <button ng-hide="listoverview.isAdd" class="btn btn-lg btn-primary col-md-offset-1 col-md-8">
-                          Update
-                          </button>
-                          <button ng-hide="!listoverview.isAdd" class="btn btn-lg btn-default col-md-3">
-                          Cancel
-                          </button>
-                          <button ng-hide="!listoverview.isAdd" class="btn btn-lg btn-success col-md-offset-1 col-md-8">
-                          Add Weight
-                          </button>
-                        </div>
-                      </fieldset>
-                      </div>
+                    <listbuttons controller="listoverview.activeList" name="Product Weight"></listbuttons>
                   </div>
+             </div>
           </form>
         </section>
     
@@ -647,24 +607,9 @@
             </div>
              <div class="panel panel-default">
                   <div class="panel-body">
-                      <fieldset class="button-group-right">                    
-                        <div class="form-group">
-                          <button ng-hide="listoverview.isAdd" class="btn btn-lg btn-danger col-md-3">
-                          Delete
-                          </button>
-                          <button ng-hide="listoverview.isAdd" class="btn btn-lg btn-primary col-md-offset-1 col-md-8">
-                          Update
-                          </button>
-                          <button ng-hide="!listoverview.isAdd" class="btn btn-lg btn-default col-md-3">
-                          Cancel
-                          </button>
-                          <button ng-hide="!listoverview.isAdd" class="btn btn-lg btn-success col-md-offset-1 col-md-8">
-                          Add Packaging
-                          </button>
-                        </div>
-                      </fieldset>
-                      </div>
+                    <listbuttons controller="listoverview.activeList" name="Product Description"></listbuttons>
                   </div>
+              </div>
           </form>
         </section>
   

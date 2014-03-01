@@ -12,13 +12,13 @@ class MainNavigation {
     return service.loaded;
   }
   MainNavigation(StateService this.service) {
-    links.add(new Link("Overview", "/overview"));
-    links.add(new Link("Workbook", "/workbook"));
-    links.add(new Link("Sales", "/sales"));
-    links.add(new Link("Purchases", "/purchases"));
-    links.add(new Link("Transport", "/transport"));
-    links.add(new Link("Payments", "/payments"));
-    links.add(new Link("Lists", "/lists"));
+    links.add(new Link("Overview", "overview"));
+    links.add(new Link("Workbook", "workbook"));
+    links.add(new Link("Sales", "sales"));
+    links.add(new Link("Purchases", "purchases"));
+    links.add(new Link("Transport", "transport"));
+    links.add(new Link("Payments", "payments"));
+    links.add(new Link("Lists", "lists"));
   }
 }
 

@@ -52,7 +52,7 @@ class WorkbookDaySheet {
   }
   WorkbookDaySheet () {
     formattedDate = longDateFormat(sheetDay);
-    for (int x = 0; x <= 50; x++) {
+    for (int x = 0; x <= 1; x++) {
     produce.add(new WorkbookProduceLine()..refID = "$x"
                                          ..supplier="Test Supplier"
                                          ..supplierQuantity=500

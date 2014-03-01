@@ -1,46 +1,50 @@
+
 /// TODO: TURN THIS INTO A CONTROLLER WITH ANGULAR AND MAKE IT MORE EFFICIENT RATHER THAN LOOPING EVERYTHING
 
-$( window ).scroll(function() {
-  var topOffset = 50;
-  $(".scrollwithview").each(function (elemI) {    
-  
 
-     var elem = $(this);
-     var isNew = elem.data("first") ? false : true;
-     if (isNew) {
-      elem.data("first", true); 
-      elem.data("origin", elem.offset());
-      elem.data("drag-style", JSON.parse(elem.attr("data-drag-style")));
-      elem.data("orig-style", css(elem));
-     } 
-     // http://stackoverflow.com/questions/6215779/scroll-if-element-is-not-visible
-     var elementOffset = elem.data("origin");
-     var viewportWidth = jQuery(window).width(),
-        viewportHeight = jQuery(window).height(),
-        documentScrollTop = jQuery(document).scrollTop() - topOffset,
-        elementHeight = elem.height(),
-        minTop = documentScrollTop,
-        maxTop = documentScrollTop + viewportHeight;
+$(document).ready(function(){
+  $( window ).scroll(function() {
+    var topOffset = 50;
+    $(".scrollwithview").each(function (elemI) {    
     
-        
-     
-    if (elementOffset.top > minTop) {
-      if (elem.css("position") != "static") {
-        elem.css(elem.data("orig-style"));
-        elem.css({ position: "static" });   
-      }
-    }
-    else {
-      if (elem.css("position") != "absolute") {
-        elem.css(elem.data("drag-style"));
-        elem.css({ position: "fixed", display: "block", top: parseInt(elem.attr("data-drag-top"))  });
-        
+  
+       var elem = $(this);
+       var isNew = elem.data("first") ? false : true;
+       if (isNew) {
+        elem.data("first", true); 
+        elem.data("origin", elem.offset());
+        elem.data("drag-style", JSON.parse(elem.attr("data-drag-style")));
+        elem.data("orig-style", css(elem));
+       } 
+       // http://stackoverflow.com/questions/6215779/scroll-if-element-is-not-visible
+       var elementOffset = elem.data("origin");
+       var viewportWidth = jQuery(window).width(),
+          viewportHeight = jQuery(window).height(),
+          documentScrollTop = jQuery(document).scrollTop() - topOffset,
+          elementHeight = elem.height(),
+          minTop = documentScrollTop,
+          maxTop = documentScrollTop + viewportHeight;
+      
+          
+       
+      if (elementOffset.top > minTop) {
+        if (elem.css("position") != "static") {
+          elem.css(elem.data("orig-style"));
+          elem.css({ position: "static" });   
+        }
       }
       else {
-       // elem.css({ top: documentScrollTop });
+        if (elem.css("position") != "absolute") {
+          elem.css(elem.data("drag-style"));
+          elem.css({ position: "fixed", display: "block", top: parseInt(elem.attr("data-drag-top"))  });
+          
+        }
+        else {
+         // elem.css({ top: documentScrollTop });
+        }
       }
-    }
-    
+      
+    });
   });
 });
 

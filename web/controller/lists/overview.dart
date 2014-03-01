@@ -1,4 +1,18 @@
-part of FreemansClient;
+library ListOverview;
+
+import "dart:html";
+// Already using mirrors so fuck it.
+import "dart:mirrors";
+import "package:angular/angular.dart";
+import "dart:js";
+import "../../utilities/state_service.dart";
+import "../../class/main.dart";
+import "../../websocket/websocket_handler.dart";
+
+part "list_container.dart";
+part "list_buttons.dart";
+
+
 
 @NgController(
     selector: '[listoverview]',
@@ -8,27 +22,30 @@ class ListEditor {
   List<ListContainer> lists = new List<ListContainer>();
   ListContainer activeList;
   Element scopeElem;
-  bool isAdd = false;
   Scope scope;
+  StateService state;
   
   String listNameUnconfirmed = "";
   bool isAddUnconfirmed = false;
   bool isSaveDialogShown = false;
-  ListEditor(StateService state, Element scopeElem, Scope this.scope) {
-    this.scopeElem = scopeElem;
-    lists.add(new ListContainer("Customer"));
-    lists.add(new ListContainer("Suppliers"));
-    lists.add(new ListContainer("Transport"));
-    lists.add(new ListContainer("Products"));
-    lists.add(new ListContainer("Weights"));
-    lists.add(new ListContainer("Packaging"));
-    lists.add(new ListContainer("Terms"));
-    lists.add(new ListContainer("Users"));
+  ListEditor(this.state, Element scopeElem, Scope this.scope) {
+    if (state.checkLogin()) {
+      this.scopeElem = scopeElem;
+      lists.add(new ListContainer<Customer>("Customer", state, state.customerList));
+//      lists.add(new ListContainer("Suppliers", state));
+//      lists.add(new ListContainer("Transport", state));
+//      lists.add(new ListContainer("Products", state));
+        lists.add(new ListContainer<ProductCategory>("Product Categories", state, state.productCategoryList));
+//      lists.add(new ListContainer("Weights", state));
+//      lists.add(new ListContainer("Packaging", state));
+//      lists.add(new ListContainer("Terms", state));
+//      lists.add(new ListContainer("Users", state));
+    }
   }
   void confirmedViewChange ([String listName, bool isNew]) {
     isSaveDialogShown = false;
     activeList = lists.where((e) => e.name == listName).first;
-    isAdd = isNew;
+    activeList.processList(isNew);
   }
   
   void closeDialog () {
@@ -50,33 +67,3 @@ class ListEditor {
   }
 }
 
-
-class ListContainer {
-  String name = "";
-  List<ListItem> names;
-  ListItem activeItem;
-  ListItem _oldActiveItem;
-  
-  List<String> colHeader = ["Date","Surcharge"];
-  List<List<String>> colData = [["Test","19"],["Test 2","20"],["Test 3","34"],["Test 2","20"],["Test 3","34"],["Test 2","20"],["Test 3","34"],["Test 2","20"],["Test 3","34"]];
-  
-  
-  bool saved = true;
-  ListContainer (this.name) {
-    
-  }
-
-  void edit (String name) {
-    
-  }
-}
-
-class CustomerListContainer extends ListContainer {
-  Customer currentCustomer = new Customer ();
-  CustomerListContainer(String name):super(name);
-}
-
-class ListItem {
-  String name;
-  String globalID;
-}

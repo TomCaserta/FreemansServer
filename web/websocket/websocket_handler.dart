@@ -1,4 +1,14 @@
-part of FreemansClient;
+library WebsocketHandler;
+
+import "dart:async";
+import "package:logging/logging.dart";
+import "package:uuid/uuid.dart";
+import "dart:html";
+import "dart:convert";
+import "dart:mirrors";
+
+part "client_packets.dart";
+part "server_packets.dart";
 
 class WebsocketHandler {
   static Logger websocketLogger = new Logger("WebsocketHandler");
