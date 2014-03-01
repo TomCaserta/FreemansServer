@@ -73,8 +73,8 @@ class QBSimpleListQuery {
   }
 }
 
-class QBSupplierList extends QBSimpleListQuery {
-  QBSupplierList (qbc, step):super(qbc, "Supplier", step: step);
+class QBVendorList extends QBSimpleListQuery {
+  QBVendorList (qbc, step):super(qbc, "Vendor", step: step);
 }
 
 class QBAccountsList extends QBSimpleListQuery {

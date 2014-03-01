@@ -1,6 +1,7 @@
 part of FreemansServer;
 
 
+
 class AuthenticateClientPacket extends ClientPacket {
   static int ID = CLIENT_PACKET_IDS.AUTHENTICATE;
   String username;
@@ -21,6 +22,7 @@ class AuthenticateClientPacket extends ClientPacket {
   }
 }
 
+
 class PingPongClientPacket extends ClientPacket {
   static int ID = CLIENT_PACKET_IDS.PING_PONG;
   bool ping;
@@ -40,13 +42,16 @@ class InitialDataRequest extends ClientPacket {
   InitialDataRequest.create (this.rID);
   
   void handlePacket(WebsocketHandler wsh, Client client) {
-    List cL = SyncCachable.getVals(Customer);
-    List pL = SyncCachable.getVals(Product);
-    List pWL = SyncCachable.getVals(ProductWeight);
-    List pPL = SyncCachable.getVals(ProductPackaging);
-    List tL = SyncCachable.getVals(Transport);
-    List uL = SyncCachable.getVals(User);
-    client.sendPacket(new InitialDataResponseServerPacket(rID, cL, pL, pWL, pPL, tL, uL));    
+    List aL = Syncable.getVals(Account);
+    List cL = Syncable.getVals(Customer);
+    List pL = Syncable.getVals(Product);
+    List pWL = Syncable.getVals(ProductWeight);
+    List pPL = Syncable.getVals(ProductPackaging);
+    List pCL = Syncable.getVals(ProductCategory);
+    List tL = Syncable.getVals(Transport);
+    List uL = Syncable.getVals(User);
+    List sL = Syncable.getVals(Supplier);
+    client.sendPacket(new InitialDataResponseServerPacket(rID, aL, cL, pL, pWL, pPL, pCL, tL, uL, sL));    
   }
 }
 
@@ -70,52 +75,122 @@ class DataChangeClientPacket extends ClientPacket {
   }
 }
 
-class SupplierAddClientPacket extends ClientPacket {
-  static int ID = CLIENT_PACKET_IDS.SUPPLIER_ADD;
-  String supplierName = "";
-  String rID = "";
-  SupplierAddClientPacket.create (this.supplierName, this.rID);
+
+class SyncableTypes {
+  static const int CUSTOMER = 1;
+  static const int SUPPLIER = 2;
+  static const int PRODUCT_WEIGHT = 3;
+  static const int PRODUCT_PACKAGING = 4;
+  static const int PRODUCT_CATEGORY = 5;
+  static const int PRODUCT = 6;
+  static const int TRANSPORT = 7;
+  static const int USER = 8;
+}
+
+class SyncableModifyClientPacket extends ClientPacket {
+  static int ID = CLIENT_PACKET_IDS.SYNCABLE_MODIFY;
+
+  bool add;
+  int type;
+  Map payload;
+  String rID;
+  SyncableModifyClientPacket.create (this.rID, this.add, this.type, this.payload);
   void handlePacket (WebsocketHandler wsh, Client client) {
-    if (!client.user.isGuest && client.user.hasPermission("list.supplier.add")) {
-      
+    if (!client.user.isGuest && client.user.hasPermission("list.modify")) {
+      Map schema = {};
+      switch (type) {
+        case SyncableTypes.CUSTOMER:
+          schema = CUSTOMER_SCHEMA;
+        break;
+        case SyncableTypes.SUPPLIER:
+          schema = SUPPLIER_SCHEMA;
+          break;
+        case SyncableTypes.PRODUCT_WEIGHT:
+          schema = PRODUCTWEIGHT_SCHEMA;
+          break;
+        case SyncableTypes.PRODUCT_PACKAGING:
+          schema = PRODUCTPACKAGING_SCHEMA;
+          break;
+        case SyncableTypes.PRODUCT_CATEGORY:
+          schema = PRODUCTCATEGORY_SCHEMA;
+          break;
+        case SyncableTypes.PRODUCT:
+          schema = PRODUCT_SCHEMA;
+          break;
+        case SyncableTypes.USER:
+          schema = USER_SCHEMA;
+          break;
+        case SyncableTypes.TRANSPORT:
+          schema = TRANSPORT_SCHEMA;
+          break;
+        default:
+          client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Unknown type $type"]));
+          return;
+          break;
+      }
+      // FUCK IT DONT EVEN BOTHER CACHING THE SCHEMAS. NO POINT. NO TIME.
+      Schema.createSchema(schema).then((validator) {
+        if (validator.validate(payload)) {
+          // Another switch statement... sorry. Only way of doing this quickly
+          Syncable s;
+          if (add) {
+            switch (type) {
+              case SyncableTypes.CUSTOMER:
+                s = new Customer.fromJson(payload);
+                break;
+              case SyncableTypes.SUPPLIER:
+                s = new Supplier.fromJson(payload);
+                break;
+              case SyncableTypes.PRODUCT_WEIGHT:
+                s = new ProductWeight.fromJson(payload);
+                break;
+              case SyncableTypes.PRODUCT_PACKAGING:
+                s = new ProductPackaging.fromJson(payload);
+                break;
+              case SyncableTypes.PRODUCT_CATEGORY:
+                s = new ProductCategory.fromJson(payload);
+                break;
+              case SyncableTypes.PRODUCT:
+                s = new Product.fromJson(payload);
+                break;
+              case SyncableTypes.USER:
+                s = new User.fromJson(payload);
+                break;
+              case SyncableTypes.TRANSPORT:
+                 s = new Transport.fromJson(payload);
+                break;
+            }
+          }
+          else {
+            s = Syncable.getByUuid(payload["Uuid"], type);
+            if (s != null) {
+              s.mergeJson(payload);
+            }
+            else {
+              client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Your client sent an invalid packet"]));
+            }
+          }
+
+          s.updateDatabase(dbHandler, qbHandler).then((bool didComplete) {
+            if (didComplete) {
+              client.sendPacket(new ActionResponseServerPacket(this.rID, true, [s]));
+            }
+            else client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Unspecified error"]));
+          }).catchError((e) => client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Unspecified error"])));
+        }
+        else {
+          client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["The request could not validate. For security reasons it has been denied. Please try again later."]));
+        }
+      });
     }
   }
 }
-
-class CustomerAddClientPacket extends ClientPacket {
-  static int ID = CLIENT_PACKET_IDS.CUSTOMER_ADD;
-  String customerName = "";
-  String rID = "";
-  CustomerAddClientPacket.create (this.customerName, this.rID);
-  void handlePacket (WebsocketHandler wsh, Client client) {
-    if (!client.user.isGuest && client.user.hasPermission("list.customer.add")) {
-      
-    }
-  }
-}
-
-
-class TransportAddClientPacket extends ClientPacket {
-  static int ID = CLIENT_PACKET_IDS.TRANSPORT_ADD;
-  String transportName = "";
-  String rID = "";
-  TransportAddClientPacket.create (this.transportName, this.rID);   
-  void handlePacket (WebsocketHandler wsh, Client client) {
-    if (!client.user.isGuest && client.user.hasPermission("list.transport.add")) {
-      
-    }
-  }
-}
-
 
 
 class CLIENT_PACKET_IDS {
   static const int AUTHENTICATE = 1;
   static const int PING_PONG = 2;
   static const int INITIAL_DATA_REQUEST = 3;
-  
+  static const int SYNCABLE_MODIFY = 4;
   static const int DATA_CHANGE = 5;
-  static const int SUPPLIER_ADD = 6;
-  static const int CUSTOMER_ADD = 7;
-  static const int TRANSPORT_ADD = 8;
 }

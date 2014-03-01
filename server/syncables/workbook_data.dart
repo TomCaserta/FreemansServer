@@ -1,12 +1,11 @@
 part of FreemansServer;
 
 
-class SalesRow extends SyncCachable<SalesRow> {
+class SalesRow extends Syncable<SalesRow> {
 
   /*
    * CONSTRUCTOR
    */
-
   SalesRow._createNew (int id, TransportRow this._transport, Customer this._customer):super(id) {
     _transport.addParent(this);
     _customer.addParent(this);
@@ -19,13 +18,13 @@ class SalesRow extends SyncCachable<SalesRow> {
     }
     else return new SalesRow._createNew(id, transport, cust);
   }
-  static exists (int ID) => SyncCachable.exists(SalesRow, ID);
-  static get (int ID) => SyncCachable.get(SalesRow, ID);
+  
+  static exists (int ID) => Syncable.exists(SalesRow, ID);
+  static get (int ID) => Syncable.get(SalesRow, ID);
 
   /*
    * SALES ROW
    */
-
   TransportRow _transport;
   Customer _customer;
   num _amount;
@@ -133,7 +132,7 @@ class SalesRow extends SyncCachable<SalesRow> {
   }
 }
 
-class PurchaseRow extends SyncCachable<PurchaseRow> {
+class PurchaseRow extends Syncable<PurchaseRow> {
 
   /*
    * CONSTRUCTOR
@@ -146,8 +145,8 @@ class PurchaseRow extends SyncCachable<PurchaseRow> {
     }
     else return new PurchaseRow._createNew(id,  amount, product, cost, purchaseTime,  supplier, sales);
   }
-  static exists (int ID) => SyncCachable.exists(PurchaseRow, ID);
-  static get (int ID) => SyncCachable.get(PurchaseRow, ID);
+  static exists (int ID) => Syncable.exists(PurchaseRow, ID);
+  static get (int ID) => Syncable.get(PurchaseRow, ID);
 
   /*
    * PURCHASE ROW
@@ -291,7 +290,7 @@ class PurchaseRow extends SyncCachable<PurchaseRow> {
   }
 }
 
-class TransportRow extends SyncCachable<TransportRow> {
+class TransportRow extends Syncable<TransportRow> {
   /*
    * CONSTRUCTOR
    */
@@ -304,8 +303,8 @@ class TransportRow extends SyncCachable<TransportRow> {
     }
     else return new TransportRow._createNew(id, company, deliveryCost);
   }
-  static exists (int ID) => SyncCachable.exists(TransportRow, ID);
-  static get (int ID) => SyncCachable.get(TransportRow, ID);
+  static exists (int ID) => Syncable.exists(TransportRow, ID);
+  static get (int ID) => Syncable.get(TransportRow, ID);
 
   /*
    * TRANSPORT ROW
@@ -339,7 +338,7 @@ class TransportRow extends SyncCachable<TransportRow> {
   }
 }
 
-class WorkbookRow extends SyncCachable<WorkbookRow> {
+class WorkbookRow extends Syncable<WorkbookRow> {
   /*
    * CONSTRUCTOR
    */
@@ -353,8 +352,8 @@ class WorkbookRow extends SyncCachable<WorkbookRow> {
     }
     else return new WorkbookRow._createNew(id, purchaseRow);
   }
-  static exists (int ID) => SyncCachable.exists(WorkbookRow, ID);
-  static get (int ID) => SyncCachable.get(WorkbookRow, ID);
+  static exists (int ID) => Syncable.exists(WorkbookRow, ID);
+  static get (int ID) => Syncable.get(WorkbookRow, ID);
 
   /*
    *  WORKBOOK ROW
@@ -371,15 +370,15 @@ class WorkbookRow extends SyncCachable<WorkbookRow> {
 }
 
 
-class WorkbookDay  extends SyncCachable<WorkbookDay> {
+class WorkbookDay  extends Syncable<WorkbookDay> {
   static int _auto_inc = 0;
   List<WorkbookRow> workbook_data = new List<WorkbookRow>();
   WorkbookDay._loadTimePeriod (DateTime timeFrom, DateTime timeTo):super(_auto_inc, "${timeFrom.millisecondsSinceEpoch};${timeTo.millisecondsSinceEpoch}") {
     _auto_inc++;
     
   }
-  static exists (DateTime timeFrom, DateTime timeTo) => SyncCachable.exists(WorkbookDay, ("${timeFrom.millisecondsSinceEpoch};${timeTo.millisecondsSinceEpoch}"));
-  static get (DateTime timeFrom, DateTime timeTo) => SyncCachable.get(WorkbookDay, "${timeFrom.millisecondsSinceEpoch};${timeTo.millisecondsSinceEpoch}");
+  static exists (DateTime timeFrom, DateTime timeTo) => Syncable.exists(WorkbookDay, ("${timeFrom.millisecondsSinceEpoch};${timeTo.millisecondsSinceEpoch}"));
+  static get (DateTime timeFrom, DateTime timeTo) => Syncable.get(WorkbookDay, "${timeFrom.millisecondsSinceEpoch};${timeTo.millisecondsSinceEpoch}");
   
   factory WorkbookDay (DateTime timeFrom, DateTime timeTo) {
      if (exists(timeFrom,timeTo)) {

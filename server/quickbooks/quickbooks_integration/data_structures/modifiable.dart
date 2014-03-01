@@ -7,6 +7,5 @@ abstract class QBModifiable {
   }
  
   Future<bool> update(QuickbooksConnector qbc) {
-    
   }
 }

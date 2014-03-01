@@ -1,6 +1,6 @@
 part of FreemansServer;
 
-class Account extends SyncCachable<Account> {
+class Account extends Syncable<Account> {
   QBAccount account;
   List<Account> childAccounts = [];
   
@@ -10,11 +10,13 @@ class Account extends SyncCachable<Account> {
   Future<bool> updateDatabase (DatabaseHandler dbh, QuickbooksConnector qbc) {
     if (isNew) {
       // TODO: Account insert
+
     }
     else {
       // TODO: Account Update
-      return;
+      
     }
+    return null;
   }
   
   String toString () {
@@ -32,9 +34,9 @@ class Account extends SyncCachable<Account> {
         Account tempAccount = new Account(data.listID);
         tempAccount.account = data;
     }, onDone: () { 
-      SyncCachable.getVals(Account).forEach((Account a) {
+      Syncable.getVals(Account).forEach((Account a) {
          if (a.account != null && a.account.parentRef != null && a.account.parentRef.listID != null) {
-           Account parent = SyncCachable.get(Account, a.account.parentRef.listID);
+           Account parent = Syncable.get(Account, a.account.parentRef.listID);
            parent.childAccounts.add(a);
          }
       });

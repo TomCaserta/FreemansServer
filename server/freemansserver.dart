@@ -8,16 +8,18 @@ import 'package:sqljocky/sqljocky.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:logging/logging.dart';
+import 'package:ansicolor/ansicolor.dart';
 import 'package:xml/xml.dart';
 import 'package:utf/utf.dart';
-import 'package:uuid/uuid.dart';
+import 'package:uuid/uuid.dart' as uuid;
+import 'package:json_schema/json_schema.dart';
 import 'utils/permissions.dart';
 import 'utils/preloader.dart';
-// TODO: Change this back to package once https://code.google.com/p/dart/issues/detail?id=16205
-// is fixed.
 import 'package:QBXMLRP2_DART/QBXMLRP2_DART.dart';
 import 'quickbooks/quickbooks_integration/qb_integration.dart';
-
+import 'utils/functions.dart';
+import 'schema_annotations/annotations.dart';
+import 'schema_annotations/generated_schemas.dart';
 
 part 'syncables/terms.dart';
 part 'syncables/accounts.dart';
@@ -26,10 +28,9 @@ part 'syncables/supplier.dart';
 part 'syncables/customer.dart';
 part 'syncables/transport.dart';
 part 'syncables/product.dart';
-part 'utils/sync_cachable.dart';
+part 'utils/syncable.dart';
 part 'syncables/workbook_data.dart';
 part 'config/config.dart';
-part 'utils/functions.dart';
 part 'utils/database_handler.dart';
 part 'websocket/websocket_handler.dart';
 part 'websocket/client.dart';
@@ -38,17 +39,16 @@ part 'websocket/client_packets/client_packet.dart';
 part 'websocket/server_packets/server_packet.dart';
 
 
-
 DatabaseHandler dbHandler;
 QuickbooksConnector qbHandler;
 Logger ffpServerLog = new Logger("FFPServer");
 void main() { 
-    
   
   qbHandler = new QuickbooksConnector();
   initEnums ();
   ffpServerLog.onRecord.listen((r) {
-    print("[${new DateFormat("hh:mm:ss").format(r.time)}][${r.level}][${r.loggerName != "" ? r.loggerName : "ROOT"}]: ${r.message}"); 
+    AnsiPen Greenpen = new AnsiPen()..green();
+    print("[${r.level}][${Greenpen(new DateFormat("hh:mm:ss").format(r.time))}][${r.loggerName != "" ? r.loggerName : "ROOT"}]: ${r.message}");
     if (r.level == Level.SEVERE) {
       throw r;
     }
@@ -76,6 +76,9 @@ void main() {
           prel.addFuture(new PreloadElement("TransportInit", Transport.init));
           prel.addFuture(new PreloadElement("QBAccountsInit", Account.init));
           prel.addFuture(new PreloadElement("ProductInit", Product.init));
+          prel.addFuture(new PreloadElement("ProductWeightInit", ProductWeight.init));
+          prel.addFuture(new PreloadElement("ProductPackagingInit", ProductPackaging.init));
+          prel.addFuture(new PreloadElement("ProductCategoryInit", ProductCategory.init));
           prel.addMethod(new PreloadElement("PacketInit", ClientPacket.init));
           ffpServerLog.info("Beginning load");
           
@@ -93,15 +96,6 @@ void main() {
 }
 
 void afterLoading () {
-  QBCustomerList qbQuery = new QBCustomerList(qbHandler,10);
-  int x = 0;
-  qbQuery.forEach().listen((QBCustomer t) { 
-    if (x == 0) {
-      QBCustomerAddQuery caq = new QBCustomerAddQuery(t);
-      caq.execute(qbHandler);
-    }
-    x= 1;
-  });
   WebsocketHandler wsh = new WebsocketHandler ();
   wsh.start(GLOBAL_CONFIG["ws_bind_ip"], GLOBAL_CONFIG["ws_bind_port"]);
 }

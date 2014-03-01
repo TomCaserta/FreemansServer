@@ -31,6 +31,7 @@ class WebsocketHandler {
                 if (obj.containsKey("ID") && obj["ID"] is int) {
                   // Construct our client packet
                   ClientPacket c = ClientPacket.getPacket(obj["ID"], obj);
+                  print(obj);
                   // Send the client and websocket handler to the packet and ask it to handle the packet.
                   if (c != null) {
                     if (obj.containsKey("rID") && obj["rID"] is String) {

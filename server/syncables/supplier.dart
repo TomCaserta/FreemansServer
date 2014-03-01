@@ -1,6 +1,7 @@
 part of FreemansServer;
 
-class Supplier extends SyncCachable<Supplier> {
+class Supplier extends Syncable<Supplier> {
+  int type = SyncableTypes.SUPPLIER;
   String _name;
   String _quickbooksName;
   String _termsRef;
@@ -14,20 +15,50 @@ class Supplier extends SyncCachable<Supplier> {
   String _addressLine5;
   String _phoneNumber;
   String _faxNumber;
-  
+
+  @IncludeSchema()
   String get name => _name;
+  @IncludeSchema(isOptional: true)
   String get quickbooksName => _quickbooksName;
+  @IncludeSchema()
   String get termsRef => _termsRef;
+  @IncludeSchema()
   int get terms => _terms;
+  @IncludeSchema(isOptional: true)
   String get remittanceEmail => _remittanceEmail;
+  @IncludeSchema(isOptional: true)
   String get confirmationEmail => _confirmationEmail;
+  @IncludeSchema(isOptional: true)
   String get addressLine1 => _addressLine1;
+  @IncludeSchema(isOptional: true)
   String get addressLine2 => _addressLine2;
+  @IncludeSchema(isOptional: true)
   String get addressLine3 => _addressLine3;
+  @IncludeSchema(isOptional: true)
   String get addressLine4 => _addressLine4;
+  @IncludeSchema(isOptional: true)
   String get addressLine5 => _addressLine5;
+  @IncludeSchema(isOptional: true)
   String get phoneNumber => _phoneNumber;
+  @IncludeSchema(isOptional: true)
   String get faxNumber => _faxNumber;
+
+  void mergeJson (Map jsonMap) {
+    this.name = jsonMap["name"];
+    this.quickbooksName = jsonMap["quickbooksName"];
+    this.termsRef = jsonMap["termsRef"];
+    this.terms = jsonMap["terms"];
+    this.remittanceEmail = jsonMap["remittanceEmail"];
+    this.confirmationEmail = jsonMap["confirmationEmail"];
+    this.addressLine1 = jsonMap["addressLine1"];
+    this.addressLine2 = jsonMap["addressLine2"];
+    this.addressLine3 = jsonMap["addressLine3"];
+    this.addressLine4 = jsonMap["addressLine4"];
+    this.addressLine5 = jsonMap["addressLine5"];
+    this.phoneNumber = jsonMap["phoneNumber"];
+    this.faxNumber = jsonMap["faxNumber"];
+    super.mergeJson(jsonMap);
+  }
 
   Map<String, dynamic> toJson () { 
           return super.toJson()..addAll({ "name": name,
@@ -128,6 +159,8 @@ class Supplier extends SyncCachable<Supplier> {
   Supplier._create (int ID, String name):super(ID, name) {
     this.name = name;
   }
+  Supplier.fromJson (Map params):super.fromJson(params);
+
 
   factory Supplier (int ID, String name) {
     if (!exists(name)) {
@@ -182,8 +215,8 @@ class Supplier extends SyncCachable<Supplier> {
     return c.future;
   }
 
-  static exists (String name) => SyncCachable.exists(Supplier, name);
-  static get (String name) => SyncCachable.get(Supplier, name);
+  static exists (String name) => Syncable.exists(Supplier, name);
+  static get (String name) => Syncable.get(Supplier, name);
 
   /// Creates a new supplier, inserting it into the database and sending it to quickbooks...
   static Future<Supplier> createNew (String name, String quickbooksName, { int terms: 42, String remittanceEmail: "", String confirmationEmail: "", String addressLine1: "", String addressLine2: "", String addressLine3: "", String addressLine4: "", String addressLine5: "", String phoneNumber: "", String faxNumber: "" }) {

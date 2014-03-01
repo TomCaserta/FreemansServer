@@ -1,6 +1,7 @@
 part of FreemansServer;
 
-class Customer extends SyncCachable<Customer> {
+class Customer extends Syncable<Customer> {
+  int type = SyncableTypes.CUSTOMER;
   /*
    * GETTERS AND SETTERS. ANYTHING CHANGED ON THE SETTERS WILL BE REFLECTED IN THE DATABASE AUTOMATICALLY WHEN RESYNCED   
    */
@@ -25,27 +26,48 @@ class Customer extends SyncCachable<Customer> {
   String _faxNumber;
   String _phoneNumber;
 
+  @IncludeSchema()
   String get name => _name;
+  @IncludeSchema(isOptional: true)
   String get quickbooksName => _quickbooksName;
+  @IncludeSchema(isOptional: true)
   String get billto1 => _billto1;
+  @IncludeSchema(isOptional: true)
   String get billto2 => _billto2;
+  @IncludeSchema(isOptional: true)
   String get billto3 => _billto3;
+  @IncludeSchema(isOptional: true)
   String get billto4 => _billto4;
+  @IncludeSchema(isOptional: true)
   String get billto5 => _billto5;
+  @IncludeSchema(isOptional: true)
   String get shipto1 => _shipto1;
+  @IncludeSchema(isOptional: true)
   String get shipto2 => _shipto2;
+  @IncludeSchema(isOptional: true)
   String get shipto3 => _shipto3;
+  @IncludeSchema(isOptional: true)
   String get shipto4 => _shipto4;
+  @IncludeSchema(isOptional: true)
   String get shipto5 => _shipto5;
+  @IncludeSchema()
   String get termsRef => _termsRef;
+  @IncludeSchema()
   int get terms => _terms;
+  @IncludeSchema(isOptional: true)
   String get invoiceEmail => _invoiceEmail;
+  @IncludeSchema()
   bool get isEmailedInvoice => _isEmailedInvoice;
+  @IncludeSchema(isOptional: true)
   String get confirmationEmail => _confirmationEmail;
+  @IncludeSchema()
   bool get isEmailedConfirmation => _isEmailedConfirmation;
+  @IncludeSchema(isOptional: true)
   String get faxNumber => _faxNumber;
+  @IncludeSchema(isOptional: true)
   String get phoneNumber => _phoneNumber;
 
+  
   Map<String, dynamic> toJson () { 
           return super.toJson()..addAll({ "name": name,
                                           "quickbooksName": quickbooksName,
@@ -223,12 +245,14 @@ class Customer extends SyncCachable<Customer> {
       return new Customer._create(ID, name, terms);
     }
   }
-  
+
+  Customer.fromJson (Map params):super.fromJson(params);
+
   /// Checks if the customer name already exists in the program
-  static exists (String name) => SyncCachable.exists(Customer, name);
+  static exists (String name) => Syncable.exists(Customer, name);
   
   /// Retreives a Customer object from the database by the name
-  static get (String name) => SyncCachable.get(Customer, name);
+  static get (String name) => Syncable.get(Customer, name);
 
   /// Returns a List containing all lines of the billing address for the scustomer
   List<String> getFullBillingAddress () {
@@ -277,7 +301,30 @@ class Customer extends SyncCachable<Customer> {
      }
      return c.future;
   }
-
+  
+  void mergeJson (Map jsonMap) {
+    this.quickbooksName = jsonMap["quickbooksName"];
+    this.name = jsonMap["name"];
+    this.billto1 = jsonMap["billto1"];
+    this.billto2 = jsonMap["billto2"];
+    this.billto3 = jsonMap["billto3"];
+    this.billto4 = jsonMap["billto4"];
+    this.billto5 = jsonMap["billto5"];
+    this.shipto1 = jsonMap["shipto1"];
+    this.shipto2 = jsonMap["shipto2"];
+    this.shipto3 = jsonMap["shipto3"];
+    this.shipto4 = jsonMap["shipto4"];
+    this.shipto5 = jsonMap["shipto5"];
+    this.termsRef = jsonMap["termsRef"];
+    this.terms = jsonMap["terms"];
+    this.invoiceEmail = jsonMap["invoiceEmail"];
+    this.isEmailedInvoice = jsonMap["isEmailedInvoice"];
+    this.confirmationEmail = jsonMap["confirmationEmail"];
+    this.isEmailedConfirmation = jsonMap["isEmailedConfirmation"];
+    this.faxNumber = jsonMap["faxNumber"];
+    this.phoneNumber = jsonMap["phoneNumber"];
+    super.mergeJson(jsonMap);
+  }
 
   /// Initializes the customers for use by retreiving them from the database
   static Future<bool> init () {

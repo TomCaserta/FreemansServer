@@ -1,8 +1,0 @@
-ÿÿÿÿ¹½|q¼|qD˜kError caught!
-ÿÿÿÿ¹½|q¼|qD˜FError caught!
-ÿÿÿÿ¹½|q¼|q˜ßError caught!
-ÿÿÿÿ¹½|q¼|q˜êError caught!
-øÐqÿÿÿÿ¹½|q¼|q˜hError caught!
-øÐqÿÿÿÿ¹½|q¼|q˜ÝError caught!
-ÿÿÿÿ¹½|q¼|q˜´Error caught!
-ÿÿÿÿ¹½|q¼|qø°°pd6°pException from HRESULT: 0x80040400

@@ -1,15 +1,44 @@
 part of FreemansServer;
 
 
-abstract class SyncCachable<T> {
+abstract class Syncable<T> {
+
+  /// Cache of Objects which extend Syncable
+  static Map<Type, Map<int, Syncable>> _cache = new Map<Type, Map<dynamic, Syncable>>();
+  static Map<String, Syncable> _UuidToSyncable = new Map<String, Syncable>();
+  static Syncable getByUuid (String Uuid, [ int typeCheck]) {
+    Syncable s = _UuidToSyncable[Uuid];
+    if (s != null) {
+      if (typeCheck != null) {
+        if (s.type != typeCheck) {
+            return null;
+        }
+      }
+      return s;
+    }
+    return null;
+  }
+
+
+  Syncable.fromJson(Map payload) {
+    while (_UuidToSyncable.containsKey(this.Uuid)) this.Uuid = new uuid.Uuid().v4();
+    _UuidToSyncable[this.Uuid] = this;
+    setNew();
+    this.mergeJson(payload);
+  }
+  int type = 0;
   /// Syncables parent object. Used to tell the parent that it contains objects that require a database sync.
-  SyncCachable _parent;
+  Syncable _parent;
 
   /// ID of the Syncable. Should match the database ID. IS NOT UNIQUE ACROSS OBJECT TYPES.
+  @IncludeSchema()
   int ID = 0;
-  String UUID = new Uuid().v4();
   
-  /// 
+  /// UUID of the current object. 100% Unique accross all Syncables. Regenerates if in the HIGHLY unlikely event of collision.
+  @IncludeSchema()
+  String Uuid = new uuid.Uuid().v4();
+  
+  /// Defines if the Syncable is active
   bool _isActive = true;
 
   /// Defines weather a Syncable is new data to be inserted into the database
@@ -19,13 +48,17 @@ abstract class SyncCachable<T> {
   bool _hasChange = false;
 
   /// Contains a list of child [Syncable]'s with data that has changed.
-  List<SyncCachable> changedChildElements = new List<SyncCachable>();
+  List<Syncable> changedChildElements = new List<Syncable>();
   
   /// Contains a list of child [Syncable]'s
-  List<SyncCachable> childElements = new List<SyncCachable>();
+  List<Syncable> childElements = new List<Syncable>();
 
-  /// Returns weather a row is new or not.
+  /// Getter to check if the result is a new object which hasnt been inserted into the database yet.
   bool get isNew => _newInsert;
+  
+  /// Getter to check if the object has been soft deleted.
+  /// If [isActive] is false, it will not show up in list queries
+  @IncludeSchema()
   bool get isActive => _isActive; 
   
   set isActive (bool active) {
@@ -33,16 +66,24 @@ abstract class SyncCachable<T> {
       childElements.forEach((e) {
         e.isActive = active;
       });
+      _isActive = active;
       requiresDatabaseSync();
     }
   }
   
-  
+  /// Temporary key to use to cache the object until it has been stored into the database.
   dynamic tempKey;
 
-  static Map<Type, Map<int, SyncCachable>> _cache = new Map<Type, Map<dynamic, SyncCachable>>();
-
-  SyncCachable (this.ID, [dynamic key]) {
+  /***
+   * Creates a new instance, if the ID is 0 it assumes the object is new
+   * and therefore is needing to be inserted into the database.
+   * 
+   * You can supply the [key] parameter to temporarily store the object into the cache... 
+   * Otherwise the object is not cached until after it has been synced.
+   */
+  Syncable (this.ID, [dynamic key]) {
+    while (_UuidToSyncable.containsKey(this.Uuid)) this.Uuid = new uuid.Uuid().v4();
+    _UuidToSyncable[this.Uuid] = this;
     if (ID != 0) {
       _put(key != null ? key : ID);
     }
@@ -53,7 +94,7 @@ abstract class SyncCachable<T> {
   }
 
 
-  static SyncCachable get (Type t, dynamic key) {
+  static Syncable get (Type t, dynamic key) {
     if (_cache.containsKey(t)) {
       if (exists(t, key)) {
         return _cache[t][key];
@@ -72,7 +113,7 @@ abstract class SyncCachable<T> {
   }
 
   void _put (dynamic key) {
-    if (!_cache.containsKey(T)) _cache[T] = new Map<dynamic, SyncCachable>();
+    if (!_cache.containsKey(T)) _cache[T] = new Map<dynamic, Syncable>();
     if (!exists(T, key)) {
       if (ID != 0) {
         _cache[T][key] = this;
@@ -83,13 +124,13 @@ abstract class SyncCachable<T> {
     }
   }
 
-  static Map<dynamic, SyncCachable> getMap (Type t) {
-    if (!_cache.containsKey(t)) _cache[t] = new Map<dynamic, SyncCachable>();
+  static Map<dynamic, Syncable> getMap (Type t) {
+    if (!_cache.containsKey(t)) _cache[t] = new Map<dynamic, Syncable>();
     return _cache[t];
   }
 
   static List getVals (Type t) {
-    if (!_cache.containsKey(t)) _cache[t] = new Map<dynamic, SyncCachable>();
+    if (!_cache.containsKey(t)) _cache[t] = new Map<dynamic, Syncable>();
     return _cache[t].values.toList();
   }
 
@@ -103,7 +144,7 @@ abstract class SyncCachable<T> {
   }
 
 
-  SyncCachable<T> getO (dynamic key) {
+  Syncable<T> getO (dynamic key) {
     return get(T, key);
   }
 
@@ -121,6 +162,7 @@ abstract class SyncCachable<T> {
     if (_newInsert) {
       this.ID = identifier;
       _newInsert = false;
+      _isActive = true;
       _put(tempKey != null ? tempKey : identifier);
       synced();
       tempKey = null;
@@ -133,7 +175,7 @@ abstract class SyncCachable<T> {
   
 
   /// Called by a syncable object when a database update is required.
-  void requiresDatabaseSync ([SyncCachable child = null]) {
+  void requiresDatabaseSync ([Syncable child = null]) {
     if (child != null) {
       changedChildElements.add(child);
     }
@@ -149,22 +191,29 @@ abstract class SyncCachable<T> {
     _hasChange = false;
   }
 
-  void _childSynced (SyncCachable child) {
+  void _childSynced (Syncable child) {
     if (changedChildElements.contains(child)) {
       changedChildElements.remove(child);
     }
   }
   
-  void addChild (SyncCachable child) {
+  void addChild (Syncable child) {
     childElements.add(child);
   }
   
-  void removeChild (SyncCachable child) {
+  void removeChild (Syncable child) {
     _childSynced(child);
     if (childElements.contains(child)) childElements.remove(child);
   }
   
-  void addParent (SyncCachable parent) {
+  /***
+   * Merges the jsonMap to the syncables data
+   */
+  void mergeJson (Map jsonMap) {
+    this.isActive = jsonMap["isActive"];
+  }
+  
+  void addParent (Syncable parent) {
     if (_parent == null && parent != null) {
       _parent = parent;
       if (parent != null) {
@@ -186,11 +235,11 @@ abstract class SyncCachable<T> {
     return c.future;
   }
   Map<String, dynamic> toJson() { 
-    return { "UUID": UUID, "ID": ID };
+    return { "Uuid": Uuid, "ID": ID, "isActive": isActive };
   }
 }
 
-class QBSyncCachable<T> extends SyncCachable<T> {
+class QBSyncCachable<T> extends Syncable<T> {
   QBSyncCachable(int ID):super(ID);
   // TODO: Implement QB syncing
 }

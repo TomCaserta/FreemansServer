@@ -5,7 +5,7 @@ class PermissionNode {
   String nodeName = "";
   Map<String, PermissionNode> _childNodes = new Map<String, PermissionNode>();
   bool _nodeValue = false;
-  set nodeValue(bool val) { 
+  set nodeValue(bool val) {
     _nodeValue = val;
   }
   get nodeValue {
@@ -17,7 +17,7 @@ class PermissionNode {
   void add (PermissionNode node) {
     _childNodes[node.nodeName] = node;
   }
-  
+
   PermissionNode get (String nodename) {
     if (exists(nodename)) {
       return _childNodes[nodename];
@@ -26,22 +26,22 @@ class PermissionNode {
   bool exists (String nodename) {
     return _childNodes.containsKey(nodename);
   }
-  
+
   Map<String, PermissionNode> get childNodes => _childNodes;
-  
+
   PermissionNode(this.nodeName);
 }
 
 class Permissions {
   PermissionNode permissions = new PermissionNode("root");
-  
+
   Permissions.create(String permissionBlob) {
     _recurseAdd(permissionBlob, this.permissions);
   }
-  
+
   void _recurseAdd (String permish, PermissionNode parent) {
     List<String> splitPerm = permish.split(",");
-    splitPerm.forEach((perm) { 
+    splitPerm.forEach((perm) {
       List<String> subPermission = perm.split(".");
       if (subPermission.length > 1) {
         if (!parent.exists(subPermission[0])) {
@@ -65,7 +65,7 @@ class Permissions {
       }
     });
   }
-  
+
   bool _recursePermissionCheck (PermissionNode parent, String permString) {
     if (parent.nodeValue == true) return true;
     else {
@@ -91,17 +91,17 @@ class Permissions {
       }
     }
   }
-   
+
   bool hasPermission (String permissionString) {
     return _recursePermissionCheck (permissions, permissionString);
   }
-  
+
   List<String> _recurseToString (PermissionNode parent, String curNodeStr, [bool override = false]) {
     List<String> tempL = new List<String>();
     curNodeStr = "$curNodeStr${(override ? "" : parent.nodeName)}";
     if (parent.hasChildNodes) {
       parent.childNodes.forEach((nodeName, node) {
-         tempL.addAll(_recurseToString(node, "$curNodeStr${(override ? "" : ".")}"));
+        tempL.addAll(_recurseToString(node, "$curNodeStr${(override ? "" : ".")}"));
       });
     }
     if (parent.nodeValue == true) tempL.add((curNodeStr == "" ? "*" : "$curNodeStr.*"));

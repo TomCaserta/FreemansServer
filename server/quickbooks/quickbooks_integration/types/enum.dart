@@ -143,3 +143,9 @@ class JobStatus extends EnumString<JobStatus> {
   static JobStatus PENDING = new JobStatus("Pending");
 }
 
+class ReportingPeriod extends EnumString<ReportingPeriod> {
+  ReportingPeriod(String eN,[ bool isDefault = false ]):super(eN, isDefault);
+
+  static ReportingPeriod MONTHLY = new ReportingPeriod("Monthly");
+  static ReportingPeriod QUARTERLY = new ReportingPeriod("Quarterly", true);
+}

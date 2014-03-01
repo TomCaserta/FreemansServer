@@ -1,7 +1,8 @@
-part of FreemansServer;
+library functions;
 
 
 String dateToFFPD (DateTime d) {
+  d = d.toUtc();
   StringBuffer sb = new StringBuffer();
   sb.write(d.year);
   sb.write("/");
@@ -35,7 +36,7 @@ DateTime FFPDToDate (String d) {
     int year = int.parse(splitD[0], onError: (e) {});
     int month = int.parse(splitD[1], onError: (e) {});
     int day = int.parse(splitD[2], onError: (e) {});
-    DateTime date = new DateTime(year, month, day);
+    DateTime date = new DateTime.utc(year, month, day);
     return date;
   }
 }

@@ -1,13 +1,13 @@
-name: FreemansServer
+name: GenerateScemas
 dependencies:
   QBXMLRP2_DART:
     path: ..\..\..\Documents\GitHub\QuickbooksDesktopConnectorDartlang\package\QBXMLRP2_DART
-  ansicolor: any
   intl: any
-  json_schema: any
   logging: any
   path: any
   sqljocky: 0.9.0
   utf: any
-  uuid: 0.2.0
+  uuid: any
   xml: any
+  ansicolor: any
+  json_schema: any

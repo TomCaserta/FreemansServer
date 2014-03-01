@@ -8,7 +8,7 @@ class QBStandardTerms extends QBModifiable {
   bool isActive;
   int stdDueDays;
   int stdDiscountDays;
-  double discountPct;
+  QBPercent discountPct;
   
 
   QBStandardTerms.parseFromListXml (XmlElement termsData) {

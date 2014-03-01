@@ -5,7 +5,7 @@ class Client {
   bool loggedIn = false;
   JsonEncoder encoder = new JsonEncoder(null);
   Map<String, Completer> responsePacket = new Map<String, Completer>();
-  Uuid u = new Uuid();
+  String Uuid = new uuid.Uuid().v4();
   WebsocketHandler wsh;
   User user = User.getUser("Guest","");
   Client (this.s, this.wsh);

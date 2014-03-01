@@ -1,6 +1,6 @@
 part of FreemansServer;
 
-class Terms extends SyncCachable<Terms> {
+class Terms extends Syncable<Terms> {
   DateTime timeCreated;
   DateTime timeModified;
   String editSequence;
@@ -17,8 +17,9 @@ class Terms extends SyncCachable<Terms> {
      }
      else {
        // TODO: Account Update
-       return;
+       return null;
      }
+     return null;
    }
   static Future<bool> init () {
     ffpServerLog.info("Loading Accounts list from quickbooks");
@@ -28,9 +29,9 @@ class Terms extends SyncCachable<Terms> {
         Account tempAccount = new Account(data.listID);
         tempAccount.account = data;
     }, onDone: () { 
-      SyncCachable.getVals(Account).forEach((Account a) {
+      Syncable.getVals(Account).forEach((Account a) {
          if (a.account != null && a.account.parentRef != null && a.account.parentRef.listID != null) {
-           Account parent = SyncCachable.get(Account, a.account.parentRef.listID);
+           Account parent = Syncable.get(Account, a.account.parentRef.listID);
            parent.childAccounts.add(a);
          }
       });

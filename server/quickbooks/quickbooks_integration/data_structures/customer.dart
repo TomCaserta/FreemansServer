@@ -57,20 +57,22 @@ class QBCustomer extends QBModifiable {
   QBRef currencyRef;
   
   List<DataExtRet> dataExtRet = new List<DataExtRet>();
+  
+  QBCustomer();
 
   QBCustomer.parseFromListXml (XmlElement customerData) {
+    parseXML(customerData);
+  }
+  void parseXML (XmlElement customerData) {
     listID = getQbxmlContainer(customerData, "ListID").text;
     timeCreated = getQbxmlContainer(customerData, "TimeCreated").date;
     timeModified = getQbxmlContainer(customerData, "TimeModified").date;
     editSequence = getQbxmlContainer(customerData, "EditSequence").text;
     name = getQbxmlContainer(customerData, "Name").text;
     fullName = getQbxmlContainer(customerData, "FullName").text;
-    isActive = getQbxmlContainer(customerData, "IsActive").boolean;
+    isActive = getQbxmlContainer(customerData, "IsActive", optional: true).boolean;
     parentRef = new QBRef.parseFromListXml(getQbxmlContainer(customerData, "ParentRef", optional: true));
-    
-
     subLevel = getQbxmlContainer(customerData, "Sublevel").integer;
-
     companyName = getQbxmlContainer(customerData, "CompanyName", optional: true).text;
     salutation = getQbxmlContainer(customerData, "Salutation", optional: true).text;
     firstName = getQbxmlContainer(customerData, "FirstName", optional: true).text;
@@ -100,7 +102,6 @@ class QBCustomer extends QBModifiable {
     jobStartDate = getQbxmlContainer(customerData, "JobStartDate", optional: true).date;
     jobProjectedEndDate = getQbxmlContainer(customerData, "JobProjectedEndDate", optional: true).date;
     jobEndDate = getQbxmlContainer(customerData, "JobEndDate", optional: true).date;
-    
     jobDescription = getQbxmlContainer(customerData, "JobDesc", optional: true).text;
     jobTypeRef = new QBRef.parseFromListXml(getQbxmlContainer(customerData, "JobTypeRef", optional: true));
     notes = getQbxmlContainer(customerData, "Notes", optional: true).text;
@@ -115,11 +116,43 @@ class QBCustomer extends QBModifiable {
   }
   
   Future<bool> insert(QuickbooksConnector qbc) {
-    
+    Completer c = new Completer();
+    String xml = ResponseBuilder.parseFromFile("customer_add", params: { "version": QB_VERSION }..addAll(this.toJson()) );  
+    qbc.processRequest(xml).then((String xmlResponse) { 
+      XmlElement xmlFile = XML.parse(xmlResponse);
+      XmlElement response = xmlFile.query("QBXML").query("QBXMLMsgsRs").query("CustomerAddRs").first;
+      if (response != null && response.attributes["statusCode"] == "0") {
+        parseXML(response);
+        c.complete(true);
+      }
+      else {
+        c.completeError(new Exception("Quickbooks could not process the response with the message: ${response.attributes["statusMessage"]}"));
+      }
+    });
+    return c.future;
   }
-  
-  Future<bool> update(QuickbooksConnector qbc) {
     
+  Future<bool> update(QuickbooksConnector qbc) {
+    Completer c = new Completer();
+    if (listID != null && editSequence != null) {
+      String xml = ResponseBuilder.parseFromFile("customer_mod", params: { "version": QB_VERSION }..addAll(this.toJson()) );  
+      print(xml);
+      qbc.processRequest(xml).then((String xmlResponse) { 
+        XmlElement xmlFile = XML.parse(xmlResponse);
+        XmlElement response = xmlFile.query("QBXML").query("QBXMLMsgsRs").query("CustomerModRs").first;
+        if (response != null && response.attributes["statusCode"] == "0") {
+          parseXML(response);
+          c.complete(true);
+        }
+        else {
+          c.completeError(new Exception("Quickbooks could not process the response with the message: ${response.attributes["statusMessage"]}"));
+        }
+      });
+    }
+    else {
+      c.completeError(new ArgumentError("You tried to update an object with quickbooks which has not got a listID or editSequence. The request would be rejected by quickbooks if this was sent."));
+    }
+    return c.future;
   }
   
   Map toJson () {

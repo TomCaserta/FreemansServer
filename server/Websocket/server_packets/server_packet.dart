@@ -10,7 +10,7 @@ abstract class ServerPacket {
 
 /// FOR SERVER RESPONSE REQUESTS. NOT CLIENT.
 abstract class ResponsePacket extends ServerPacket {
-  String rID = new Uuid().v4();
+  String rID = new uuid.Uuid().v4();
   Map<String, dynamic> toJsonDefault(int ID) {
     return super.toJsonDefault(ID)..addAll({ "rID": rID });
   }
@@ -18,15 +18,19 @@ abstract class ResponsePacket extends ServerPacket {
 class InitialDataResponseServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.INITIAL_DATA_RESPONSE;
   String rID = "";
+
+  List accountList = new List<Account>();
   List customerList = new List<Customer>();
   List productList = new List<Product>();
   List productWeightsList = new List<ProductWeight>();
   List productPackagingList = new List<ProductPackaging>();
+  List productCategoryList = new List<ProductCategory>();
   List transportList = new List<Transport>();
   List userList = new List<User>();
-  InitialDataResponseServerPacket(this.rID, this.customerList, this.productList, this.productWeightsList, this.productPackagingList, this.transportList, this.userList);
+  List supplierList = new List<Supplier>();
+  InitialDataResponseServerPacket(this.rID, this.accountList, this.customerList, this.productList, this.productWeightsList, this.productPackagingList, this.productCategoryList, this.transportList, this.userList, this.supplierList);
   toJson () {
-    return super.toJsonDefault(ID)..addAll({ "rID": rID, "customerList": customerList, "productList": productList, "productWeightsList": productWeightsList, "productPackagingList": productPackagingList, "transportList": transportList, "userList": userList });
+    return super.toJsonDefault(ID)..addAll({ "rID": rID, "accountList": accountList, "customerList": customerList, "productList": productList, "productWeightsList": productWeightsList, "productPackagingList": productPackagingList, "productCategoryList": productCategoryList, "transportList": transportList, "userList": userList, "supplierList": supplierList });
   }
 }
 
@@ -94,11 +98,11 @@ class TransportAddServerPacket extends ServerPacket {
 class ActionResponseServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.ACTION_RESPONSE;
   bool completeSucessfully = false;
-  List<String> errors = new List<String>();
+  List payload = new List();
   String rID = "";
-  ActionResponseServerPacket (this.rID, this.completeSucessfully, [this.errors]);
+  ActionResponseServerPacket (this.rID, this.completeSucessfully, [this.payload]);
   toJson () {
-    return super.toJsonDefault(ID)..addAll({ "rID": rID, "complete": completeSucessfully, "errors": errors });
+    return super.toJsonDefault(ID)..addAll({ "rID": rID, "complete": completeSucessfully, "payload": payload });
   }
 }
 

@@ -19,6 +19,10 @@ packages:
     description: args
     source: hosted
     version: "0.9.0"
+  bignum:
+    description: bignum
+    source: hosted
+    version: "0.0.5"
   browser:
     description: browser
     source: hosted
@@ -26,7 +30,7 @@ packages:
   cipher:
     description: cipher
     source: hosted
-    version: "0.4.0"
+    version: "0.6.0"
   collection:
     description: collection
     source: hosted
@@ -46,7 +50,7 @@ packages:
   json_schema:
     description: json_schema
     source: hosted
-    version: "1.0.0"
+    version: "0.0.2"
   logging:
     description: logging
     source: hosted
@@ -54,11 +58,11 @@ packages:
   options_file:
     description: options_file
     source: hosted
-    version: "0.10.0"
+    version: "0.9.15"
   path:
     description: path
     source: hosted
-    version: "0.9.0"
+    version: "1.0.0"
   sqljocky:
     description: sqljocky
     source: hosted
@@ -66,11 +70,11 @@ packages:
   stack_trace:
     description: stack_trace
     source: hosted
-    version: "0.9.0"
+    version: "0.9.2"
   unittest:
     description: unittest
     source: hosted
-    version: "0.9.3"
+    version: "0.10.0"
   unmodifiable_collection:
     description: unmodifiable_collection
     source: hosted
@@ -82,7 +86,7 @@ packages:
   uuid:
     description: uuid
     source: hosted
-    version: "0.2.0"
+    version: "0.3.0"
   xml:
     description: xml
     source: hosted

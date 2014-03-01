@@ -136,7 +136,6 @@ class ResponseBuilder {
                                  ifStartBefore = tagStart;
                                  startIf = x+1;
                                  ifParam = commandDat[1];
-                                  print(currentTagData.toString());
                                 }
                                 ifNum++;
                                 inIf = true;                             
@@ -276,7 +275,6 @@ class ResponseBuilder {
      }
       
      sections.forEach((String secName, String data) {
-       //print(data);
        fileData = fileData.replaceAll(new RegExp("{yeild::${secName}}"), parse(data, params: params));       
      });
      return fileData;  
@@ -320,7 +318,8 @@ class ResponseBuilder {
     List<String> buffer = new List<String>(str.length);
     while (i-- != 0) {
       var iC = str[i].codeUnitAt(0);
-      if (!(iC >= 48 && iC <= 57) && !(iC >= 65 && iC <= 90) && !(iC >= 97 && iC <= 122) && iC != 46 && iC != 32 && iC != 64) {
+      // TODO: At this stage its easier to just fucking write out what characters I *do* want encoded
+      if (!(iC >= 48 && iC <= 57) && !(iC >= 65 && iC <= 90) && !(iC >= 97 && iC <= 122) && iC != 46 && iC != 32 && iC != 64 && iC != 45) {
         buffer[i] = '&#$iC;';
       } else {
         buffer[i] = str[i];

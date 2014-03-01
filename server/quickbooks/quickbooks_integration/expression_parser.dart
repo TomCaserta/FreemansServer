@@ -78,7 +78,6 @@ class QBExpression {
      else if (e is QBOperator) {
        // TODO: FOLLOW BODMAS NOT ORDER OF OPERANDS
        // Should be relatively simple to do, loop over the operators implementation above
-       print("GETTING EXPRESSION FROM OPERATION ${e.op} : ${currentOutputValue}");
        currentOutputValue = OPERATORS[e.op]((currentOutputValue != null ? currentOutputValue : 0), (isLast ? 0 : parsedExpression[x+1]));
        if (!isLast) x+=1;
      }
@@ -167,7 +166,6 @@ class QBIdentifier {
           value = null;
           break;
         default:
-          print(m);
           List param = _containsParameter(m, identifier.split("."));
           if (param[0]) {
             value = param[1];

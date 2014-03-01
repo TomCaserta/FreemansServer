@@ -14,12 +14,13 @@ class Surcharge {
     return "${dateToFFPD(dateBefore)}:$surcharge";
   }
   List toJson () { 
-          return [dateBefore.millisecondsSinceEpoch, surcharge];
+          return [dateBefore.toUtc().millisecondsSinceEpoch, surcharge];
   }
   
 }
 
-class Transport extends SyncCachable<Transport> {
+class Transport extends Syncable<Transport> {
+  int type = SyncableTypes.TRANSPORT;
   List<Surcharge> _surcharges = new List<Surcharge>();
   String _name = "";
   String _quickbooksName = "";
@@ -28,20 +29,41 @@ class Transport extends SyncCachable<Transport> {
   String _termsRef;  
   int _terms;
 
+
+  @IncludeSchema()
   String get name => _name;
+  @IncludeSchema(isOptional: true)
   String get quickbooksName => _quickbooksName;
+  @IncludeSchema(isOptional: true)
   String get transportSheetEmail => _transportSheetEmail;
+  @IncludeSchema(isOptional: true)
   String get remittanceEmail => _remittanceEmail;
+  @IncludeSchema()
   String get termsRef => _termsRef;
+  @IncludeSchema()
   int get terms => _terms;
-  
+  @IncludeSchema()
+  String get surcharges => _surcharges.join(",");
+
+  void mergeJson (Map jsonMap) {
+    this.name = jsonMap["name"];
+    this.quickbooksName = jsonMap["quickbooksName"];
+    this.transportSheetEmail = jsonMap["transportSheetEmail"];
+    this.remittanceEmail = jsonMap["remittanceEmail"];
+    this.termsRef = jsonMap["termsRef"];
+    this.terms = jsonMap["terms"];
+    this.surcharges = jsonMap["surcharges"];
+    super.mergeJson(jsonMap);
+  }
+
   Map<String, dynamic> toJson () { 
           return super.toJson()..addAll({ "name": name,
                                           "quickbooksName": quickbooksName,
                                           "transportSheetEmail": transportSheetEmail,
                                           "remittanceEmail": remittanceEmail,
                                           "termsRef": termsRef,
-                                          "terms": terms
+                                          "terms": terms,
+                                          "surcharges" : surcharges
                                           });
   }
   
@@ -84,10 +106,24 @@ class Transport extends SyncCachable<Transport> {
       requiresDatabaseSync();
     }
   }
+  set surcharges (String surchargeStr) {
+    if (surchargeStr != surcharges) {
+      this._surcharges.clear();
+      List<String> splitS = surchargeStr.split(",");
+      splitS.forEach((String sur) {
+        List<String> splitSur = sur.split(":");
+        this._surcharges.add(new Surcharge.parse(splitSur[0], splitSur[1]));
+      });
+      requiresDatabaseSync();
+    }
+  }
   
   Transport._create (int ID, String name, this._quickbooksName, this._surcharges, this._transportSheetEmail, this._remittanceEmail, this._termsRef, this._terms):super(ID, name) {
     this._name = name;
   }
+  Transport.fromJson (Map params):super.fromJson(params);
+
+
 
   factory Transport (int ID, String name, String quickbooksName, List<Surcharge> surcharges, String transportSheetEmail, String remittanceEmail, String termsRef, int terms) {
     if (!exists(name)) {
@@ -129,8 +165,8 @@ class Transport extends SyncCachable<Transport> {
     return c.future;
   }
 
-  static bool exists(String name) => SyncCachable.exists(Transport, name);
-  static Transport get (String name) => SyncCachable.get(Transport, name);
+  static bool exists(String name) => Syncable.exists(Transport, name);
+  static Transport get (String name) => Syncable.get(Transport, name);
 
   static Future<bool> init () {
     Completer c = new Completer();

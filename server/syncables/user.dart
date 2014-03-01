@@ -1,15 +1,26 @@
 part of FreemansServer;
 
-class User extends SyncCachable<User> {
+class User extends Syncable<User> {
+  int type = SyncableTypes.USER;
   bool _isGuest = false;
   String _username;
   String _password;
   Permissions _permissions;
-  
+
   bool get isGuest => _isGuest;
+  @IncludeSchema()
   String get username => _username;
+  @IncludeSchema(isOptional: true)
   String get password => _password;
+  @IncludeSchema()
   Permissions get permissions => _permissions;
+
+  void mergeJson (Map jsonMap) {
+    this.username = jsonMap["username"];
+    if (jsonMap["password"] != null) this.password = jsonMap["password"];
+    this.permissions = new Permissions.create(jsonMap["permissions"]);
+    super.mergeJson(jsonMap);
+  }
 
   set isGuest (bool isGuest) {
     if (isGuest != _isGuest) {
@@ -17,7 +28,7 @@ class User extends SyncCachable<User> {
       requiresDatabaseSync();
     }
   }
-  
+
   set username (String username) {
     if (username != _username) {
       _username = username;
@@ -43,13 +54,15 @@ class User extends SyncCachable<User> {
     this._username = username;
     this._permissions = new Permissions.create(permissionBlob);
   }
+  User.fromJson (Map params):super.fromJson(params);
+
+
 
   factory User (String username, String password, int ID, String permissionBlob) {
      if (exists(username)) {
        return get(username);
      }
      else {
-       print("Creating new user $username");
        return new User._create(username, password, ID, permissionBlob);
      }
   }
@@ -126,23 +139,20 @@ class User extends SyncCachable<User> {
   }
 
   static bool exists(String name) {
-    return SyncCachable.exists(User, name);
+    return Syncable.exists(User, name);
   }
 
   /// Finds a user where the username and password matches the supplied username and password.
   /// Password is the plaintext password.
   static User getUser (String username, String password) {
-    List users = SyncCachable.getVals(User).toList();
-    users.forEach((User u) { 
-      print(u.username);
-    });
+    List users = Syncable.getVals(User).toList();
     Iterable<User> u = users.where((e) => e.username == username && e.password == password);
-    print(u.length);
+
     if (u.length > 0) {
       return u.elementAt(0);
     }
   }
 
-  static User get(String username) => SyncCachable.get(User, username);
+  static User get(String username) => Syncable.get(User, username);
 
 }
