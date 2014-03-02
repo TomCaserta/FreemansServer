@@ -338,7 +338,7 @@ class Customer extends Syncable<Customer> {
         }
       }).catchError((err) => c.completeError(err));
     }
-
+    Completer quickbooksInt = new Completer();
     if (this.quickbooksName == null || this.quickbooksName.isEmpty) {
       ffpServerLog.info("Inserting new customer in quickbooks");
       QBCustomer customer = new QBCustomer();
@@ -359,10 +359,42 @@ class Customer extends Syncable<Customer> {
       customer.faxNumber = this.faxNumber;
       customer.phoneNumber = this.phoneNumber;
       customer.isActive = this.isActive;
-      waitingFor.add(customer.insert(qbc));
+      customer.insert(qbc).then((e) {
+        if (e) {
+          this.quickbooksName = customer.listID;
+          quickbooksInt.complete(true);
+        }
+        else quickbooksInt.complete(false);
+      }).catchError((error) => quickbooksInt.completeError(error));
     } else {
-      ffpServerLog.info("I would have updated the Customer");
+      ffpServerLog.info("Updating customer in quickbooks");
+      QBCustomer.fetchByID(this.quickbooksName, qbc).then((QBCustomer customer)  {
+        customer.name = this.name;
+        customer.email = this.invoiceEmail;
+        customer.billAddress = new QBAddress();
+        customer.billAddress.lines[0] = this.billto1;
+        customer.billAddress.lines[1] = this.billto2;
+        customer.billAddress.lines[2] = this.billto3;
+        customer.billAddress.lines[3] = this.billto4;
+        customer.billAddress.lines[4] = this.billto5;
+        customer.shipAddress = new QBAddress();
+        customer.shipAddress.lines[0] = this.shipto1;
+        customer.shipAddress.lines[1] = this.shipto2;
+        customer.shipAddress.lines[2] = this.shipto3;
+        customer.shipAddress.lines[3] = this.shipto4;
+        customer.shipAddress.lines[4] = this.shipto5;
+        customer.faxNumber = this.faxNumber;
+        customer.phoneNumber = this.phoneNumber;
+        customer.isActive = this.isActive;
+        customer.update(qbc).then((e) {
+          if (e) {
+            quickbooksInt.complete(true);
+          }
+          else quickbooksInt.complete(false);
+        }).catchError((error) => quickbooksInt.completeError(error));
+      });
     }
+    waitingFor.add(quickbooksInt.future);
 
     return Future.wait(waitingFor);
   }

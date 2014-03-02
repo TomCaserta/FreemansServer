@@ -249,7 +249,10 @@ class ResponseBuilder {
                                      fileData = _makeReplacement(fileData, tagStart, x+1, value);
                                      x = tagStart + value.length;
                                    }
-                                   else throw "Non optional parameter value was omitted: $parameter";
+                                   else {
+                                     _qbLogger.info(fileData);
+                                     throw new Exception("Non optional parameter value was omitted: $parameter");
+                                   }
                                  }
                                  break;
                              }

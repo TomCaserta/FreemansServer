@@ -27,6 +27,7 @@ part 'controller/main/contentdropdown.dart';
 part 'controller/main/multilistselectbox.dart';
 part 'controller/workbook/workbook.dart';
 part 'controller/transport/transport.dart';
+part 'controller/sales/sales.dart';
 
 
 void main() {
@@ -50,6 +51,7 @@ class FreemansModule extends Module {
     type(Loading);
     type(Login);
     type(ListButtons);
+    type(SalesController);
     type(ListEditor);
     type(MultiListSelectBox);
     factory(NgRoutingUsePushState,

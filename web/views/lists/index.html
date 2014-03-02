@@ -3,8 +3,7 @@
     <ul class="listbox large">
         <!--- LEAVE NO GAP BETWEEN BUTTON AND DIV OTHERWISE IT WILL THROW IT ONTO A NEW LINE -->
         <li ng-repeat="list in listoverview.lists">
-            <div ng-click="listoverview.changeView(list.name)">{{list.name}}</div>
-            <button class="btn-default btn" ng-click="listoverview.changeView(list.name,true)"><span
+            <div ng-click="listoverview.changeView(list.name)">{{list.name}}</div><button class="btn-default btn" ng-click="listoverview.changeView(list.name,true)"><span
                     class="glyphicon glyphicon-plus"></span></button>
         </li>
     </ul>
@@ -13,11 +12,9 @@
 <br class="hidden-lg"/>
 
 <div class="form-group col-lg-12">
-    <label>
         <select class="form-control" ng-model="listoverview.activeList.activeItem">
             <option ng-value="names" ng-repeat="names in listoverview.activeList.names">{{names.name}}</option>
         </select>
-    </label>
 </div>
 <div class="col-lg-12" ng-if="listoverview.activeList.name != null">
     <div ng-if="listoverview.activeList.notifications.length > 0"

@@ -35,7 +35,7 @@ class QBSimpleListQuery {
     } else xml = ResponseBuilder.parseFromFile("list_request", params: {
         "version": QB_VERSION, "listType": listType, "maxReturned": (step != null ? step.toString() : null), "listID": listID
     });
-
+    print(xml);
     qbc.processRequest(xml).then((String resp) {
       if (resp != null && resp is String) {
         XmlElement xmlFile = XML.parse(resp);

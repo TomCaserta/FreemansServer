@@ -120,6 +120,8 @@ class QBCustomer extends QBModifiable {
 
 
   static Future fetchByID(String listID, QuickbooksConnector qbc) {
+
+    _qbLogger.info("Fetching $listID");
     Completer c = new Completer();
     QBCustomerList cl = new QBCustomerList(qbc, 1, listID: listID);
     cl.forEach().listen((QBCustomer customer) {
@@ -133,6 +135,7 @@ class QBCustomer extends QBModifiable {
   }
 
   Future<bool> insert(QuickbooksConnector qbc) {
+    _qbLogger.info("Attempting to insert ${this.name}");
     Completer c = new Completer();
     String xml = ResponseBuilder.parseFromFile("customer_add", params: { "version": QB_VERSION }..addAll(this.toJson()) );  
     qbc.processRequest(xml).then((String xmlResponse) { 
@@ -153,11 +156,13 @@ class QBCustomer extends QBModifiable {
 
   Future<bool> update(QuickbooksConnector qbc) {
     Completer c = new Completer();
+    _qbLogger.info("Attempting to update ${this.name}");
     if (listID != null && editSequence != null) {
       String xml = ResponseBuilder.parseFromFile("customer_mod", params: {
           "version": QB_VERSION
       }
         ..addAll(this.toJson()));
+      print(xml);
       qbc.processRequest(xml).then((String xmlResponse) { 
         XmlElement xmlFile = XML.parse(xmlResponse);
         XmlElement response = xmlFile.query("QBXML").query("QBXMLMsgsRs").query("CustomerModRs").first;
