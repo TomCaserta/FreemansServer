@@ -1,6 +1,7 @@
 {extends::template}
-{section::CONTENT}
-<{$::listType}QueryRq {atrib::?::iterator} {atrib::?::iteratorID}>
-  {if::maxReturned}<MaxReturned>{$::maxReturned}</MaxReturned>{endIf}
-</{$::listType}QueryRq>
-{endSection}
+        {section::CONTENT}
+<{$::listType}QueryRq {atrib::?::iterator}
+        {if::listID != null}<ListID>{$::listID}</ListID>{endIf}
+        {if::maxReturned}<MaxReturned>{$::maxReturned}</MaxReturned>{endIf}
+        </{$::listType}QueryRq>
+        {endSection}

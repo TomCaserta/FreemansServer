@@ -9,9 +9,14 @@ class QBStandardTerms extends QBModifiable {
   int stdDueDays;
   int stdDiscountDays;
   QBPercent discountPct;
-  
+
+  QBStandardTerms();
 
   QBStandardTerms.parseFromListXml (XmlElement termsData) {
+    parseXML(termsData);
+  }
+
+  void parseXML(XmlElement termsData) {
     listID = getQbxmlContainer(termsData, "ListID").text;
     name = getQbxmlContainer(termsData, "Name").text;
     timeCreated = getQbxmlContainer(termsData, "TimeCreated").date;
@@ -23,12 +28,43 @@ class QBStandardTerms extends QBModifiable {
     discountPct = getQbxmlContainer(termsData, "DiscountPct", optional: true).percent;
   }
 
+  static Future<QBStandardTerms> fetchByID(String listID, QuickbooksConnector qbc) {
+    Completer c = new Completer();
+    QBStandardTermsList cl = new QBStandardTermsList(qbc, listID: listID);
+    cl.forEach().listen((QBStandardTerms terms) {
+      c.complete(terms);
+    }, onDone: () {
+      if (!c.isCompleted) {
+        c.completeError("No results from query for ${listID} perhaps an outdated row?");
+      }
+    });
+    return c.future;
+  }
+
   Future<bool> insert(QuickbooksConnector qbc) {
-    
+    Completer c = new Completer();
+    String xml = ResponseBuilder.parseFromFile("standard_terms_add", params: {
+        "version": QB_VERSION
+    }
+      ..addAll(this.toJson()));
+    qbc.processRequest(xml).then((String xmlResponse) {
+      XmlElement xmlFile = XML.parse(xmlResponse);
+      XmlElement response = xmlFile.query("QBXML").query("QBXMLMsgsRs").query("StandardTermsAddRs").first;
+      if (response != null && response.attributes["statusCode"] == "0") {
+        parseXML(response.query("StandardTermsRet").first);
+        _qbLogger.fine("Created new Terms ${name}");
+        c.complete(true);
+      } else {
+        _qbLogger.warning("Quickbooks could not process the response with the message: ${response.attributes["statusMessage"]}");
+        c.completeError(new Exception("Quickbooks could not process the response with the message: ${response.attributes["statusMessage"]}"));
+      }
+    });
+    return c.future;
   }
   
   Future<bool> update(QuickbooksConnector qbc) {
-    
+    // Fun fact, there is no way to modify terms! :D
+    throw new UnimplementedError();
   }
   
   Map toJson () {

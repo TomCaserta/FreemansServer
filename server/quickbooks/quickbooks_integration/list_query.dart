@@ -5,6 +5,9 @@ class QBSimpleListQuery {
   int step = 0;
   int currentRecord = 0;
   int maxItems = 0;
+
+  String listID;
+
   String iteratorID;
   QuickbooksConnector qbc;
   String ticket;
@@ -15,19 +18,24 @@ class QBSimpleListQuery {
   QBSimpleListQuery(this.qbc, String this.listType,  { int this.step,  bool this.useIterator: true, String this.returnName: null }) {
      
   }
-  
+
   Future _requestNext (StreamController sc) {
     String xml = "";
-    if (useIterator) { 
-      if (isRequesting) { 
-         xml = ResponseBuilder.parseFromFile("list_request", params: { "version": QB_VERSION, "listType": listType, "iterator": "Continue", "iteratorID": iteratorID, "maxReturned": (step != null ? step.toString() : null) } );
+    if (useIterator) {
+      if (isRequesting) {
+        xml = ResponseBuilder.parseFromFile("list_request", params: {
+            "version": QB_VERSION, "listType": listType, "iterator": "Continue", "iteratorID": iteratorID, "maxReturned": (step != null ? step.toString() : null), "listID": listID
+        });
       }    
       else {
-        xml = ResponseBuilder.parseFromFile("list_request", params: { "version": QB_VERSION, "listType": listType, "iterator": "Start", "maxReturned": (step != null ? step.toString() : null) } );  
+        xml = ResponseBuilder.parseFromFile("list_request", params: {
+            "version": QB_VERSION, "listType": listType, "iterator": "Start", "maxReturned": (step != null ? step.toString() : null), "listID": listID
+        });
       }
-    }
-    else  xml = ResponseBuilder.parseFromFile("list_request", params: { "version": QB_VERSION, "listType": listType, "maxReturned": (step != null ? step.toString() : null) } );  
-  
+    } else xml = ResponseBuilder.parseFromFile("list_request", params: {
+        "version": QB_VERSION, "listType": listType, "maxReturned": (step != null ? step.toString() : null), "listID": listID
+    });
+
     qbc.processRequest(xml).then((String resp) {
       if (resp != null && resp is String) {
         XmlElement xmlFile = XML.parse(resp);
@@ -74,11 +82,30 @@ class QBSimpleListQuery {
 }
 
 class QBVendorList extends QBSimpleListQuery {
-  QBVendorList (qbc, step):super(qbc, "Vendor", step: step);
+  QBVendorList(qbc, step, { String listID: null }):super(qbc, "Vendor", step: step) {
+    this.listID = listID;
+  }
+
+  Stream<QBVendor> forEach() {
+    StreamController<XmlElement> sc = new StreamController<XmlElement>();
+    StreamController<QBVendor> vendorStream = new StreamController<QBVendor>();
+    _requestNext(sc);
+
+    sc.stream.listen((XmlElement data) {
+      QBVendor currVendor = new QBVendor.parseFromListXml(data);
+      vendorStream.add(currVendor);
+    }, onDone: () {
+      vendorStream.close();
+    });
+    return vendorStream.stream;
+  }
 }
 
 class QBAccountsList extends QBSimpleListQuery {
-  QBAccountsList (qbc):super(qbc, "Account", useIterator: false);
+  QBAccountsList(qbc, { String listID: null }):super(qbc, "Account", useIterator: false) {
+    this.listID = listID;
+  }
+
   Stream<QBAccount> forEach () {
     StreamController<XmlElement> sc = new StreamController<XmlElement>();
     StreamController<QBAccount> accountStream = new StreamController<QBAccount>();
@@ -97,7 +124,10 @@ class QBAccountsList extends QBSimpleListQuery {
 
 
 class QBCustomerList extends QBSimpleListQuery {
-  QBCustomerList (qbc, step):super(qbc, "Customer", step: step);
+  QBCustomerList(qbc, step, { String listID: null }):super(qbc, "Customer", step: step) {
+    this.listID = listID;
+  }
+
   Stream<QBCustomer> forEach () {
       StreamController<XmlElement> sc = new StreamController<XmlElement>();
       StreamController<QBCustomer> customerStream = new StreamController<QBCustomer>();
@@ -115,8 +145,10 @@ class QBCustomerList extends QBSimpleListQuery {
 }
 
 class QBStandardTermsList extends QBSimpleListQuery {
-  QBStandardTermsList (qbc):super(qbc, "StandardTerms", useIterator: false, returnName: "StandardTermsRet");
-  
+  QBStandardTermsList(qbc, { String listID: null }):super(qbc, "StandardTerms", useIterator: false, returnName: "StandardTermsRet") {
+    this.listID = listID;
+  }
+
   Stream<QBStandardTerms> forEach () {
      StreamController<XmlElement> sc = new StreamController<XmlElement>();
      StreamController<QBStandardTerms> termsStream = new StreamController<QBStandardTerms>();

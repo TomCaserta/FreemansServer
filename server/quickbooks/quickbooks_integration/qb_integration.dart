@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:xml/xml.dart';
 import 'dart:mirrors';
 import 'package:QBXMLRP2_DART/QBXMLRP2_DART.dart';
+import 'package:logging/logging.dart';
 
 part 'expression_parser.dart';
 part 'response_builder.dart';
@@ -19,6 +20,9 @@ part 'data_structures/account.dart';
 part 'data_structures/terms.dart';
 
 String QB_VERSION;
+
+Logger _qbLogger = new Logger("QuickbooksIntegration");
+
 void initEnums ([String version = "11.0"]) {
   QB_VERSION = version;
   MirrorSystem ms = currentMirrorSystem();

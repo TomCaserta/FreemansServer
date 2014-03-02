@@ -57,8 +57,11 @@ class QBCustomer extends QBModifiable {
   QBRef currencyRef;
   
   List<DataExtRet> dataExtRet = new List<DataExtRet>();
-  
-  QBCustomer();
+
+  QBCustomer() {
+    timeCreated = new DateTime.now();
+    timeModified = new DateTime.now();
+  }
 
   QBCustomer.parseFromListXml (XmlElement customerData) {
     parseXML(customerData);
@@ -114,7 +117,21 @@ class QBCustomer extends QBModifiable {
           dataExtRet.add(new DataExtRet.parseFromListXml(dataExtEl));
     }); 
   }
-  
+
+
+  static Future fetchByID(String listID, QuickbooksConnector qbc) {
+    Completer c = new Completer();
+    QBCustomerList cl = new QBCustomerList(qbc, 1, listID: listID);
+    cl.forEach().listen((QBCustomer customer) {
+      c.complete(customer);
+    }, onDone: () {
+      if (!c.isCompleted) {
+        c.completeError("No results from query for ${listID} perhaps an outdated row?");
+      }
+    });
+    return c.future;
+  }
+
   Future<bool> insert(QuickbooksConnector qbc) {
     Completer c = new Completer();
     String xml = ResponseBuilder.parseFromFile("customer_add", params: { "version": QB_VERSION }..addAll(this.toJson()) );  
@@ -122,41 +139,56 @@ class QBCustomer extends QBModifiable {
       XmlElement xmlFile = XML.parse(xmlResponse);
       XmlElement response = xmlFile.query("QBXML").query("QBXMLMsgsRs").query("CustomerAddRs").first;
       if (response != null && response.attributes["statusCode"] == "0") {
-        parseXML(response);
+        parseXML(response.query("CustomerRet").first);
+        _qbLogger.fine("Created new Customer ${name}");
         c.complete(true);
       }
       else {
+        _qbLogger.warning("Quickbooks could not process the response with the message: ${response.attributes["statusMessage"]}");
         c.completeError(new Exception("Quickbooks could not process the response with the message: ${response.attributes["statusMessage"]}"));
       }
     });
     return c.future;
   }
-    
+
   Future<bool> update(QuickbooksConnector qbc) {
     Completer c = new Completer();
     if (listID != null && editSequence != null) {
-      String xml = ResponseBuilder.parseFromFile("customer_mod", params: { "version": QB_VERSION }..addAll(this.toJson()) );  
-      print(xml);
+      String xml = ResponseBuilder.parseFromFile("customer_mod", params: {
+          "version": QB_VERSION
+      }
+        ..addAll(this.toJson()));
       qbc.processRequest(xml).then((String xmlResponse) { 
         XmlElement xmlFile = XML.parse(xmlResponse);
         XmlElement response = xmlFile.query("QBXML").query("QBXMLMsgsRs").query("CustomerModRs").first;
         if (response != null && response.attributes["statusCode"] == "0") {
-          parseXML(response);
+          parseXML(response.query("CustomerRet").first);
+          _qbLogger.fine("Updated the Customer ${name}");
           c.complete(true);
+
         }
         else {
+          _qbLogger.warning("Quickbooks could not process the response with the message: ${response.attributes["statusMessage"]}");
           c.completeError(new Exception("Quickbooks could not process the response with the message: ${response.attributes["statusMessage"]}"));
         }
       });
-    }
-    else {
+    } else if (listID != null && listID.isNotEmpty) {
+      _qbLogger.info("Requested an update on a Customer with no editSequence. Going to try to search for the item on quickbooks...");
+      return QBCustomer.fetchByID(listID, qbc).then((QBCustomer qbCust) {
+        qbCust.mergeWith(this);
+        return qbCust.update(qbc);
+      });
+    } else {
+      _qbLogger.warning("Attempt to update an object which hasn't got an edit sequence or listID");
       c.completeError(new ArgumentError("You tried to update an object with quickbooks which has not got a listID or editSequence. The request would be rejected by quickbooks if this was sent."));
     }
     return c.future;
   }
   
   Map toJson () {
-    return { "listID": listID, "timeCreated": timeCreated.millisecondsSinceEpoch,  "timeModified": timeModified.millisecondsSinceEpoch,  "editSequence": editSequence,  "name": name,  "fullName": fullName,  "isActive": isActive,  "parentRef": parentRef,  "subLevel": subLevel,  "companyName": companyName,  "salutation": salutation,  "firstName": firstName,  "middleName": middleName,  "lastName": lastName,  "billAddress": billAddress,  "shipAddress": shipAddress,  "phoneNumber": phoneNumber,  "altPhoneNumber": altPhoneNumber,  "faxNumber": faxNumber,  "email": email,  "contact": contact,  "altContact": altContact,  "customerTypeRef": customerTypeRef,  "termsRef": termsRef,  "salesRepRef": salesRepRef,  "openBalance": openBalance, "openBalanceDate": openBalanceDate,  "totalBalance": totalBalance,  "salesTaxCodeRef": salesTaxCodeRef,  "salesTaxCountry": salesTaxCountry,  "resaleNumber": resaleNumber,  "accountNumber": accountNumber,  "creditLimit": creditLimit,  "preferredPaymentMethodRef": preferredPaymentMethodRef,  "creditCardInfo": creditCardInfo,  "jobStatus": jobStatus,  "jobStartDate": jobStartDate,  "jobProjectedEndDate": jobProjectedEndDate,  "jobEndDate": jobEndDate,  "jobDescription": jobDescription,  "jobTypeRef": jobTypeRef,  "notes": notes,  "priceLevelRef": priceLevelRef,  "externalGUID": externalGUID,  "taxRegistrationNumber": taxRegistrationNumber,  "currencyRef": currencyRef, "dataExtRet": dataExtRet };
+    return {
+        "listID": listID, "timeCreated": timeCreated.millisecondsSinceEpoch, "timeModified": timeModified.millisecondsSinceEpoch, "editSequence": editSequence, "name": name, "fullName": fullName, "isActive": isActive, "parentRef": parentRef, "subLevel": subLevel, "companyName": companyName, "salutation": salutation, "firstName": firstName, "middleName": middleName, "lastName": lastName, "billAddress": billAddress, "shipAddress": shipAddress, "phoneNumber": phoneNumber, "altPhoneNumber": altPhoneNumber, "faxNumber": faxNumber, "email": email, "contact": contact, "altContact": altContact, "customerTypeRef": customerTypeRef, "termsRef": termsRef, "salesRepRef": salesRepRef, "openBalance": openBalance, "openBalanceDate": (openBalanceDate != null ? openBalanceDate.millisecondsSinceEpoch : null), "totalBalance": totalBalance, "salesTaxCodeRef": salesTaxCodeRef, "salesTaxCountry": salesTaxCountry, "resaleNumber": resaleNumber, "accountNumber": accountNumber, "creditLimit": creditLimit, "preferredPaymentMethodRef": preferredPaymentMethodRef, "creditCardInfo": creditCardInfo, "jobStatus": jobStatus, "jobStartDate": jobStartDate, "jobProjectedEndDate": jobProjectedEndDate, "jobEndDate": jobEndDate, "jobDescription": jobDescription, "jobTypeRef": jobTypeRef, "notes": notes, "priceLevelRef": priceLevelRef, "externalGUID": externalGUID, "taxRegistrationNumber": taxRegistrationNumber, "currencyRef": currencyRef, "dataExtRet": dataExtRet
+    };
   }
   
   String toString () {

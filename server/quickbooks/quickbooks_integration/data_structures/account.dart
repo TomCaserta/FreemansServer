@@ -2,33 +2,57 @@ part of QuickbooksIntegration;
 
 class QBAccount extends QBModifiable {
   bool isActive;
+
   DateTime timeCreated;
+
   DateTime timeModified;
+
   String editSequence;
-  String name;  
+
+  String name;
+
   String fullName;
+
   QBRef parentRef;
+
   int subLevel;
+
   AccountType accountType;
+
   SpecialAccountType specialAccountType;
+
   bool isTaxAccount;
+
   String accountNumber;
+
   String bankNumber;
+
   QBRef salesTaxCodeRef;
+
   String description;
+
   num balance;
+
   num totalBalance;
+
   CashFlowClassification cashFlowClassification;
+
   QBRef currencyRef;
+
   List<DataExtRet> dataExtRet = new List<DataExtRet>();
-  
-  Map toJson () { 
-    return { "listID": listID, "isActive": isActive,  "timeCreated": timeCreated.millisecondsSinceEpoch,  "timeModified": timeModified.millisecondsSinceEpoch,  "editSequence": editSequence, "name": name, "fullName": fullName,  "parentRef": parentRef,  "subLevel": subLevel,  "accountType": accountType,  "specialAccountType": specialAccountType,  "isTaxAccount": isTaxAccount,  "accountNumber": accountNumber,  "bankNumber": bankNumber,  "salesTaxCodeRef": salesTaxCodeRef,  "description": description,  "balance": balance,  "totalBalance": totalBalance, "cashFlowClassification": cashFlowClassification,  "currencyRef": currencyRef };
+
+  Map toJson() {
+    return {
+        "listID": listID, "isActive": isActive, "timeCreated": timeCreated.millisecondsSinceEpoch, "timeModified": timeModified.millisecondsSinceEpoch, "editSequence": editSequence, "name": name, "fullName": fullName, "parentRef": parentRef, "subLevel": subLevel, "accountType": accountType, "specialAccountType": specialAccountType, "isTaxAccount": isTaxAccount, "accountNumber": accountNumber, "bankNumber": bankNumber, "salesTaxCodeRef": salesTaxCodeRef, "description": description, "balance": balance, "totalBalance": totalBalance, "cashFlowClassification": cashFlowClassification, "currencyRef": currencyRef
+    };
   }
-  String toString () {
+
+  String toString() {
     return toJson().toString();
   }
-  
+
+  QBAccount();
+
   QBAccount.parseFromListXml (XmlElement data) {
     listID = getQbxmlContainer(data, "ListID").text;
     isActive = getQbxmlContainer(data, "IsActive", optional: true).boolean;
@@ -51,17 +75,31 @@ class QBAccount extends QBModifiable {
     cashFlowClassification = EnumString.get(CashFlowClassification, getQbxmlContainer(data, "CashFlowClassification", optional: true).text);
     currencyRef = new QBRef.parseFromListXml(getQbxmlContainer(data, "CurrencyRef", optional: true));
     XmlCollection dataExtRetList = data.query("DataExtRet");
-    dataExtRetList.forEach((XmlElement dataExtEl) {          
+    dataExtRetList.forEach((XmlElement dataExtEl) {
       dataExtRet.add(new DataExtRet.parseFromListXml(dataExtEl));
-    });   
+    });
+    super.addToCache(listID);
   }
-  
-  
+
+
+  static Future<QBAccount> fetchByID(String listID, QuickbooksConnector qbc) {
+    Completer c = new Completer();
+    QBAccountsList cl = new QBAccountsList(qbc, listID: listID);
+    cl.forEach().listen((QBAccount acc) {
+      c.complete(acc);
+    }, onDone: () {
+      if (!c.isCompleted) {
+        c.completeError("No results from query for ${listID} perhaps an outdated row?");
+      }
+    });
+    return c.future;
+  }
+
   Future<bool> insert(QuickbooksConnector qbc) {
-    
+
   }
-  
+
   Future<bool> update(QuickbooksConnector qbc) {
-    
+
   }
 }

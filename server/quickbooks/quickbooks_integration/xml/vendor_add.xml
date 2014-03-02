@@ -1,0 +1,123 @@
+{extends::template}
+        {section::CONTENT}
+<VendorAddRq>
+    <VendorAdd>
+        <Name>{$::name}</Name>
+        {if::isActive != null}<IsActive>{$::isActive}</IsActive>{endIf}
+        {if::companyName}<CompanyName>{$::companyName}</CompanyName>{endIf}
+        {if::salutation}<Salutation>{$::salutation}</Salutation>{endIf}
+        {if::firstName}<FirstName>{$::firstName}</FirstName>{endIf}
+        {if::middleName}<MiddleName>{$::middleName}</MiddleName>{endIf}
+        {if::lastName}<LastName>{$::lastName}</LastName>{endIf}
+
+        {if::vendorAddress}
+        <VendorAddress>
+            {if::vendorAddress.line1}<Addr1>{$::vendorAddress.line1}</Addr1>{endIf}
+            {if::vendorAddress.line2}<Addr2>{$::vendorAddress.line2}</Addr2>{endIf}
+            {if::vendorAddress.line3}<Addr3>{$::vendorAddress.line3}</Addr3>{endIf}
+            {if::vendorAddress.line4}<Addr4>{$::vendorAddress.line4}</Addr4>{endIf}
+            {if::vendorAddress.line5}<Addr5>{$::vendorAddress.line5}</Addr5>{endIf}
+            {if::vendorAddress.city}<City>{$::vendorAddress.city}</City>{endIf}
+            {if::vendorAddress.state}<State>{$::vendorAddress.state}</State>{endIf}
+            {if::vendorAddress.postalCode}<PostalCode>{$::vendorAddress.postalCode}</PostalCode>{endIf}
+            {if::vendorAddress.country}<Country>{$::vendorAddress.country}</Country>{endIf}
+            {if::vendorAddress.note}<Note>{$::vendorAddress.note}</Note>{endIf}
+        </VendorAddress>
+        {endIf}
+
+        {if::phoneNumber}<Phone>{$::phoneNumber}</Phone>{endIf}
+        {if::altPhone}<AltPhone>{$::altPhone}</AltPhone>{endIf}
+        {if::faxNumber}<Fax>{$::faxNumber}</Fax>{endIf}
+        {if::email}<Email>{$::email}</Email>{endIf}
+        {if::contact}<Contact>{$::contact}</Contact>{endIf}
+        {if::altContact}<AltContact>{$::altContact}</AltContact>{endIf}
+        {if::nameOnCheck}<NameOnCheck>{$::nameOnCheck}</NameOnCheck>{endIf}
+        {if::accountNumber}<AccountNumber>{$::accountNumber}</AccountNumber>{endIf}
+        {if::notes}<Notes>{$::notes}</Notes>{endIf}
+
+        {if::vendorTypeRef}
+        <VendorTypeRef>
+            {if::vendorTypeRef.listID}<ListID>{$::vendorTypeRef.listID}</ListID>{endIf}
+            {if::vendorTypeRef.fullName}<FullName>{$::vendorTypeRef.fullName}</FullName>{endIf}
+        </VendorTypeRef>
+        {endIf}
+
+        {if::termsRef}
+        <TermsRef>
+            {if::termsRef.listID}<ListID>{$::termsRef.listID}</ListID>{endIf}
+            {if::termsRef.fullName}<FullName>{$::termsRef.fullName}</FullName>{endIf}
+        </TermsRef>
+        {endIf}
+
+        {if::creditLimit}<CreditLimit>{$::creditLimit}</CreditLimit>{endIf}
+        {if::vendorTaxIdent}<VendorTaxIdent>{$::vendorTaxIdent}</VendorTaxIdent>{endIf}
+        {if::openBalance}<OpenBalance>{$::openBalance}</OpenBalance>{endIf}
+        {if::openBalanceDate}<OpenBalanceDate>{$::openBalanceDate}</OpenBalanceDate>{endIf}
+
+        {if::billingRateRef}
+        <BillingRateRef>
+            {if::billingRateRef.listID}<ListID>{$::billingRateRef.listID}</ListID>{endIf}
+            {if::billingRateRef.fullName}<FullName>{$::billingRateRef.fullName}</FullName>{endIf}
+        </BillingRateRef>
+        {endIf}
+
+        {if::externalGUID}<ExternalGUID>{$::externalGUID}</ExternalGUID>{endIf}
+
+        {if::salesTaxCodeRef}
+        <SalesTaxCodeRef>
+            {if::salesTaxCodeRef.listID}<ListID>{$::salesTaxCodeRef.listID}</ListID>{endIf}
+            {if::salesTaxCodeRef.fullName}<FullName>{$::salesTaxCodeRef.fullName}</FullName>{endIf}
+        </SalesTaxCodeRef>
+        {endIf}
+
+        {if::salesTaxCountry}<SalesTaxCountry>{$::salesTaxCountry}</SalesTaxCountry>{endIf}
+        {if::isSalesTaxAgency != null}<IsSalesTaxAgency>{$::isSalesTaxAgency}</IsSalesTaxAgency>{endIf}
+
+        {if::salesTaxReturnRef}
+        <SalesTaxReturnRef>
+            {if::salesTaxReturnRef.listID}<ListID>{$::salesTaxReturnRef.listID}</ListID>{endIf}
+            {if::salesTaxReturnRef.fullName}<FullName>{$::salesTaxReturnRef.fullName}</FullName>{endIf}
+        </SalesTaxReturnRef>
+        {endIf}
+
+        {if::taxRegistrationNumber}<TaxRegistrationNumber>{$::taxRegistrationNumber}</TaxRegistrationNumber>{endIf}
+
+        {if::reportingPeriod}<ReportingPeriod>{$::reportingPeriod}</ReportingPeriod>{endIf}
+        {if::isTaxTrackedOnPurchases != null}<IsTaxTrackedOnPurchases>
+        {$::isTaxTrackedOnPurchases}</IsTaxTrackedOnPurchases>{endIf}
+
+        {if::taxOnPurchasesAccountRef}
+        <TaxOnPurchasesAccountRef>
+            {if::taxOnPurchasesAccountRef.listID}<ListID>{$::taxOnPurchasesAccountRef.listID}</ListID>{endIf}
+            {if::taxOnPurchasesAccountRef.fullName}<FullName>{$::taxOnPurchasesAccountRef.fullName}</FullName>{endIf}
+        </TaxOnPurchasesAccountRef>
+        {endIf}
+
+        {if::isTaxTrackedOnSales != null}<IsTaxTrackedOnSales>{$::isTaxTrackedOnSales}</IsTaxTrackedOnSales>{endIf}
+
+        {if::taxOnSalesAccountRef}
+        <TaxOnSalesAccountRef>
+            {if::taxOnSalesAccountRef.listID}<ListID>{$::taxOnSalesAccountRef.listID}</ListID>{endIf}
+            {if::taxOnSalesAccountRef.fullName}<FullName>{$::taxOnSalesAccountRef.fullName}</FullName>{endIf}
+        </TaxOnSalesAccountRef>
+        {endIf}
+
+
+        {if::isTaxOnTax != null}<IsTaxOnTax>{$::isTaxOnTax}</IsTaxOnTax>{endIf}
+
+        {if::prefillAccountRef}
+        <PrefillAccountRef>
+            {if::prefillAccountRef.listID}<ListID>{$::prefillAccountRef.listID}</ListID>{endIf}
+            {if::prefillAccountRef.fullName}<FullName>{$::prefillAccountRef.fullName}</FullName>{endIf}
+        </PrefillAccountRef>
+        {endIf}
+
+        {if::currencyRef}
+        <CurrencyRef>
+            {if::currencyRef.listID}<ListID>{$::currencyRef.listID}</ListID>{endIf}
+            {if::currencyRef.fullName}<FullName>{$::currencyRef.fullName}</FullName>{endIf}
+        </CurrencyRef>
+        {endIf}
+    </VendorAdd>
+</VendorAddRq>
+        {endSection}
