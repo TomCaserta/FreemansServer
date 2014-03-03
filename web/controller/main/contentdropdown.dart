@@ -33,28 +33,25 @@ class ContentDropdown {
     this.inputBox = new DivElement();
 
     el.onClick.listen((ev) { inputBox.focus(); });
-    inputBox.tabIndex = 1;
+    //inputBox.tabIndex = 1;
     inputBox.classes.add("auto-completer-input");
-    inputBox.tabIndex = 1;
+    //inputBox.tabIndex = 1;
     inputBox.contentEditable = "true";
     inputBox.onKeyUp.listen((KeyboardEvent ev) {
       if ((ev.which >= 48 && ev.which <= 222) || (ev.which == 32)) {
         refreshSubset();
       }
       if (ev.which == 8) {
-        if (inputBox.text.length > 0) {
-          refreshSubset();
-        }
-        else {
+        if (inputBox.text.length == 0) {
           if (activeNum > 0) {
             currentSelected = 0;
             activeNum--;
             selectedElements.removeLast();
             this.selectedElementsDisplay.children.last.remove();
             inputBox.text = "";
-            refreshSubset();
           }
         }
+        refreshSubset();
       }
     });
     inputBox.onFocus.listen((ev) {
@@ -63,10 +60,15 @@ class ContentDropdown {
       el.classes.add("focused");
       refreshSubset();
     });
-    inputBox.onBlur.listen((ev) { this.autoCompleteBox.remove();el.classes.remove("focused"); });
+    inputBox.onBlur.listen((ev) { this.autoCompleteBox.remove();el.classes.remove("focused");
+      if (!isComplete) {
+        el.parent.classes.add("has-error");
+      }
+    });
     inputBox.onKeyDown.listen((KeyboardEvent ev) {
       switch (ev.which) {
         case 13:
+        case 9:
           if (!isComplete) {
             List<Element> lis = this.autoCompleteBox.querySelectorAll("ul > li");
             print(lis.length);
@@ -78,7 +80,9 @@ class ContentDropdown {
               refreshSubset();
             }
           }
-          ev.preventDefault();
+          /// Check again because it may have changed inside the above if 
+          if (isComplete) el.parent.classes.remove("has-error");
+          if (ev.which == 13) ev.preventDefault();
           break;
         case 127: ev.preventDefault();
         // Delete
@@ -98,7 +102,7 @@ class ContentDropdown {
             currentSelected++;
             if (lis.length >= currentSelected) {
               lis.forEach((elem) => elem.classes.remove("active"));
-              lis[currentSelected].classes.add("active");
+              lis[currentSelected]..scrollIntoView()..classes.add("active");
             }
             ev.preventDefault();
           }
@@ -110,7 +114,7 @@ class ContentDropdown {
             if (lis.length >= currentSelected) {
 
               lis.forEach((elem) => elem.classes.remove("active"));
-              lis[currentSelected].classes.add("active");
+              lis[currentSelected]..scrollIntoView()..classes.add("active");
             }
             ev.preventDefault();
           }
@@ -135,12 +139,35 @@ class ContentDropdown {
       ulEl.classes.add("auto-completer-suggestions");
       currentSelected = 0;
       bool isFirst = true;
-      activeList.where((String res) { return currentSearch.length <= res.length ? res.substring(0,currentSearch.length).toLowerCase() == currentSearch.toLowerCase() : false; }).forEach((String match) {
+      activeList.where((String res) {
+        if (currentSearch.length <= res.length) {
+          //print("Checking: '${res.substring(0,currentSearch.length).toLowerCase()}' == '${currentSearch.toLowerCase()}'");
+          return res.substring(0,currentSearch.length).toLowerCase() == currentSearch.toLowerCase();
+        }
+        else {
+          return false;
+        }        
+      }).forEach((String match) {
+        print("MATCH $match");
         LIElement li = new LIElement();
         li.text = match;
+       
         ulEl.append(li);
+        li.onMouseDown.listen((ev) {
+           if (!isComplete) {
+               selectedElements.add(ev.target.text);
+               this.selectedElementsDisplay.append(new LIElement()..text = ev.target.text);
+               activeNum++;
+               inputBox.text = "";
+               refreshSubset();
+               inputBox.focus();
+           }
+           if (isComplete) el.parent.classes.remove("has-error");
+         });
         if (isFirst) { li.classes.add("active"); isFirst =  false;}
       });
+      if (isFirst) ulEl.style.display = "none";
+      else ulEl.style.display = "inline-block";
       this.autoCompleteBox.append(ulEl);
     }
   }
