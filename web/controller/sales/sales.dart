@@ -21,6 +21,6 @@ class SalesController {
   }
   
   SalesController (Scope this.s, StateService this.state) {
-print(weightList);
+    print(weightList);
   }
 }

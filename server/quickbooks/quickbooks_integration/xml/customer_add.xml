@@ -12,48 +12,48 @@
 </ParentRef>
 {endIf}
 
-{if::companyName}<CompanyName >{$::companyName}</CompanyName>{endIf}
-{if::salutation}<Salutation >{$::salutation}</Salutation>{endIf}
-{if::firstName}<FirstName >{$::firstName}</FirstName>{endIf}
-{if::middleName}<MiddleName >{$::middleName}</MiddleName>{endIf}
-{if::lastName}<LastName >{$::lastName}</LastName>{endIf}
+{if::companyName != null}<CompanyName >{$::companyName}</CompanyName>{endIf}
+{if::salutation != null}<Salutation >{$::salutation}</Salutation>{endIf}
+{if::firstName != null}<FirstName >{$::firstName}</FirstName>{endIf}
+{if::middleName != null}<MiddleName >{$::middleName}</MiddleName>{endIf}
+{if::lastName != null}<LastName >{$::lastName}</LastName>{endIf}
 
 {if::billAddress}
 <BillAddress>
-{if::billAddress.line1}<Addr1 >{$::billAddress.line1}</Addr1>{endIf}
-{if::billAddress.line2}<Addr2 >{$::billAddress.line2}</Addr2>{endIf}
-{if::billAddress.line3}<Addr3 >{$::billAddress.line3}</Addr3>{endIf}
-{if::billAddress.line4}<Addr4 >{$::billAddress.line4}</Addr4>{endIf}
-{if::billAddress.line5}<Addr5 >{$::billAddress.line5}</Addr5>{endIf}
-{if::billAddress.city}<City >{$::billAddress.city}</City>{endIf}
-{if::billAddress.state}<State >{$::billAddress.state}</State>{endIf}
-{if::billAddress.postalCode}<PostalCode >{$::billAddress.postalCode}</PostalCode>{endIf}
-{if::billAddress.country}<Country >{$::billAddress.country}</Country>{endIf}
-{if::billAddress.note}<Note >{$::billAddress.note}</Note>{endIf}
+{if::billAddress.line1 != null}<Addr1 >{$::billAddress.line1}</Addr1>{endIf}
+{if::billAddress.line2 != null}<Addr2 >{$::billAddress.line2}</Addr2>{endIf}
+{if::billAddress.line3 != null}<Addr3 >{$::billAddress.line3}</Addr3>{endIf}
+{if::billAddress.line4 != null}<Addr4 >{$::billAddress.line4}</Addr4>{endIf}
+{if::billAddress.line5 != null}<Addr5 >{$::billAddress.line5}</Addr5>{endIf}
+{if::billAddress.city != null}<City >{$::billAddress.city}</City>{endIf}
+{if::billAddress.state != null}<State >{$::billAddress.state}</State>{endIf}
+{if::billAddress.postalCode != null}<PostalCode >{$::billAddress.postalCode}</PostalCode>{endIf}
+{if::billAddress.country != null}<Country >{$::billAddress.country}</Country>{endIf}
+{if::billAddress.note != null}<Note >{$::billAddress.note}</Note>{endIf}
 </BillAddress>
 {endIf}
 
 {if::shipAddress}
 <ShipAddress>
-{if::shipAddress.line1}<Addr1 >{$::shipAddress.line1}</Addr1>{endIf}
-{if::shipAddress.line2}<Addr2 >{$::shipAddress.line2}</Addr2>{endIf}
-{if::shipAddress.line3}<Addr3 >{$::shipAddress.line3}</Addr3>{endIf}
-{if::shipAddress.line4}<Addr4 >{$::shipAddress.line4}</Addr4>{endIf}
-{if::shipAddress.line5}<Addr5 >{$::shipAddress.line5}</Addr5>{endIf}
-{if::shipAddress.city}<City >{$::shipAddress.city}</City>{endIf}
-{if::shipAddress.state}<State >{$::shipAddress.state}</State>{endIf}
-{if::shipAddress.postalCode}<PostalCode >{$::shipAddress.postalCode}</PostalCode>{endIf}
-{if::shipAddress.country}<Country >{$::shipAddress.country}</Country>{endIf}
-{if::shipAddress.note}<Note >{$::shipAddress.note}</Note>{endIf}
+{if::shipAddress.line1 != null}<Addr1 >{$::shipAddress.line1}</Addr1>{endIf}
+{if::shipAddress.line2 != null}<Addr2 >{$::shipAddress.line2}</Addr2>{endIf}
+{if::shipAddress.line3 != null}<Addr3 >{$::shipAddress.line3}</Addr3>{endIf}
+{if::shipAddress.line4 != null}<Addr4 >{$::shipAddress.line4}</Addr4>{endIf}
+{if::shipAddress.line5 != null}<Addr5 >{$::shipAddress.line5}</Addr5>{endIf}
+{if::shipAddress.city != null}<City >{$::shipAddress.city}</City>{endIf}
+{if::shipAddress.state != null}<State >{$::shipAddress.state}</State>{endIf}
+{if::shipAddress.postalCode != null}<PostalCode >{$::shipAddress.postalCode}</PostalCode>{endIf}
+{if::shipAddress.country != null}<Country >{$::shipAddress.country}</Country>{endIf}
+{if::shipAddress.note != null}<Note >{$::shipAddress.note}</Note>{endIf}
 </ShipAddress>
 {endIf}
 
-{if::phoneNumber}<Phone >{$::phoneNumber}</Phone>{endIf}
-{if::altPhoneNumber}<AltPhone >{$::altPhoneNumber}</AltPhone>{endIf}
-{if::faxNumber}<Fax >{$::faxNumber}</Fax>{endIf}
-{if::email}<Email >{$::email}</Email>{endIf}
-{if::contact}<Contact >{$::contact}</Contact>{endIf}
-{if::altContact}<AltContact >{$::altContact}</AltContact>{endIf}
+{if::phoneNumber != null}<Phone >{$::phoneNumber}</Phone>{endIf}
+{if::altPhoneNumber != null}<AltPhone >{$::altPhoneNumber}</AltPhone>{endIf}
+{if::faxNumber != null}<Fax >{$::faxNumber}</Fax>{endIf}
+{if::email != null}<Email >{$::email}</Email>{endIf}
+{if::contact != null}<Contact >{$::contact}</Contact>{endIf}
+{if::altContact != null}<AltContact >{$::altContact}</AltContact>{endIf}
 
 {if::customerTypeRef}
 <CustomerTypeRef>
@@ -122,7 +122,7 @@
 </JobTypeRef>
 {endIf}
 
-{if::notes}<Notes >{$::notes}</Notes>{endIf}
+{if::notes != null}<Notes >{$::notes}</Notes>{endIf}
 
 {if::priceLevelRef}
 <PriceLevelRef>

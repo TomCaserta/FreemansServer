@@ -78,7 +78,7 @@ class QBExpression {
      else if (e is QBOperator) {
        // TODO: FOLLOW BODMAS NOT ORDER OF OPERANDS
        // Should be relatively simple to do, loop over the operators implementation above
-       currentOutputValue = OPERATORS[e.op]((currentOutputValue != null ? currentOutputValue : 0), (isLast ? 0 : parsedExpression[x+1]));
+       currentOutputValue = OPERATORS[e.op](currentOutputValue, (isLast ? 0 : parsedExpression[x+1].value));
        if (!isLast) x+=1;
      }
    }

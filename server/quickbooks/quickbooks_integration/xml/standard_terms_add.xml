@@ -1,13 +1,13 @@
 {extends::template}
 {section::CONTENT}
 <StandardTermsAddRq>
-    <StandardTermsAdd>
-        <Name>{$::name}</Name> 
-        {if::isActive != null}<IsActive>{$::isActive}</IsActive>{endIf}
-        {if::stdDueDays}<StdDueDays>{$::stdDueDays}</StdDueDays>{endIf}
-        {if::stdDiscountDays}<StdDiscountDays>{$::stdDiscountDays}</StdDiscountDays>{endIf}
-        {if::discountPct}<DiscountPct>{$::discountPct}</DiscountPct>{endIf}
-    </StandardTermsAdd>
-    {if::includeRetElement}<IncludeRetElement>{$::includeRetElement}</IncludeRetElement>{endIf}
+<StandardTermsAdd>
+<Name>{$::name}</Name>
+{if::isActive != null}<IsActive>{$::isActive}</IsActive>{endIf}
+{if::stdDueDays}<StdDueDays>{$::stdDueDays}</StdDueDays>{endIf}
+{if::stdDiscountDays}<StdDiscountDays>{$::stdDiscountDays}</StdDiscountDays>{endIf}
+{if::discountPct}<DiscountPct>{$::discountPct}</DiscountPct>{endIf}
+</StandardTermsAdd>
+{if::includeRetElement}<IncludeRetElement>{$::includeRetElement}</IncludeRetElement>{endIf}
 </StandardTermsAddRq>
 {endSection}

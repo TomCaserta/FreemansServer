@@ -83,7 +83,10 @@ class QBSimpleListQuery {
 
 class QBVendorList extends QBSimpleListQuery {
   QBVendorList(qbc, step, { String listID: null }):super(qbc, "Vendor", step: step) {
-    this.listID = listID;
+    if(listID != null) {
+      this.listID = listID;
+      this.useIterator = false;
+    }
   }
 
   Stream<QBVendor> forEach() {
@@ -103,7 +106,10 @@ class QBVendorList extends QBSimpleListQuery {
 
 class QBAccountsList extends QBSimpleListQuery {
   QBAccountsList(qbc, { String listID: null }):super(qbc, "Account", useIterator: false) {
-    this.listID = listID;
+    if(listID != null) {
+      this.listID = listID;
+      this.useIterator = false;
+    }
   }
 
   Stream<QBAccount> forEach () {
@@ -125,7 +131,10 @@ class QBAccountsList extends QBSimpleListQuery {
 
 class QBCustomerList extends QBSimpleListQuery {
   QBCustomerList(qbc, step, { String listID: null }):super(qbc, "Customer", step: step) {
-    this.listID = listID;
+    if(listID != null) {
+      this.listID = listID;
+      this.useIterator = false;
+    }
   }
 
   Stream<QBCustomer> forEach () {

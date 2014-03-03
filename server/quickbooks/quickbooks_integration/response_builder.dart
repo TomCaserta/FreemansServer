@@ -104,8 +104,8 @@ class ResponseBuilder {
                        switch (commandDat[0].toUpperCase()) {
                          case "EXTENDS":
                              // Extension should replace the tag with the extension data. 
-                             String extendData = parseFromFile(commandDat[1], params: params).replaceAll("\n","");
-                             fileData = _makeReplacement(fileData, tagStart, x+1, extendData);
+                             String extendData = parseFromFile(commandDat[1], params: params);
+                           fileData = _makeReplacement(fileData, tagStart, x+1, extendData);
                              x = tagStart + extendData.length;
                              
                            break;
@@ -223,6 +223,7 @@ class ResponseBuilder {
                                    
                                    if (paramDat != null || hasDefault || optional) {
                                      String value = (paramDat != null ? "$fullVariable=\"${_convertToString(paramDat, false)}\"" : (hasDefault ? "$fullVariable=${attribDefault}" : ""));
+
                                      fileData = _makeReplacement(fileData, tagStart, x+1, value);
                                      x = tagStart + value.length;
                                    }

@@ -6,36 +6,36 @@
         <EditSequence>{$::editSequence}</EditSequence>
         {if::name}<Name>{$::name}</Name>{endIf}
         {if::isActive != null}<IsActive>{$::isActive}</IsActive>{endIf}
-        {if::companyName}<CompanyName>{$::companyName}</CompanyName>{endIf}
-        {if::salutation}<Salutation>{$::salutation}</Salutation>{endIf}
-        {if::firstName}<FirstName>{$::firstName}</FirstName>{endIf}
-        {if::middleName}<MiddleName>{$::middleName}</MiddleName>{endIf}
-        {if::lastName}<LastName>{$::lastName}</LastName>{endIf}
+        {if::companyName != null}<CompanyName>{$::companyName}</CompanyName>{endIf}
+        {if::salutation != null}<Salutation>{$::salutation}</Salutation>{endIf}
+        {if::firstName != null}<FirstName>{$::firstName}</FirstName>{endIf}
+        {if::middleName != null}<MiddleName>{$::middleName}</MiddleName>{endIf}
+        {if::lastName != null}<LastName>{$::lastName}</LastName>{endIf}
 
         {if::vendorAddress}
         <VendorAddress>
-            {if::vendorAddress.line1}<Addr1>{$::vendorAddress.line1}</Addr1>{endIf}
-            {if::vendorAddress.line2}<Addr2>{$::vendorAddress.line2}</Addr2>{endIf}
-            {if::vendorAddress.line3}<Addr3>{$::vendorAddress.line3}</Addr3>{endIf}
-            {if::vendorAddress.line4}<Addr4>{$::vendorAddress.line4}</Addr4>{endIf}
-            {if::vendorAddress.line5}<Addr5>{$::vendorAddress.line5}</Addr5>{endIf}
-            {if::vendorAddress.city}<City>{$::vendorAddress.city}</City>{endIf}
-            {if::vendorAddress.state}<State>{$::vendorAddress.state}</State>{endIf}
-            {if::vendorAddress.postalCode}<PostalCode>{$::vendorAddress.postalCode}</PostalCode>{endIf}
-            {if::vendorAddress.country}<Country>{$::vendorAddress.country}</Country>{endIf}
-            {if::vendorAddress.note}<Note>{$::vendorAddress.note}</Note>{endIf}
+            {if::vendorAddress.line1 != null}<Addr1>{$::vendorAddress.line1}</Addr1>{endIf}
+            {if::vendorAddress.line2 != null}<Addr2>{$::vendorAddress.line2}</Addr2>{endIf}
+            {if::vendorAddress.line3 != null}<Addr3>{$::vendorAddress.line3}</Addr3>{endIf}
+            {if::vendorAddress.line4 != null}<Addr4>{$::vendorAddress.line4}</Addr4>{endIf}
+            {if::vendorAddress.line5 != null}<Addr5>{$::vendorAddress.line5}</Addr5>{endIf}
+            {if::vendorAddress.city != null}<City>{$::vendorAddress.city}</City>{endIf}
+            {if::vendorAddress.state != null}<State>{$::vendorAddress.state}</State>{endIf}
+            {if::vendorAddress.postalCode != null}<PostalCode>{$::vendorAddress.postalCode}</PostalCode>{endIf}
+            {if::vendorAddress.country != null}<Country>{$::vendorAddress.country}</Country>{endIf}
+            {if::vendorAddress.note != null}<Note>{$::vendorAddress.note}</Note>{endIf}
         </VendorAddress>
         {endIf}
 
-        {if::phoneNumber}<Phone>{$::phoneNumber}</Phone>{endIf}
-        {if::altPhone}<AltPhone>{$::altPhone}</AltPhone>{endIf}
-        {if::faxNumber}<Fax>{$::faxNumber}</Fax>{endIf}
-        {if::email}<Email>{$::email}</Email>{endIf}
-        {if::contact}<Contact>{$::contact}</Contact>{endIf}
-        {if::altContact}<AltContact>{$::altContact}</AltContact>{endIf}
-        {if::nameOnCheck}<NameOnCheck>{$::nameOnCheck}</NameOnCheck>{endIf}
-        {if::accountNumber}<AccountNumber>{$::accountNumber}</AccountNumber>{endIf}
-        {if::notes}<Notes>{$::notes}</Notes>{endIf}
+        {if::phoneNumber != null}<Phone>{$::phoneNumber}</Phone>{endIf}
+        {if::altPhone != null}<AltPhone>{$::altPhone}</AltPhone>{endIf}
+        {if::faxNumber != null}<Fax>{$::faxNumber}</Fax>{endIf}
+        {if::email != null}<Email>{$::email}</Email>{endIf}
+        {if::contact != null}<Contact>{$::contact}</Contact>{endIf}
+        {if::altContact != null}<AltContact>{$::altContact}</AltContact>{endIf}
+        {if::nameOnCheck != null}<NameOnCheck>{$::nameOnCheck}</NameOnCheck>{endIf}
+        {if::accountNumber != null}<AccountNumber>{$::accountNumber}</AccountNumber>{endIf}
+        {if::notes != null}<Notes>{$::notes}</Notes>{endIf}
 
         {if::vendorTypeRef}
         <VendorTypeRef>
