@@ -1,6 +1,7 @@
 
 
 .focused {
+  z-index: 5 !important;
   border-color: #66afe9;
   outline: 0;
   -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075),0 0 8px rgba(102,175,233,0.6);
@@ -8,6 +9,7 @@
 }
 
 div[auto-completer] {
+  z-index: 0;
   position: relative;
   padding: 0;
   margin: 0;
@@ -26,7 +28,6 @@ div[auto-completer] {
 }
 
 .auto-completer-selections {
-
   padding-left: 15px;
   vertical-align: middle;
   display: inline-block;
@@ -64,7 +65,7 @@ div[auto-completer] {
 
 .auto-completer-suggestions {
   position: absolute;
-  z-index: 10;
+  display: none;
   background-color: white;
   margin: 0;
   width: 100%;
@@ -74,25 +75,24 @@ div[auto-completer] {
   max-height: 300px;
   overflow: auto;
   border: 1px solid #ccc;
-
-}
-.auto-completer-suggestions li {
-  margin: 0;
-  height: 50px;
-  line-height: 50px;
-  text-decoration: none;
-  list-style: none;
-  padding: 0;
-  padding-left: 15px;
-}
-.auto-completer-suggestions li:hover {
-  background-color: #EEEEFF;
-  cursor: pointer;
-}
-
-.auto-completer-suggestions .active {
-  font-weight: bold;
-  color: white;
-  font-weight: bold;
-  background-color: #66afe9;
+  li {
+    margin: 0;
+    height: 50px;
+    line-height: 50px;
+    text-decoration: none;
+    list-style: none;
+    padding: 0;
+    padding-left: 15px;
+    margin-right: 10px;
+    &:hover {
+      background-color: #EEEEFF;
+      cursor: pointer;
+    }
+  }
+  .active {
+    font-weight: bold;
+    color: white;
+    font-weight: bold;
+    background-color: #66afe9;
+  }
 }

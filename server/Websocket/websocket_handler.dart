@@ -31,7 +31,6 @@ class WebsocketHandler {
                 if (obj.containsKey("ID") && obj["ID"] is int) {
                   // Construct our client packet
                   ClientPacket c = ClientPacket.getPacket(obj["ID"], obj);
-                  print(obj);
                   // Send the client and websocket handler to the packet and ask it to handle the packet.
                   if (c != null) {
                     if (obj.containsKey("rID") && obj["rID"] is String) {
@@ -47,7 +46,7 @@ class WebsocketHandler {
               }
             }
             catch (e) {
-              print("Error when parsing packet $e");
+              ffpServerLog.warning("Error when parsing packet $e");
             }
           }
           // Listen to the websocket for messages
@@ -60,7 +59,6 @@ class WebsocketHandler {
       // Listen to normal http connections and upgrade them to a websocket connection
       server.listen((HttpRequest request) { 
         ffpServerLog.info ("New connection to server");
-        print(request.uri.path);
         if (request.uri.path == "/websocket") {
           ffpServerLog.info ("Websocket request found... forwarding...");
                sc.add(request);

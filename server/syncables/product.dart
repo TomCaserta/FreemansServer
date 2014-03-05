@@ -3,13 +3,13 @@ part of FreemansServer;
 
 class ProductWeight extends Syncable<ProductWeight>  {
   int type = SyncableTypes.PRODUCT_WEIGHT;
-  ProductWeight._create(ID, this._description):super(ID);
+  ProductWeight._create(ID, this._description, this._kg):super(ID);
   ProductWeight.fromJson (Map params):super.fromJson(params);
-  factory ProductWeight (int ID, String description) {
+  factory ProductWeight (int ID, String description, int kg) {
     if (exists(ID)) {
       return get(ID);
     }
-    else return new ProductWeight._create(ID, description);
+    else return new ProductWeight._create(ID, description, kg);
   }
   static exists (int ID) => Syncable.exists(ProductWeight, ID);
   static get (int ID) => Syncable.get(ProductWeight, ID);
@@ -17,10 +17,11 @@ class ProductWeight extends Syncable<ProductWeight>  {
   static Future<bool> init() {
     Completer c = new Completer();
     ffpServerLog.info("Loading product weights list...");
-    dbHandler.query("SELECT ID, description, active FROM productweights").then((Results results){
+    dbHandler.query("SELECT ID, description, active, kg FROM productweights").then((Results results){
       results.listen((Row row) {
-        ProductWeight weight = new ProductWeight(row[0], row[1]);
-        weight._isActive = row[2];
+        ProductWeight weight = new ProductWeight(row[0], row[1], row[3]);
+        weight._isActive = row[2] == 1;
+        
       },
       onDone: () {
         c.complete(true);
@@ -40,7 +41,7 @@ class ProductWeight extends Syncable<ProductWeight>  {
   
   
   String _description;
-  int _kg;
+  num _kg;
   Map<String, dynamic> toJson () { 
           return super.toJson()..addAll({ "description": description, "kg": kg });
   }
@@ -48,7 +49,7 @@ class ProductWeight extends Syncable<ProductWeight>  {
   @IncludeSchema()
   String get description => _description;
   @IncludeSchema()
-  int get kg => _kg;
+  num get kg => _kg;
   set description (String description) {
     if (description != _description) {
       _description = description;
@@ -123,9 +124,10 @@ class ProductPackaging extends Syncable<ProductPackaging>  {
   static Future<bool> init() {
     Completer c = new Completer();
     ffpServerLog.info("Loading product weights list...");
-    dbHandler.query("SELECT ID, description FROM packaging").then((Results results){
+    dbHandler.query("SELECT ID, description, active FROM packaging").then((Results results){
       results.listen((Row row) {
         ProductPackaging p = new ProductPackaging(row[0],row[1]);
+        p._isActive = row[2] == 1;
       },
       onDone: () {
         c.complete(true);
@@ -224,7 +226,6 @@ class ProductCategory extends Syncable<ProductCategory>  {
     ffpServerLog.info("Loading category list...");
     dbHandler.query("SELECT ID, categoryName, categoryColour, active FROM productcategories").then((Results results){
       results.listen((Row row) {
-        print("Created new product category");
         ProductCategory p = new ProductCategory(row[0],row[1], row[2])..isActive = row[3] == 1;
       },
       onDone: () {
@@ -327,7 +328,7 @@ class Product extends Syncable<Product> {
   static Future<bool> init() {
     Completer c = new Completer();
     ffpServerLog.info("Loading product list...");
-    dbHandler.query("SELECT ID, productName, validWeights, validPackaging, quickbooksItem, category FROM products").then((Results results){
+    dbHandler.query("SELECT ID, productName, validWeights, validPackaging, quickbooksItem, category, active FROM products").then((Results results){
       results.listen((Row row) {
         List<int> vWeights = new List<int>();
         List<int> vPackaging = new List<int>();
@@ -343,7 +344,7 @@ class Product extends Syncable<Product> {
             vPackaging.add(int.parse(val));
           });
         }
-        new Product(row[0], row[1], vWeights, vPackaging, row[4], row[5]);
+        new Product(row[0], row[1], vWeights, vPackaging, row[4], row[5]).._isActive = row[6] == 1;
       },
       onDone: () {
         ffpServerLog.info("List loaded.");

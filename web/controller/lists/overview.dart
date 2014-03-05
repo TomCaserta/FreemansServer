@@ -35,11 +35,12 @@ class ListEditor {
 //      lists.add(new ListContainer("Suppliers", state));
 //      lists.add(new ListContainer("Transport", state));
 //      lists.add(new ListContainer("Products", state));
+        lists.add(new ListContainer<Product>("Products", state, state.productList));
         lists.add(new ListContainer<ProductCategory>("Product Categories", state, state.productCategoryList));
-//      lists.add(new ListContainer("Weights", state));
-//      lists.add(new ListContainer("Packaging", state));
-//      lists.add(new ListContainer("Terms", state));
-//      lists.add(new ListContainer("Users", state));
+        lists.add(new ListContainer<ProductWeight>("Weights", state, state.productWeightsList));
+        lists.add(new ListContainer<ProductPackaging>("Packaging", state, state.productPackagingList));
+        lists.add(new ListContainer<Terms>("Terms", state, state.termsList));
+        lists.add(new ListContainer<Locations>("Locations", state, state.locationList));
     }
   }
   void confirmedViewChange ([String listName, bool isNew]) {

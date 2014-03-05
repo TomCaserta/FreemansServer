@@ -526,7 +526,7 @@
                         <label for="globalID" class="col-md-2">Global ID:</label>
 
                         <div class="col-md-10">
-                            <input type="text" class="form-control" id="globalID" disabled
+                            <input type="text" class="form-control" id="globalID" ng-model="listoverview.activeList.activeItem.Uuid" disabled
                                    placeholder="{XXXX99-XXXX-XXX-XX99}">
                         </div>
 
@@ -657,7 +657,7 @@
                         <label for="weightName" class="col-md-2">Weight Name:</label>
 
                         <div class="col-md-10">
-                            <input type="text" class="form-control" id="weightName" placeholder="Weight Name">
+                            <input type="text" ng-model="listoverview.activeList.activeItem.name" class="form-control" id="weightName" placeholder="Weight Name">
                         </div>
                     </div>
                     <div class="form-group">
@@ -665,7 +665,7 @@
 
                         <div class="col-md-10">
                             <div class="input-group">
-                                <input type="number" class="form-control" id="weight" placeholder="100">
+                                <input type="number" ng-model="listoverview.activeList.activeItem.kg" class="form-control" id="weight" placeholder="100">
                                 <span class="input-group-addon">KG</span>
                             </div>
                         </div>
@@ -688,10 +688,10 @@
             <div class="panel-body">
                 <fieldset>
                     <div class="form-group">
-                        <label for="weightName" class="col-md-2">Packaging Description:</label>
+                        <label for="description" class="col-md-2">Packaging Description:</label>
 
                         <div class="col-md-10">
-                            <input type="text" class="form-control" id="weightName" placeholder="Description">
+                            <input type="text" class="form-control" id="description" ng-model="listoverview.activeList.activeItem.description" placeholder="Description">
                         </div>
                     </div>
                 </fieldset>
@@ -704,6 +704,89 @@
         </div>
     </form>
 </section>
+
+
+<section class="col-lg-12" ng-if="listoverview.activeList.name == 'Terms'">
+    <form role="form" class="form-horizontal">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4>Terms Sync</h4></div>
+            <div class="panel-body">
+                <fieldset>
+                    <div class="form-group">
+                        <label for="name" class="col-md-2">Name:</label>
+
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" id="name"
+                                   ng-model="listoverview.activeList.activeItem.name" required ng-disabled="!listoverview.activeList.isAdd" maxlength="64"
+                                   placeholder="Terms Name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="stdDueDays" class="col-md-2">Terms Day:</label>
+
+                        <div class="col-md-10">
+                            <input type="number" class="form-control" id="stdDueDays"
+                                   ng-model="listoverview.activeList.activeItem.stdDueDays" required ng-disabled="!listoverview.activeList.isAdd" placeholder="Days until due">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="stdDiscountDays" class="col-md-2">Discount Day:</label>
+
+                        <div class="col-md-10">
+                            <input type="number" class="form-control" id="stdDiscountDays"
+                                   ng-model="listoverview.activeList.activeItem.stdDiscountDays" ng-disabled="!listoverview.activeList.isAdd" placeholder="Discount is applied when within this date">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="discountPct" class="col-md-2">Discount (%):</label>
+
+                        <div class="col-md-10">
+                            <input type="number" class="form-control" id="stdDueDays"
+                                   ng-model="listoverview.activeList.activeItem.discountPct" ng-disabled="!listoverview.activeList.isAdd" placeholder="Percent discount to apply">
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+            <div ng-if="!listoverview.activeList.isAdd">
+              <div class="col-sm-12 text-center alert alert-info alert-top">Quickbooks Does not support editing terms from outside of the application. Please modify the terms on Quickbooks and refresh the list.</div
+              ><div class="col-sm-12 no-gutter alert-bottom"><button class="btn btn-primary alert-bottom" style="width:100%;"><span class="glyphicon glyphicon-refresh"></span></button></div>
+            </div>
+            <div class="pull-right" ng-if="listoverview.activeList.isAdd">
+              <button class="btn btn-success" ng-click="listoverview.activeList.onAdd()">Add Term</button>
+            </div>
+            </div>
+        </div>
+    </form>
+</section>
+
+
+<section class="col-lg-12" ng-if="listoverview.activeList.name == 'Locations'">
+    <form role="form" class="form-horizontal">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4>Location</h4></div>
+            <div class="panel-body">
+                <fieldset>
+                    <div class="form-group">
+                        <label for="locName" class="col-md-2">Location Name:</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" id="locName" ng-model="listoverview.activeList.activeItem.locationName" placeholder="Location Name">
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <listbuttons controller="listoverview.activeList" name="Location"></listbuttons>
+            </div>
+        </div>
+    </form>
+</section>
+
 
 
 </div>

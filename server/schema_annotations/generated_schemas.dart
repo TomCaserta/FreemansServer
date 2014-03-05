@@ -1,17 +1,23 @@
 /* AUTO GENERATED FILE */
 library GeneratedSchema;
 
+// TransportHaulageCost Schema: 
+Map TRANSPORTHAULAGECOST_SCHEMA = {"type":"object","name":"TransportHaulageCost","additionalProperties":true,"properties":{"ID":{"type":"integer"},"Uuid":{"type":"string"},"isActive":{"type":"boolean"}}};
+
 // Account Schema: 
 Map ACCOUNT_SCHEMA = {"type":"object","name":"Account","additionalProperties":true,"properties":{"ID":{"type":"integer"},"Uuid":{"type":"string"},"isActive":{"type":"boolean"}}};
 
 // Terms Schema: 
-Map TERMS_SCHEMA = {"type":"object","name":"Terms","additionalProperties":true,"properties":{"ID":{"type":"integer"},"Uuid":{"type":"string"},"isActive":{"type":"boolean"}}};
+Map TERMS_SCHEMA = {"type":"object","name":"Terms","additionalProperties":true,"properties":{"timeCreated":{"type":"int"},"timeModified":{"type":"int"},"name":{"type":"string"},"stdDueDays":{"type":"integer"},"stdDiscountDays":{"oneOf":[{"type":"integer"},{"type":"null"}]},"discountPct":{"oneOf":[{"type":"number"},{"type":"null"}]},"ID":{"type":"integer"},"Uuid":{"type":"string"},"isActive":{"type":"boolean"}}};
 
 // QBSyncCachable Schema: 
 Map QBSYNCCACHABLE_SCHEMA = {"type":"object","name":"QBSyncCachable","additionalProperties":true,"properties":{"ID":{"type":"integer"},"Uuid":{"type":"string"},"isActive":{"type":"boolean"}}};
 
 // User Schema: 
 Map USER_SCHEMA = {"type":"object","name":"User","additionalProperties":true,"properties":{"username":{"type":"string"},"password":{"oneOf":[{"type":"string"},{"type":"null"}]},"permissions":{"type":"string"},"ID":{"type":"integer"},"Uuid":{"type":"string"},"isActive":{"type":"boolean"}}};
+
+// Location Schema: 
+Map LOCATION_SCHEMA = {"type":"object","name":"Location","additionalProperties":true,"properties":{"locationName":{"type":"string"},"ID":{"type":"integer"},"Uuid":{"type":"string"},"isActive":{"type":"boolean"}}};
 
 // Transport Schema: 
 Map TRANSPORT_SCHEMA = {"type":"object","name":"Transport","additionalProperties":true,"properties":{"name":{"type":"string"},"quickbooksName":{"oneOf":[{"type":"string"},{"type":"null"}]},"transportSheetEmail":{"oneOf":[{"type":"string"},{"type":"null"}]},"remittanceEmail":{"oneOf":[{"type":"string"},{"type":"null"}]},"termsRef":{"type":"string"},"terms":{"type":"integer"},"surcharges":{"type":"string"},"ID":{"type":"integer"},"Uuid":{"type":"string"},"isActive":{"type":"boolean"}}};
@@ -20,7 +26,7 @@ Map TRANSPORT_SCHEMA = {"type":"object","name":"Transport","additionalProperties
 Map WORKBOOKROW_SCHEMA = {"type":"object","name":"WorkbookRow","additionalProperties":true,"properties":{"ID":{"type":"integer"},"Uuid":{"type":"string"},"isActive":{"type":"boolean"}}};
 
 // ProductWeight Schema: 
-Map PRODUCTWEIGHT_SCHEMA = {"type":"object","name":"ProductWeight","additionalProperties":true,"properties":{"description":{"type":"string"},"kg":{"type":"integer"},"ID":{"type":"integer"},"Uuid":{"type":"string"},"isActive":{"type":"boolean"}}};
+Map PRODUCTWEIGHT_SCHEMA = {"type":"object","name":"ProductWeight","additionalProperties":true,"properties":{"description":{"type":"string"},"kg":{"type":"number"},"ID":{"type":"integer"},"Uuid":{"type":"string"},"isActive":{"type":"boolean"}}};
 
 // SalesRow Schema: 
 Map SALESROW_SCHEMA = {"type":"object","name":"SalesRow","additionalProperties":true,"properties":{"ID":{"type":"integer"},"Uuid":{"type":"string"},"isActive":{"type":"boolean"}}};

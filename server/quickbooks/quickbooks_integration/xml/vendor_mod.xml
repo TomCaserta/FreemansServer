@@ -1,5 +1,5 @@
 {extends::template}
-        {section::CONTENT}
+{section::CONTENT}
 <VendorModRq>
     <VendorMod>
         <ListID>{$::listID}</ListID>
@@ -118,4 +118,4 @@
         {endIf}
     </VendorMod>
 </VendorModRq>
-        {endSection}
+{endSection}

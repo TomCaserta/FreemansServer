@@ -83,7 +83,7 @@ freemansRouteInitializer(Router router, ViewFactory views) {
           view: 'views/lists/index.html'
        ),
        'login': ngRoute (
-           defaultRoute: true,
+          defaultRoute: true,
           path: "login",
           view: "views/login/login.html"
        )

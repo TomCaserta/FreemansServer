@@ -136,7 +136,6 @@ abstract class ClientPacket {
   
   
   static ClientPacket getPacket (int packetID, Map props) {
-    packets.forEach((int k, v) { print(k); });
     if (packets.containsKey(packetID)) {
       return packets[packetID].getPacket(props);
     }

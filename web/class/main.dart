@@ -10,7 +10,9 @@ part "product.dart";
 part "supplier.dart";
 part "transport.dart";
 part "user.dart";
-
+part "terms.dart";
+part "location.dart";
+part "transport_haulage_costs.dart";
 
 abstract class Syncable {
   final int type = 0;
@@ -28,6 +30,7 @@ abstract class Syncable {
     this.Uuid = jsonMap["Uuid"];
     this.isActive = jsonMap["isActive"];
   }
+  
   Future<ActionResponseServerPacket> update(WebsocketHandler wsh) {
     return wsh.sendGetResponse(new SyncableModifyClientPacket(false, this.type, this.toJson()));
   }

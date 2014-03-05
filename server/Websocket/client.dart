@@ -5,7 +5,7 @@ class Client {
   bool loggedIn = false;
   JsonEncoder encoder = new JsonEncoder(null);
   Map<String, Completer> responsePacket = new Map<String, Completer>();
-  String Uuid = new uuid.Uuid().v4();
+  uuid.Uuid Uuid = new uuid.Uuid();
   WebsocketHandler wsh;
   User user = User.getUser("Guest","");
   Client (this.s, this.wsh);
@@ -34,14 +34,14 @@ class Client {
         responsePacket.remove(respID);
       }
       else {
-        print("Response had already timed out...");
+        ffpServerLog.warning("Response had already timed out...");
       }
     }
   }
   
   Future<ClientPacket> sendGetResponse(ResponsePacket packet) {
     Completer c = new Completer();
-    String id = u.v4();
+    String id = Uuid.v4();
     new Timer(new Duration(seconds: 5), () {
       c.completeError("Response timed out. $id");
       disconnect("Client did not respond in time");

@@ -82,6 +82,9 @@ class SyncableTypes {
   static const int PRODUCT = 6;
   static const int TRANSPORT = 7;
   static const int USER = 8;
+  static const int TERMS = 9;
+  static const int LOCATION = 10;
+  static const int TRANSPORT_HAULAGE_COST = 11;
 }
 
 

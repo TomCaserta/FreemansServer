@@ -9,38 +9,74 @@ class Terms extends Syncable<Terms> {
 
   String editSequence;
 
-  @IncludeSchema(isOptional: true)
+  @IncludeSchema()
   String name;
 
-  @IncludeSchema(isOptional: true)
-  bool isActive;
+  @IncludeSchema()
+  int stdDueDays;
 
   @IncludeSchema(isOptional: true)
-  String stdDueDays;
+  int stdDiscountDays;
 
   @IncludeSchema(isOptional: true)
-  String stdDiscountDays;
-
-  @IncludeSchema(isOptional: true)
-  String discountPct;
+  num discountPct;
 
   Terms(String listID, [bool isNew = false]):super((isNew ? 0 : -1), listID);
+  
 
+  Terms.fromJson (Map params):super.fromJson(params);
+  
+  void mergeJson (Map jsonMap) {
+    this.timeCreated = new DateTime.fromMillisecondsSinceEpoch(jsonMap["timeCreated"], isUtc: true);
+    this.timeModified = new DateTime.fromMillisecondsSinceEpoch(jsonMap["timeModified"], isUtc: true);
+    this.name = jsonMap["name"];
+    this.stdDueDays = jsonMap["stdDueDays"];
+    this.stdDiscountDays = jsonMap["stdDiscountDays"];
+    this.discountPct = jsonMap["discountPct"];
+    super.mergeJson(jsonMap);
+  }
+  
   Future<bool> updateDatabase(DatabaseHandler dbh, QuickbooksConnector qbc) {
+    Completer c = new Completer();
     if (isNew) {
-
+      QBStandardTerms term = new QBStandardTerms();
+      term.timeCreated = this.timeCreated;
+      term.timeModified = this.timeModified; // Why does this even have a time modified if it cant be modified... seriously.
+      term.editSequence = this.editSequence;
+      term.name = this.name;
+      term.stdDueDays = this.stdDueDays;
+      term.stdDiscountDays = this.stdDiscountDays;
+      term.discountPct = new QBPercent(this.discountPct);
     } else {
-
-      return null;
+      // Yeah really... It is literally the *ONLY* method without an update 
+      ffpServerLog.warning("Did not update term $name as there is no valid implementation available in the quickbooks SDK");  
     }
-    return null;
+    return c.future;
   }
 
   static Future<bool> init() {
     ffpServerLog.info("Loading terms list from quickbooks");
     Completer c = new Completer();
-
+    new QBStandardTermsList(qbHandler).forEach().listen((QBStandardTerms term) { 
+      Terms t = new Terms(term.listID);      
+      t.timeCreated = term.timeCreated;
+      t.timeModified = term.timeModified;
+      t.editSequence = term.editSequence;
+      t.name = term.name;
+      t.isActive = term.isActive;
+      t.stdDueDays = term.stdDueDays;
+      t.stdDiscountDays = term.stdDiscountDays;
+      if (t.discountPct != null) {
+       t.discountPct = term.discountPct.value;
+      }
+    }, onDone: () {
+      c.complete(true);
+    });
     return c.future;
   }
-
+  
+  Map toJson () {
+    return super.toJson()..addAll({  "timeCreated": timeCreated.millisecondsSinceEpoch,  "timeModified": timeModified.millisecondsSinceEpoch,  "name": name,  "stdDueDays": stdDueDays,  "stdDiscountDays": stdDiscountDays,  "discountPct": discountPct });
+  }
+  
 }

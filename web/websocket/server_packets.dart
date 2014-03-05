@@ -171,7 +171,22 @@ class InitialDataResponseServerPacket extends ServerPacket {
   List transportList = new List();
   List userList = new List();
   List supplierList = new List();
-  InitialDataResponseServerPacket.create(this.accountList, this.customerList, this.productList, this.productWeightsList, this.productPackagingList, this.productCategoryList, this.transportList, this.userList, this.supplierList);
+  List termsList = new List();
+  List locationList = new List();
+  List transportHaulageCostList = new List();
+  
+  InitialDataResponseServerPacket.create(this.accountList,
+                                         this.customerList,
+                                         this.productList,
+                                         this.productWeightsList,
+                                         this.productPackagingList,
+                                         this.productCategoryList,
+                                         this.transportList,
+                                         this.userList,
+                                         this.supplierList,
+                                         this.termsList,
+                                         this.locationList,
+                                         this.transportHaulageCostList);
   void handlePacket () {
     
   }

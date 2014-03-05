@@ -50,16 +50,22 @@ class InitialDataRequest extends ClientPacket {
   InitialDataRequest.create (this.rID);
 
   void handlePacket(WebsocketHandler wsh, Client client) {
-    List aL = Syncable.getVals(Account);
-    List cL = Syncable.getVals(Customer);
-    List pL = Syncable.getVals(Product);
-    List pWL = Syncable.getVals(ProductWeight);
-    List pPL = Syncable.getVals(ProductPackaging);
-    List pCL = Syncable.getVals(ProductCategory);
-    List tL = Syncable.getVals(Transport);
-    List uL = Syncable.getVals(User);
-    List sL = Syncable.getVals(Supplier);
-    client.sendPacket(new InitialDataResponseServerPacket(rID, aL, cL, pL, pWL, pPL, pCL, tL, uL, sL));
+    if (!client.user.isGuest) {
+      List aL = Syncable.getVals(Account);
+      List cL = Syncable.getVals(Customer);
+      List pL = Syncable.getVals(Product);
+      List pWL = Syncable.getVals(ProductWeight);
+      List pPL = Syncable.getVals(ProductPackaging);
+      List pCL = Syncable.getVals(ProductCategory);
+      List tL = Syncable.getVals(Transport);
+      List uL = Syncable.getVals(User);
+      List sL = Syncable.getVals(Supplier);
+      List terL = Syncable.getVals(Terms);
+      List locL = Syncable.getVals(Location);
+      List thcL = Syncable.getVals(TransportHaulageCost);
+      
+      client.sendPacket(new InitialDataResponseServerPacket(rID, aL, cL, pL, pWL, pPL, pCL, tL, uL, sL, terL, locL, thcL));
+    }
   }
 }
 
@@ -93,20 +99,16 @@ class DataChangeClientPacket extends ClientPacket {
 
 class SyncableTypes {
   static const int CUSTOMER = 1;
-
   static const int SUPPLIER = 2;
-
   static const int PRODUCT_WEIGHT = 3;
-
   static const int PRODUCT_PACKAGING = 4;
-
   static const int PRODUCT_CATEGORY = 5;
-
   static const int PRODUCT = 6;
-
   static const int TRANSPORT = 7;
-
   static const int USER = 8;
+  static const int TERMS = 9;
+  static const int LOCATION = 10;
+  static const int TRANSPORT_HAULAGE_COST = 11;
 }
 
 class SyncableModifyClientPacket extends ClientPacket {
@@ -151,6 +153,15 @@ class SyncableModifyClientPacket extends ClientPacket {
         case SyncableTypes.TRANSPORT:
           schema = TRANSPORT_SCHEMA;
           break;
+        case SyncableTypes.TERMS:
+          schema = TERMS_SCHEMA;
+          break;
+        case SyncableTypes.LOCATION:
+          schema = LOCATION_SCHEMA;
+          break;
+        case SyncableTypes.TRANSPORT_HAULAGE_COST:
+          schema = TRANSPORTHAULAGECOST_SCHEMA;
+          break;
         default:
           client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Unknown type $type"]));
           return;
@@ -187,6 +198,16 @@ class SyncableModifyClientPacket extends ClientPacket {
               case SyncableTypes.TRANSPORT:
                 s = new Transport.fromJson(payload);
                 break;
+              case SyncableTypes.TERMS:
+                s = new Terms.fromJson(payload);
+                break;
+              case SyncableTypes.LOCATION:
+                s = new Location.fromJson(payload);
+                break;
+              case SyncableTypes.TRANSPORT_HAULAGE_COST:
+                s = new TransportHaulageCost.fromJson(payload);
+                break;
+              
             }
           } else {
             s = Syncable.getByUuid(payload["Uuid"], type);

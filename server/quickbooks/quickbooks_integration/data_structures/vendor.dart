@@ -101,7 +101,7 @@ class QBVendor extends QBModifiable {
     taxOnSalesAccountRef = new QBRef.parseFromListXml(getQbxmlContainer(vendorData, "TaxOnSalesAccountRef", optional: true));
     isTaxOnTax = getQbxmlContainer(vendorData, "IsTaxOnTax", optional: true).boolean;
     prefillAccountRef = new QBRef.parseFromListXml(getQbxmlContainer(vendorData, "PrefillAccountRef", optional: true));
-    currencyRef = new QBRef.parseFromLIstXml(getQbxmlContainer(vendorData, "CurrencyRef", optional: true));
+    currencyRef = new QBRef.parseFromListXml(getQbxmlContainer(vendorData, "CurrencyRef", optional: true));
     XmlCollection dataExtRetList = vendorData.query("DataExtRet");
     dataExtRetList.forEach((XmlElement dataExtEl) {
       dataExtRet.add(new DataExtRet.parseFromListXml(dataExtEl));

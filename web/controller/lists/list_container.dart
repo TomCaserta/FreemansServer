@@ -38,7 +38,8 @@ class ListContainer<T> {
         isError = false;
         notifications.add("Updated item successfully!");
         activeItem.mergeJson(response.payload[0]);
-      } else {
+      }
+      else {
         isError = true;
         notifications.clear();
         response.payload.forEach((v) {
@@ -59,8 +60,9 @@ class ListContainer<T> {
         notifications.add("Created item successfully!");
         activeItem.mergeJson(response.payload[0]);
         _allNames.add(activeItem);
-        isAdd = false;
-      } else {
+        newItem();
+      } 
+      else {
         isError = true;
         notifications.clear();
         response.payload.forEach((v) {
@@ -85,22 +87,21 @@ class ListContainer<T> {
   void processList(bool isNew) {
     if (!isNew && names.length > 0) {
       editItem(names[0]);
-      isAdd = false;
     } else {
       newItem();
-      isAdd = true;
     }
   }
 
   void editItem(Syncable item) {
     notifications.clear();
     _activeItem = item;
+    isAdd = false;
   }
 
   void newItem() {
-
     ClassMirror tm = reflectClass(T);
     activeItem = tm.newInstance(const Symbol(""), []).reflectee;
+    isAdd = true;
   }
 }
 

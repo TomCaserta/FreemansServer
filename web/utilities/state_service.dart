@@ -22,6 +22,9 @@ class StateService {
   List<Supplier> supplierList = new List<Supplier>();
   List<Transport> transportList = new List<Transport>();
   List<User> userList = new List<User>();
+  List<Terms> termsList = new List<Terms>();
+  List<Locations> locationList = new List<Locations>();
+  List<TransportHaulageCost> transportHaulageCostList = new List<TransportHaulageCost>();
   
   bool get loaded {
     return preloader.loaded;  
@@ -33,6 +36,7 @@ class StateService {
   
   
   void parseInitializationPacket (InitialDataResponseServerPacket packet) {
+    print("Parsing packet");
     this.customerList.clear();
     packet.customerList.forEach((Map customerListJson) {
       this.customerList.add(new Customer.fromJson(customerListJson));
@@ -57,6 +61,15 @@ class StateService {
     });
     packet.userList.forEach((Map userJson) { 
       this.userList.add(new User.fromJson(userJson));
+    });
+    packet.termsList.forEach((Map termsList) { 
+      this.termsList.add(new Terms.fromJson(termsList));
+    });
+    packet.locationList.forEach((Map locationList) { 
+      this.locationList.add(new Locations.fromJson(locationList));
+    });
+    packet.termsList.forEach((Map thcList) { 
+      this.transportHaulageCostList.add(new TransportHaulageCost.fromJson(thcList));
     });
   }
   

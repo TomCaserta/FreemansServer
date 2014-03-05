@@ -28,9 +28,41 @@ class InitialDataResponseServerPacket extends ServerPacket {
   List transportList = new List<Transport>();
   List userList = new List<User>();
   List supplierList = new List<Supplier>();
-  InitialDataResponseServerPacket(this.rID, this.accountList, this.customerList, this.productList, this.productWeightsList, this.productPackagingList, this.productCategoryList, this.transportList, this.userList, this.supplierList);
-  toJson () {
-    return super.toJsonDefault(ID)..addAll({ "rID": rID, "accountList": accountList, "customerList": customerList, "productList": productList, "productWeightsList": productWeightsList, "productPackagingList": productPackagingList, "productCategoryList": productCategoryList, "transportList": transportList, "userList": userList, "supplierList": supplierList });
+  List termsList = new List<Terms>();
+  List locationList = new List<Location>();
+  List transportHaulageCostList = new List<TransportHaulageCost>();
+  
+  InitialDataResponseServerPacket(
+                                  this.rID,
+                                  this.accountList,
+                                  this.customerList,
+                                  this.productList,
+                                  this.productWeightsList,
+                                  this.productPackagingList,
+                                  this.productCategoryList,
+                                  this.transportList,
+                                  this.userList,
+                                  this.supplierList,
+                                  this.termsList,
+                                  this.locationList,
+                                  this.transportHaulageCostList
+                                 );
+  
+  Map toJson () {
+    return super.toJsonDefault(ID)..addAll({  "rID": rID,
+                                              "accountList": accountList,
+                                              "customerList": customerList,
+                                              "productList": productList,
+                                              "productWeightsList": productWeightsList,
+                                              "productPackagingList": productPackagingList,
+                                              "productCategoryList": productCategoryList,
+                                              "transportList": transportList,
+                                              "userList": userList,
+                                              "supplierList": supplierList,
+                                              "termsList": termsList,
+                                              "locationList": locationList,
+                                              "transportHaulageCostList": transportHaulageCostList
+                                            });
   }
 }
 

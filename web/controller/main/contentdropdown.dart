@@ -6,41 +6,67 @@ part of FreemansClient;
 class ContentDropdown {
   String fieldType = "";
   Scope s;
+  
+  // Essentially the values of the input
   List selectedElements = new List();
   UListElement selectedElementsDisplay;
 
+  // Current State
   int rows = 0;
   List rowsList = new List();
   bool get isComplete => rows == activeNum;
   int activeNum = 0;
 
+  /// Current stripped input box text
   String currentSearch = "";
+  /// Current selected element. 
   int currentSelected = 0;
+  /// Active List that is being searched
   List get activeList => (activeNum < rowsList.length ? rowsList[activeNum] : []);
+  
+  // Container Elements
   Element el;
   DivElement inputBox;
   DivElement autoCompleteBox;
-
+  
+  String _outputWatch = "";
+  @NgAttr ("model")
+  String get value => _outputWatch;
+  set value (String value) {
+    if (value != null && value.isNotEmpty) {
+      _outputWatch = value;
+      selectedElements = this.s.$eval("$value");
+      // Change the value of the selected Elements 
+    }
+  }
+  
   ContentDropdown (Scope this.s, Element this.el) {
-    this.rows = int.parse((el.getAttribute("rows") != null ? el.getAttribute("rows") : ""), onError: (s) { return 1; });
+    String rowText = el.getAttribute("rows");
+    // Parse the "row" attribute
+    this.rows = int.parse((rowText != null ? rowText : ""), onError: (s) { return 1; });
+    
+    // Loop from 1 to [row] 
     for (int x = 1; x <= rows; x++) {
       String rName = "row$x";
+      // Grab the attribute
       String rowVal = el.getAttribute(rName);
       // Pass by reference so itl update automatically
       rowsList.add(s.$eval(rowVal));
     }
-
+    
+    // Create the input box element
     this.inputBox = new DivElement();
-
-    el.onClick.listen((ev) { inputBox.focus(); });
-    //inputBox.tabIndex = 1;
+    
     inputBox.classes.add("auto-completer-input");
-    //inputBox.tabIndex = 1;
-    inputBox.contentEditable = "true";
+    inputBox.contentEditable = "true";    
+    
     inputBox.onKeyUp.listen((KeyboardEvent ev) {
+      // If the key is a character:
       if ((ev.which >= 48 && ev.which <= 222) || (ev.which == 32)) {
         refreshSubset();
       }
+      
+      // If the key is backspace:
       if (ev.which == 8) {
         if (inputBox.text.length == 0) {
           if (activeNum > 0) {
@@ -54,13 +80,17 @@ class ContentDropdown {
         refreshSubset();
       }
     });
+    
     inputBox.onFocus.listen((ev) {
       this.autoCompleteBox = new DivElement();
       el.append(autoCompleteBox);
       el.classes.add("focused");
       refreshSubset();
     });
-    inputBox.onBlur.listen((ev) { this.autoCompleteBox.remove();el.classes.remove("focused");
+    
+    inputBox.onBlur.listen((ev) {
+      el.classes.remove("focused");
+      autoCompleteBox.remove();
       if (!isComplete) {
         el.parent.classes.add("has-error");
       }
@@ -121,6 +151,8 @@ class ContentDropdown {
           break;
       }
     });
+
+    el.onClick.listen((ev) { inputBox.focus(); });
     DivElement selectedSections = new DivElement();
     selectedSections.classes.add("auto-completer-selections");
     this.selectedElementsDisplay = new UListElement();
@@ -141,14 +173,12 @@ class ContentDropdown {
       bool isFirst = true;
       activeList.where((String res) {
         if (currentSearch.length <= res.length) {
-          //print("Checking: '${res.substring(0,currentSearch.length).toLowerCase()}' == '${currentSearch.toLowerCase()}'");
           return res.substring(0,currentSearch.length).toLowerCase() == currentSearch.toLowerCase();
         }
         else {
           return false;
         }        
       }).forEach((String match) {
-        print("MATCH $match");
         LIElement li = new LIElement();
         li.text = match;
        

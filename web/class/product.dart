@@ -3,7 +3,7 @@ part of DataObjects;
 class ProductWeight extends Syncable {
   final int type = SyncableTypes.PRODUCT_WEIGHT;
   String description;
-  int kg;
+  num kg;
   String get name => description;
   ProductWeight();
   ProductWeight.fromJson(Map jsonMap):super.fromJson(jsonMap) {

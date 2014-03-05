@@ -5,6 +5,7 @@ import 'package:xml/xml.dart';
 import 'dart:mirrors';
 import 'package:QBXMLRP2_DART/QBXMLRP2_DART.dart';
 import 'package:logging/logging.dart';
+import 'package:intl/intl.dart';
 
 part 'expression_parser.dart';
 part 'response_builder.dart';
@@ -23,7 +24,7 @@ String QB_VERSION;
 
 Logger _qbLogger = new Logger("QuickbooksIntegration");
 
-void initEnums ([String version = "11.0"]) {
+void initQbIntegration ([String version = "11.0"]) {
   QB_VERSION = version;
   MirrorSystem ms = currentMirrorSystem();
   TypeMirror tm = reflectType(EnumString);
@@ -44,6 +45,15 @@ void initEnums ([String version = "11.0"]) {
          }
       }
     });
+  });
+
+  hierarchicalLoggingEnabled = true;
+  _qbLogger.level = Level.ALL;
+  _qbLogger.onRecord.listen((r) {
+    print("[${r.level}][${new DateFormat("hh:mm:ss").format(r.time)}][${r.loggerName != "" ? r.loggerName : "ROOT"}]: ${r.message}");
+    if (r.level == Level.SEVERE) {
+      throw r;
+    }
   });
 }
 

@@ -28,6 +28,8 @@ part 'syncables/supplier.dart';
 part 'syncables/customer.dart';
 part 'syncables/transport.dart';
 part 'syncables/product.dart';
+part 'syncables/location.dart';
+part 'syncables/transport_haulage_costs.dart';
 part 'utils/syncable.dart';
 part 'syncables/workbook_data.dart';
 part 'config/config.dart';
@@ -48,7 +50,10 @@ Logger ffpServerLog = new Logger("FFPServer");
 void main() {
 
   qbHandler = new QuickbooksConnector();
-  initEnums();
+  initQbIntegration();
+  //ffpServerLog.hierarchicalLoggingEnabled = true
+  hierarchicalLoggingEnabled = true;
+  ffpServerLog.level = Level.ALL;
   ffpServerLog.onRecord.listen((r) {
     print("[${r.level}][${new DateFormat("hh:mm:ss").format(r.time)}][${r.loggerName != "" ? r.loggerName : "ROOT"}]: ${r.message}");
     if (r.level == Level.SEVERE) {
@@ -79,15 +84,17 @@ void main() {
     prel.addFuture(new PreloadElement("ProductWeightInit", ProductWeight.init));
     prel.addFuture(new PreloadElement("ProductPackagingInit", ProductPackaging.init));
     prel.addFuture(new PreloadElement("ProductCategoryInit", ProductCategory.init));
+    prel.addFuture(new PreloadElement("TermsInit", Terms.init));
+    prel.addFuture(new PreloadElement("LocationInit", Location.init));
+    prel.addFuture(new PreloadElement("TransportHaulageCostInit", TransportHaulageCost.init));
     prel.addMethod(new PreloadElement("PacketInit", ClientPacket.init));
     ffpServerLog.info("Beginning load");
 
     prel.startLoad(onError: (e) {
       ffpServerLog.severe("$e");
     }).listen((int x) {
-      print("[${str_repeat("|", x)}${str_repeat("=", (100 - x))}]");
+      ffpServerLog.fine("[${str_repeat("|", x)}${str_repeat("=", (100 - x))}]");
     }, onDone: () {
-      print("Finished loading!");
       afterLoading();
     });
   }).catchError((err) {
