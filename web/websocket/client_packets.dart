@@ -87,8 +87,6 @@ class SyncableTypes {
   static const int TRANSPORT_HAULAGE_COST = 11;
 }
 
-
-
 class CLIENT_PACKET_IDS {
   static const int AUTHENTICATE = 1;
   static const int PING_PONG = 2;

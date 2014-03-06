@@ -5,7 +5,7 @@ class ProductWeight extends Syncable<ProductWeight>  {
   int type = SyncableTypes.PRODUCT_WEIGHT;
   ProductWeight._create(ID, this._description, this._kg):super(ID);
   ProductWeight.fromJson (Map params):super.fromJson(params);
-  factory ProductWeight (int ID, String description, int kg) {
+  factory ProductWeight (int ID, String description, num kg) {
     if (exists(ID)) {
       return get(ID);
     }
@@ -57,7 +57,7 @@ class ProductWeight extends Syncable<ProductWeight>  {
     }
   }
   
-  set kg (int kg) {
+  set kg (num kg) {
        if (kg != _kg) {
          _kg = kg;
          requiresDatabaseSync();

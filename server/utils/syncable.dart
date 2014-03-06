@@ -36,12 +36,10 @@ abstract class Syncable<T> {
 
   /// ID of the Syncable. Should match the database ID. IS NOT UNIQUE ACROSS OBJECT TYPES.
   @IncludeSchema()
-
   int ID = 0;
 
   /// UUID of the current object. 100% Unique accross all Syncables. Regenerates if in the HIGHLY unlikely event of collision.
   @IncludeSchema()
-
   String Uuid = new uuid.Uuid().v4();
 
   /// Defines if the Syncable is active
@@ -63,6 +61,9 @@ abstract class Syncable<T> {
 
   bool get isNew => _newInsert;
 
+  @IncludeSchema()
+  dynamic key;  
+  
   /// Getter to check if the object has been soft deleted.
   /// If [isActive] is false, it will not show up in list queries
   @IncludeSchema()
@@ -95,8 +96,10 @@ abstract class Syncable<T> {
     _UuidToSyncable[this.Uuid] = this;
     if (ID != 0) {
       _put(key != null ? key : ID);
+      this.key = key != null ? key : ID;
     } else {
       tempKey = key;
+      this.key = key;
       setNew();
     }
   }
@@ -246,7 +249,7 @@ abstract class Syncable<T> {
 
   Map<String, dynamic> toJson() {
     return {
-        "Uuid": Uuid, "ID": ID, "isActive": isActive
+        "Uuid": Uuid, "ID": ID, "isActive": isActive, "key": key
     };
   }
 }

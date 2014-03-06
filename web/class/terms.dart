@@ -2,12 +2,14 @@ part of DataObjects;
 
 class Terms extends Syncable {
   final int type = SyncableTypes.TERMS;  
+  
   DateTime timeCreated;
   DateTime timeModified;
   String name;
   int stdDueDays;
   int stdDiscountDays;
   num discountPct;
+  
   Terms();
   
   Terms.fromJson(Map jsonMap):super.fromJson(jsonMap);
@@ -19,6 +21,7 @@ class Terms extends Syncable {
     this.stdDueDays = jsonMap["stdDueDays"];
     this.stdDiscountDays = jsonMap["stdDiscountDays"];
     this.discountPct = jsonMap["discountPct"];
+    this.ID = jsonMap["ID"];
     super.mergeJson(jsonMap);
   }
   

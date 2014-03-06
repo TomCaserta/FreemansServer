@@ -82,8 +82,8 @@
                 <label for="terms" class="col-md-2">Terms:</label>
 
                 <div class="col-md-10">
-                    <select id="terms" class="form-control">
-                        <option>Terms</option>
+                    <select id="terms" ng-model="listoverview.activeList.activeItem.termsRef" class="form-control">
+                        <option ng-repeat="term in listoverview.state.termsList" value="{{term.key}}">{{term.name}}</option>
                     </select>
                 </div>
             </div>
@@ -270,7 +270,7 @@
                         <label for="globalID" class="col-md-2">Global ID:</label>
 
                         <div class="col-md-10">
-                            <input type="text" class="form-control" id="globalID" disabled
+                            <input type="text" ng-model="listoverview.activeList.activeItem.quickbooksName" class="form-control" id="globalID" disabled
                                    placeholder="{XXXX99-XXXX-XXX-XX99}">
                         </div>
                     </div>
@@ -278,7 +278,7 @@
                         <label for="globalID" class="col-md-2">Name:</label>
 
                         <div class="col-md-10">
-                            <input type="text" class="form-control" id="name" placeholder="Supplier Name">
+                            <input type="text" ng-model="listoverview.activeList.activeItem.name" class="form-control" id="name" placeholder="Supplier Name">
                         </div>
                     </div>
                 </fieldset>
@@ -301,35 +301,35 @@
                         <label for="addressLine1" class="sr-only">Line 1:</label>
 
                         <div class="col-md-12">
-                            <input type="text" class="form-control" id="addressLine1" placeholder="Line 1">
+                            <input type="text" class="form-control" id="addressLine1" ng-model="listoverview.activeList.activeItem.addressLine1" placeholder="Line 1">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="addressLine2" class="sr-only">Line 2:</label>
 
                         <div class="col-md-12">
-                            <input type="text" class="form-control" id="addressLine2" placeholder="Line 2">
+                            <input type="text" class="form-control" id="addressLine2" ng-model="listoverview.activeList.activeItem.addressLine2" placeholder="Line 2">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="addressLine3" class="sr-only">Line 3:</label>
 
                         <div class="col-md-12">
-                            <input type="text" class="form-control" id="addressLine3" placeholder="Line 3">
+                            <input type="text" class="form-control" id="addressLine3" ng-model="listoverview.activeList.activeItem.addressLine3" placeholder="Line 3">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="addressLine4" class="sr-only">Line 4:</label>
 
                         <div class="col-md-12">
-                            <input type="text" class="form-control" id="addressLine4" placeholder="Line 4">
+                            <input type="text" class="form-control" id="addressLine4" ng-model="listoverview.activeList.activeItem.addressLine4" placeholder="Line 4">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="addressLine5" class="sr-only">Line 5:</label>
 
                         <div class="col-md-12">
-                            <input type="text" class="form-control" id="addressLine5" placeholder="Line 5">
+                            <input type="text" class="form-control" id="addressLine5" ng-model="listoverview.activeList.activeItem.addressLine5" placeholder="Line 5">
                         </div>
                     </div>
                 </fieldset>
@@ -346,10 +346,10 @@
                         <div class="col-md-10">
                             <div class="input-group">
                             <span class="input-group-addon">
-                              <label for="remittanceEmailCheckbox"></label><input id="remittanceEmailCheckbox"
+                              <label for="remittanceEmailCheckbox"></label><input ng-model="listoverview.activeList.activeItem.isEmailedRemittance" id="remittanceEmailCheckbox"
                                                                                   type="checkbox">
                             </span>
-                                <input type="text" class="form-control" id="remittanceEmail"
+                                <input type="text" class="form-control" id="remittanceEmail" ng-model="listoverview.activeList.activeItem.remittanceEmail"
                                        placeholder="accounts@suppliersite.com">
                             </div>
                         </div>
@@ -361,10 +361,10 @@
                             <div class="input-group">
                             <span class="input-group-addon">
                               <label>
-                                  <input type="checkbox">
+                                  <input ng-model="listoverview.activeList.activeItem.isEmailedConfirmation" type="checkbox">
                               </label>
                             </span>
-                                <input type="text" class="form-control" id="confirmationEmail"
+                                <input type="text" class="form-control"  ng-model="listoverview.activeList.activeItem.confirmationEmail" id="confirmationEmail"
                                        placeholder="confirmations@suppliersite.com">
                             </div>
                         </div>
@@ -374,7 +374,7 @@
                         <label for="fax" class="col-md-2">Fax Number:</label>
 
                         <div class="col-md-10">
-                            <input type="tel" class="form-control" id="fax" placeholder="02077204444">
+                            <input type="tel" class="form-control" id="fax"  ng-model="listoverview.activeList.activeItem.faxNumber" placeholder="02077204444">
                         </div>
                     </div>
 
@@ -382,7 +382,7 @@
                         <label for="phone" class="col-md-2">Phone Number:</label>
 
                         <div class="col-md-10">
-                            <input type="tel" class="form-control" id="phone" placeholder="02077204444">
+                            <input type="tel" class="form-control" ng-model="listoverview.activeList.activeItem.phoneNumber" id="phone" placeholder="02077204444">
                         </div>
                     </div>
 
@@ -399,6 +399,7 @@
 
     </form>
 </section>
+
 <section class="col-lg-12" ng-if="listoverview.activeList.name == 'Transport'">
     <form role="form" class="form-horizontal">
         <div class="panel panel-default">

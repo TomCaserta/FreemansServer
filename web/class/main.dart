@@ -20,6 +20,7 @@ abstract class Syncable {
   String Uuid = "";
   bool isActive = false;
   String name;
+  dynamic key;
   Syncable();
   Syncable.fromJson (Map jsonMap) {
     this.mergeJson(jsonMap);
@@ -29,6 +30,7 @@ abstract class Syncable {
     this.ID = jsonMap["ID"];
     this.Uuid = jsonMap["Uuid"];
     this.isActive = jsonMap["isActive"];
+    this.key = jsonMap["key"];
   }
   
   Future<ActionResponseServerPacket> update(WebsocketHandler wsh) {
@@ -38,9 +40,8 @@ abstract class Syncable {
   Future<ActionResponseServerPacket> insert(WebsocketHandler wsh) {
     return wsh.sendGetResponse(new SyncableModifyClientPacket(true, this.type, this.toJson()));
   }
-  
-  
+    
   Map toJson () {
-    return { "type": type, "Uuid": Uuid, "ID": ID, "isActive": isActive };
+    return { "type": type, "Uuid": Uuid, "ID": ID, "isActive": isActive, "key": key };
   }
 }

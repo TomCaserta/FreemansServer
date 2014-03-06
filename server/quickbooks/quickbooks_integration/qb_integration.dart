@@ -46,15 +46,15 @@ void initQbIntegration ([String version = "11.0"]) {
       }
     });
   });
-
-  hierarchicalLoggingEnabled = true;
-  _qbLogger.level = Level.ALL;
-  _qbLogger.onRecord.listen((r) {
-    print("[${r.level}][${new DateFormat("hh:mm:ss").format(r.time)}][${r.loggerName != "" ? r.loggerName : "ROOT"}]: ${r.message}");
-    if (r.level == Level.SEVERE) {
-      throw r;
-    }
-  });
+//
+//  hierarchicalLoggingEnabled = true;
+//  _qbLogger.level = Level.ALL;
+//  _qbLogger.onRecord.listen((r) {
+//    print("[${r.level}][${new DateFormat("hh:mm:ss").format(r.time)}][${r.loggerName != "" ? r.loggerName : "ROOT"}]: ${r.message}");
+//    if (r.level == Level.SEVERE) {
+//      throw r;
+//    }
+//  });
 }
 
 //http://phpjs.org/functions/htmlspecialchars_decode/

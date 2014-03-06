@@ -67,7 +67,7 @@ class Terms extends Syncable<Terms> {
       t.stdDueDays = term.stdDueDays;
       t.stdDiscountDays = term.stdDiscountDays;
       if (t.discountPct != null) {
-       t.discountPct = term.discountPct.value;
+        t.discountPct = term.discountPct.value;
       }
     }, onDone: () {
       c.complete(true);

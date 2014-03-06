@@ -112,6 +112,7 @@ class JsonTypeDefinition {
   String propName;
 
   bool isOptional = false;
+  bool isAny = false;
 
   JsonTypeDefinition(String this.propName, String typeName, [bool this.isOptional = false]) {
     switch (typeName) {
@@ -140,7 +141,8 @@ class JsonTypeDefinition {
         type = "string";
         break;
       case "dynamic":
-        type = "any";
+        type = "";
+        isAny = true;
         break;
       default:
         if (JsonSchemaBuilder.builders.containsKey(typeName)) {
@@ -175,6 +177,7 @@ class JsonTypeDefinition {
 //            });
 //            if (type == null) throw "Could not resolve $typeName";
           type = "any";
+          isAny = true;
         }
         //else throw new Exception("Cant create schema - No such schema name $typeName");
         break;
@@ -182,6 +185,18 @@ class JsonTypeDefinition {
   }
 
   toJson() {
+    if (isAny) {
+        return { "$propName": { "oneOf": [
+                                          { "type": "null" },
+                                          { "type": "boolean" },
+                                          { "type": "integer" },
+                                          { "type": "array" },
+                                          { "type": "number" },
+                                          { "type": "object" },
+                                          { "type": "string" }
+                                          ] }};
+    }
+    else {
     if (type is String) {
       if (!isOptional) {
         return {
@@ -216,5 +231,6 @@ class JsonTypeDefinition {
         };
       }
     }
+  }
   }
 }

@@ -16,6 +16,8 @@ class Supplier extends Syncable {
   String addressLine5;
   String phoneNumber;
   String faxNumber;
+  bool isEmailedRemittance = true;
+  bool isEmailedConfirmation = true;
   
   Supplier();
   
@@ -35,6 +37,8 @@ class Supplier extends Syncable {
     this.addressLine5 = jsonMap["addressLine5"];
     this.phoneNumber = jsonMap["phoneNumber"];
     this.faxNumber = jsonMap["faxNumber"];
+    this.isEmailedRemittance = jsonMap["isEmailedRemittance"];
+    this.isEmailedConfirmation = jsonMap["isEmailedConfirmation"];
     super.mergeJson(jsonMap);    
   }
   Map<String, dynamic> toJson () {
@@ -51,7 +55,9 @@ class Supplier extends Syncable {
       "addressLine4": addressLine4,
       "addressLine5": addressLine5,
       "phoneNumber": phoneNumber,
-      "faxNumber": faxNumber
+      "faxNumber": faxNumber,
+      "isEmailedRemittance": isEmailedRemittance,
+      "isEmailedConfirmation": isEmailedConfirmation
     });
   }
   

@@ -1,4 +1,4 @@
-part of FreemansServer;
+part of FreemansClient;
 
 @NgController(
   selector: "[salesinput]",

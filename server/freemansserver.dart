@@ -52,8 +52,8 @@ void main() {
   qbHandler = new QuickbooksConnector();
   initQbIntegration();
   //ffpServerLog.hierarchicalLoggingEnabled = true
-  hierarchicalLoggingEnabled = true;
-  ffpServerLog.level = Level.ALL;
+//  hierarchicalLoggingEnabled = true;
+//  ffpServerLog.level = Level.ALL;
   ffpServerLog.onRecord.listen((r) {
     print("[${r.level}][${new DateFormat("hh:mm:ss").format(r.time)}][${r.loggerName != "" ? r.loggerName : "ROOT"}]: ${r.message}");
     if (r.level == Level.SEVERE) {

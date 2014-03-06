@@ -15,14 +15,16 @@ class Supplier extends Syncable<Supplier> {
   String _addressLine5;
   String _phoneNumber;
   String _faxNumber;
+  bool _isEmailedConfirmation;
+  bool _isEmailedRemittance;
 
   @IncludeSchema()
   String get name => _name;
   @IncludeSchema(isOptional: true)
   String get quickbooksName => _quickbooksName;
-  @IncludeSchema()
+  @IncludeSchema(isOptional: true)
   String get termsRef => _termsRef;
-  @IncludeSchema()
+  @IncludeSchema(isOptional: true)
   int get terms => _terms;
   @IncludeSchema(isOptional: true)
   String get remittanceEmail => _remittanceEmail;
@@ -42,6 +44,11 @@ class Supplier extends Syncable<Supplier> {
   String get phoneNumber => _phoneNumber;
   @IncludeSchema(isOptional: true)
   String get faxNumber => _faxNumber;
+  @IncludeSchema()
+  bool get isEmailedConfirmation => _isEmailedConfirmation;
+  @IncludeSchema()
+  bool get isEmailedRemittance => _isEmailedRemittance;
+  
 
   void mergeJson (Map jsonMap) {
     this.name = jsonMap["name"];
@@ -57,6 +64,8 @@ class Supplier extends Syncable<Supplier> {
     this.addressLine5 = jsonMap["addressLine5"];
     this.phoneNumber = jsonMap["phoneNumber"];
     this.faxNumber = jsonMap["faxNumber"];
+    this.isEmailedConfirmation = jsonMap["isEmailedConfirmation"];
+    this.isEmailedRemittance = jsonMap["isEmailedRemittance"];
     super.mergeJson(jsonMap);
   }
 
@@ -73,7 +82,9 @@ class Supplier extends Syncable<Supplier> {
                                           "remittanceEmail": remittanceEmail,
                                           "confirmationEmail": confirmationEmail,
                                           "faxNumber": faxNumber,
-                                          "phoneNumber": phoneNumber });
+                                          "phoneNumber": phoneNumber,
+                                          "isEmailedConfirmation": isEmailedConfirmation,
+                                          "isEmailedRemittance": isEmailedRemittance });
   }
   
   
@@ -156,6 +167,19 @@ class Supplier extends Syncable<Supplier> {
     }
   }
   
+  set isEmailedRemittance (bool t) { 
+    if (t != _isEmailedRemittance) {
+      _isEmailedRemittance = t;
+      requiresDatabaseSync();
+    }
+  }
+  set isEmailedConfirmation (bool t) { 
+    if (t != _isEmailedConfirmation) {
+      _isEmailedConfirmation = t;
+      requiresDatabaseSync();
+    }
+  }
+  
   Supplier._create (int ID, String name):super(ID, name) {
     this.name = name;
   }
@@ -178,11 +202,20 @@ class Supplier extends Syncable<Supplier> {
   }
 
 
-  Future<bool> updateDatabase(DatabaseHandler dbh, QuickbooksConnector qbc) {
+  Future<List<bool>> updateDatabase(DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer<bool>();
+
+    List<Future> waitingFor = new List<Future>();
+    waitingFor.add(c.future);
     if (this.isNew) {
-      dbh.prepareExecute("INSERT INTO suppliers (supplierName, quickbooksName, termsRef, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
-          [name, quickbooksName, termsRef, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5]).then((Results res) {
+      dbh.prepareExecute("INSERT INTO suppliers (supplierName, quickbooksName, termsRef, terms,"
+                         "remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1,"
+                         "addressLine2, addressLine3, addressLine4, addressLine5, isEmailedRemittance, isEmailedConfirmation, active)"
+                         "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                          [name, quickbooksName, termsRef, terms,
+                           remittanceEmail, confirmationEmail, phoneNumber, faxNumber,
+                           addressLine1, addressLine2, addressLine3, addressLine4, addressLine5,
+                           isEmailedRemittance ? 1 : 0, isEmailedConfirmation ? 1 : 0, isActive ? 1 : 0]).then((Results res) {
               if (res.insertId != 0) {
                 c.complete(true);
                 this._firstInsert(res.insertId);
@@ -191,16 +224,21 @@ class Supplier extends Syncable<Supplier> {
               }
               else {
                 c.completeError("Unspecified mysql error");
-                ffpServerLog.severe("Unspecified mysql error");
+                ffpServerLog.warning("Unspecified mysql error");
               }
           }).catchError((e) {
             c.completeError(e);
-            ffpServerLog.severe("Error whilst creating supplier $name :", e);
+
+            ffpServerLog.warning("Unspecified mysql $e");
           });
     }
     else {
-      dbh.prepareExecute("UPDATE suppliers SET supplierName=?, quickbooksName=?, termsRef=?, terms=?, remittanceEmail=?, confirmationEmail=?, phoneNumber=?, faxNumber=?, addressLine1=?, addressLine2=?, addressLine3=?, addressLine4=?, addressLine5=? WHERE ID=?",
-          [name, quickbooksName, termsRef, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5, ID]).then((Results res) {
+      dbh.prepareExecute("UPDATE suppliers SET supplierName=?, quickbooksName=?, termsRef=?, terms=?, remittanceEmail=?, " 
+                         "confirmationEmail=?, phoneNumber=?, faxNumber=?, addressLine1=?, addressLine2=?, addressLine3=?, "
+                         "addressLine4=?, addressLine5=?, isEmailedRemittance=?, isEmailedConfirmation=?, active=? WHERE ID=?",
+                          [name, quickbooksName, termsRef, terms, remittanceEmail,
+                           confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, 
+                           addressLine4, addressLine5, isEmailedRemittance ? 1 : 0, isEmailedConfirmation ? 1 : 0, isActive ? 1 : 0, ID]).then((Results res) {
             if (res.affectedRows <= 1) {
               this.synced();
                c.complete(true);
@@ -210,44 +248,83 @@ class Supplier extends Syncable<Supplier> {
             }
           }).catchError((e) {
             c.completeError(e);
+
+            ffpServerLog.warning("Unspecified mysql $e");
           });
     }
-    return c.future;
+    
+
+    Completer quickbooksInt = new Completer();
+    if (this.quickbooksName == null || this.quickbooksName.isEmpty) {
+      ffpServerLog.info("Inserting supplier into quickbooks..."); 
+      QBVendor qbv = new QBVendor();
+      qbv.name = this.name;
+      qbv.email = this.remittanceEmail;
+      qbv.phoneNumber = this.phoneNumber;
+      qbv.faxNumber = this.faxNumber;
+      qbv.vendorAddress = new QBAddress();
+      qbv.vendorAddress.lines[0] = this.addressLine1;
+      qbv.vendorAddress.lines[1] = this.addressLine2;
+      qbv.vendorAddress.lines[2] = this.addressLine3;
+      qbv.vendorAddress.lines[3] = this.addressLine4;
+      qbv.vendorAddress.lines[4] = this.addressLine5;
+      qbv.vendorAddress.city = "";
+      qbv.vendorAddress.country = "";
+      qbv.vendorAddress.note = "";
+      qbv.vendorAddress.postalCode = "";
+      qbv.vendorAddress.state = "";
+      qbv.isActive = isActive;
+      qbv.insert(qbc).then((e) {
+        if (e) {
+            this.quickbooksName = qbv.listID;
+
+            quickbooksInt.complete(true);
+          }
+          else quickbooksInt.complete(false);
+        }).catchError((error) => quickbooksInt.completeError(error));
+    }
+    else {
+      ffpServerLog.info("Updating supplier in quickbooks");
+      QBVendor.fetchByID(this.quickbooksName, qbc).then((QBVendor qbv)  {
+        qbv.name = this.name;
+              qbv.email = this.remittanceEmail;
+              qbv.phoneNumber = this.phoneNumber;
+              qbv.faxNumber = this.faxNumber;
+              qbv.vendorAddress = new QBAddress();
+              qbv.vendorAddress.lines[0] = this.addressLine1;
+              qbv.vendorAddress.lines[1] = this.addressLine2;
+              qbv.vendorAddress.lines[2] = this.addressLine3;
+              qbv.vendorAddress.lines[3] = this.addressLine4;
+              qbv.vendorAddress.lines[4] = this.addressLine5;
+              qbv.vendorAddress.city = "";
+              qbv.vendorAddress.country = "";
+              qbv.vendorAddress.note = "";
+              qbv.vendorAddress.postalCode = "";
+              qbv.vendorAddress.state = "";
+              qbv.isActive = isActive;
+        qbv.update(qbc).then((e) {
+          if (e) {
+            quickbooksInt.complete(true);
+          }
+          else quickbooksInt.complete(false);
+        }).catchError((error) => quickbooksInt.completeError(error));
+      });
+    }
+    waitingFor.add(quickbooksInt.future);
+    return Future.wait(waitingFor);
   }
 
   static exists (String name) => Syncable.exists(Supplier, name);
   static get (String name) => Syncable.get(Supplier, name);
-
-  /// Creates a new supplier, inserting it into the database and sending it to quickbooks...
-  static Future<Supplier> createNew (String name, String quickbooksName, { int terms: 42, String remittanceEmail: "", String confirmationEmail: "", String addressLine1: "", String addressLine2: "", String addressLine3: "", String addressLine4: "", String addressLine5: "", String phoneNumber: "", String faxNumber: "" }) {
-    Completer c = new Completer<Supplier>();
-    Supplier sup = new Supplier(0, name);
-    sup.quickbooksName = quickbooksName;
-    sup.terms = terms;
-    sup.remittanceEmail = remittanceEmail;
-    sup.confirmationEmail = confirmationEmail;
-    sup.phoneNumber = phoneNumber;
-    sup.faxNumber = faxNumber;
-    sup.addressLine1 = addressLine1;
-    sup.addressLine2 = addressLine2;
-    sup.addressLine3 = addressLine3;
-    sup.addressLine4 = addressLine4;
-    sup.addressLine5 = addressLine5;
-    sup.updateDatabase(dbHandler, qbHandler).then((bool done) {
-      if (done == true) {
-        c.complete(sup);
-      }
-      else c.completeError("Unspecified error");
-    }).catchError((e) => c.completeError(e));
-    return c.future;
-  }
 
 
   /// Initializes the suppliers for use by retreiving them from the database
   static Future<bool> init () {
     Completer c = new Completer();
     ffpServerLog.info("Loading supplier list...");
-    dbHandler.query("SELECT ID, supplierName, quickbooksName, terms, remittanceEmail, confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5, termsRef FROM suppliers").then((Results results){
+    dbHandler.query("SELECT ID, supplierName, quickbooksName, terms, remittanceEmail,"
+                    "confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, "
+                    "addressLine3, addressLine4, addressLine5, termsRef, isEmailedRemittance, isEmailedConfirmation, active FROM suppliers").then((Results results){
       results.listen((Row row) {
         Supplier sup = new Supplier(row[0], row[1]);
         sup._quickbooksName = row[2];
@@ -262,6 +339,9 @@ class Supplier extends Syncable<Supplier> {
         sup._addressLine4 = row[11];
         sup._addressLine5 = row[12];
         sup._termsRef = row[13];
+        sup._isEmailedRemittance = row[14] == 1;
+        sup._isEmailedConfirmation = row[15] == 1;
+        sup._isActive = row[16] == 1;
       },
       onDone: () {
         c.complete(true);
