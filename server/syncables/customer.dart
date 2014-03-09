@@ -338,6 +338,16 @@ class Customer extends Syncable<Customer> {
         }
       }).catchError((err) => c.completeError(err));
     }
+
+    Terms term = Syncable.get(Terms, this.termsRef);
+    if (term == null) {
+      this.termsRef = null;
+      this.terms = 0;
+    }
+    else {
+      this.terms = term.stdDueDays;
+    }
+
     Completer quickbooksInt = new Completer();
     if (this.quickbooksName == null || this.quickbooksName.isEmpty) {
       ffpServerLog.info("Inserting new customer in quickbooks");
@@ -345,6 +355,10 @@ class Customer extends Syncable<Customer> {
       customer.name = this.name;
       customer.email = this.invoiceEmail;
       customer.billAddress = new QBAddress();
+      if (this.termsRef != null) {
+        customer.termsRef = new QBRef();
+        customer.termsRef.listID = this.termsRef;
+      }
       customer.billAddress.lines[0] = this.billto1;
       customer.billAddress.lines[1] = this.billto2;
       customer.billAddress.lines[2] = this.billto3;
@@ -382,6 +396,10 @@ class Customer extends Syncable<Customer> {
         customer.name = this.name;
         customer.email = this.invoiceEmail;
         customer.billAddress = new QBAddress();
+        if (this.termsRef != null) {
+          customer.termsRef = new QBRef();
+          customer.termsRef.listID = this.termsRef;
+        }
         customer.billAddress.lines[0] = this.billto1;
         customer.billAddress.lines[1] = this.billto2;
         customer.billAddress.lines[2] = this.billto3;

@@ -72,12 +72,14 @@ class PacketInstancer {
       }
     });
     if (posArguments.length == positional.length) {
+      
       return cm.newInstance(const Symbol("create"), posArguments, namedParams).reflectee;
     }
     else {
-      
       ServerPacket.serverPacketLogger.warning("Incorrect parameters found");
     }
+    ServerPacket.serverPacketLogger.warning("Unidentified error?");
+    return null;
   }
 }
 
@@ -98,7 +100,7 @@ abstract class ServerPacket {
   static int ID = 0;
   ServerPacket();
   ServerPacket.create();
-  void handlePacket ();
+  void handlePacket (WebsocketHandler ws);
   
   static Map<int, PacketInstancer> packets = new Map<int, PacketInstancer>();
   static bool init() {
@@ -151,6 +153,7 @@ abstract class ServerPacket {
   
   static ServerPacket getPacket (int packetID, Map props) {
     if (packets.containsKey(packetID)) {
+      serverPacketLogger.info("Fetched packet");
       return packets[packetID].getPacket(props);
     }
     else {
@@ -187,7 +190,7 @@ class InitialDataResponseServerPacket extends ServerPacket {
                                          this.termsList,
                                          this.locationList,
                                          this.transportHaulageCostList);
-  void handlePacket () {
+  void handlePacket (WebsocketHandler wsh) {
     
   }
 }
@@ -196,7 +199,7 @@ class DisconnectServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.DISCONNECT_SERVER;
   String reason;
   DisconnectServerPacket.create (this.reason);
-  void handlePacket () {
+  void handlePacket (WebsocketHandler ws) {
     
   }
 }
@@ -205,10 +208,10 @@ class LoggedInServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.LOGGED_IN;
   Map user;
   LoggedInServerPacket.create (this.user);
-  void handlePacket () {
-    
+  void handlePacket (WebsocketHandler wsh) { 
+    ServerPacket.serverPacketLogger.info("Received login information from server... Overriding login");
+    wsh.ss.handleLogin(this);      
   }
-
 }
 
 class DataChangeServerPacket extends ServerPacket {
@@ -218,7 +221,7 @@ class DataChangeServerPacket extends ServerPacket {
   int type = 0;
   String identifier = "";
   DataChangeServerPacket.create (this.userID, this.change, this.type, this.identifier);
-  void handlePacket () {
+  void handlePacket (WebsocketHandler ws) {
     
   }
 
@@ -229,7 +232,7 @@ class SupplierAddServerPacket extends ServerPacket {
   int supplierID = 0;
   String supplierName = "";
   SupplierAddServerPacket.create (this.supplierID, this.supplierName);
-  void handlePacket () {
+  void handlePacket (WebsocketHandler ws) {
     
   }
 
@@ -240,7 +243,7 @@ class CustomerAddServerPacket extends ServerPacket {
    int customerID = 0;
    String customerName = "";
    CustomerAddServerPacket.create (this.customerID, this.customerName);
-   void handlePacket () {
+   void handlePacket (WebsocketHandler ws) {
      
    }
 
@@ -251,7 +254,7 @@ class TransportAddServerPacket extends ServerPacket {
   int transportID = 0;
   String transportName = "";
   TransportAddServerPacket.create (this.transportID, this.transportName);
-  void handlePacket () {
+  void handlePacket (WebsocketHandler ws) {
     
   }
 
@@ -262,7 +265,7 @@ class ActionResponseServerPacket extends ServerPacket {
   bool complete = false;
   List payload = new List();
   ActionResponseServerPacket.create (this.complete, {this.payload});
-  void handlePacket () {
+  void handlePacket (WebsocketHandler ws) {
     
   }
 
@@ -272,10 +275,28 @@ class PingPongServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.PING_PONG;
   bool ping;
   PingPongServerPacket.create (this.ping);
-  void handlePacket () {
+  void handlePacket (WebsocketHandler ws) {
     
   }
 
+}
+
+//{ID: 11, sessionID: 00089770-7366-4df5-bdef-529a6ba32534}
+class SetSessionServerPacket extends ServerPacket {
+  static int ID = SERVER_PACKET_IDS.SET_SESSION;
+  String sessionID;
+  SetSessionServerPacket.create (this.sessionID);
+  void handlePacket (WebsocketHandler ws) {
+    window.localStorage["FFPSESSID"] = sessionID;
+  }
+}
+
+class DeleteSessionServerPacket extends ServerPacket {
+  static int ID = SERVER_PACKET_IDS.DELETE_SESSION;
+  DeleteSessionServerPacket.create ();
+  void handlePacket (WebsocketHandler ws) {
+    window.localStorage.remove("FFPSESSID");
+  }
 }
 
 class SERVER_PACKET_IDS {
@@ -291,4 +312,6 @@ class SERVER_PACKET_IDS {
   static const int TRANSPORT_ADD = 8;
   static const int ACTION_RESPONSE = 9;
   static const int PING_PONG = 10;
+  static const int SET_SESSION = 11;
+  static const int DELETE_SESSION = 12;
 }

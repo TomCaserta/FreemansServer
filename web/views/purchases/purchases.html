@@ -1,0 +1,34 @@
+<div purchases class="">
+  <div class="col-lg-10 col-lg-offset-1 well well-sm">
+    <a href="#sheetview" role="button" class="btn btn-default">Product List View</a>
+  </div>
+
+  <section class="col-lg-5 col-lg-offset-1 no-gutter-left" salesinput>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Enter Purchases</h3>
+    </div>
+    <div class="panel-body">
+      <form class="form-horizontal">
+        <div class="form-group">
+          <label for="supplier" class="col-md-2">Supplier:</label>
+          <div class="col-md-10"><select id="supplier" class="form-control"><option>Supplier</option></select></div>
+        </div>
+        <div class="form-group">
+          <label for="product" class="col-md-2">Product:</label>
+          <div class="col-md-10"><div id="product" class="form-control" auto-completer rows="3" row1="sales.state.activeProductList" row2="sales.state.activeWeightList" row3="sales.state.activePackagingList"></div></div>
+        </div>
+        <div class="form-group">
+          <label for="cost" class="col-md-2">Cost:</label>
+          <div class="col-md-10"><input type="number" id="cost" class="form-control" /></div>
+        </div>
+        <div class="form-group pull-right col-md-12">
+          <button class="btn btn-primary pull-right"><span class="glyphicon glyphicon-tag"></span> Purchase</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  </section>
+      
+</div>

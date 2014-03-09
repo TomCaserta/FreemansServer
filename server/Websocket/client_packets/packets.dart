@@ -17,6 +17,7 @@ class AuthenticateClientPacket extends ClientPacket {
       User temp = User.getUser(this.username, this.password);
       if (temp != null) {
         client.user = temp;
+        client.loggedIn = true;
         client.sendPacket(new LoggedInServerPacket(this.rID, temp));
       } else {
         client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Username or password did not match any records"]));
@@ -236,14 +237,47 @@ class SyncableModifyClientPacket extends ClientPacket {
 }
 
 
+class SendSessionClientPacket extends ClientPacket {
+  static int ID = CLIENT_PACKET_IDS.SEND_SESSION;
+  String sessionID;
+  SendSessionClientPacket.create (this.sessionID);
+
+  void handlePacket(WebsocketHandler wsh, Client client) {
+    ffpServerLog.info("Received session packet ${sessionID}");
+    if (sessionID != null && sessionID.isNotEmpty) {
+      Client cli = wsh.getClientFromSocket(sessionID); 
+      ffpServerLog.info("Session data received...");
+      if (cli != null) {
+        ffpServerLog.info("Sent new session information");
+        wsh.removeClient(cli);
+        client.mergeWith(cli);
+        client.cancelDestroy();
+        if (client.loggedIn) {
+          client.sendPacket(new LoggedInServerPacket("", client.user));
+        }
+        else {
+          ffpServerLog.warning("Client was not logged in! ${cli.loggedIn}");
+        }
+        client.sendPacket(new SetSessionServerPacket(client._uniqueID));
+      }
+      else {
+        ffpServerLog.info("Session not found $sessionID resending data ${client._uniqueID}");
+        client.sendPacket(new SetSessionServerPacket(client._uniqueID));
+      }
+    }
+    else {
+      ffpServerLog.info("Sent new session data ${client._uniqueID}");
+      client.sendPacket(new SetSessionServerPacket(client._uniqueID));
+    }
+  }  
+}
+
+
 class CLIENT_PACKET_IDS {
   static const int AUTHENTICATE = 1;
-
   static const int PING_PONG = 2;
-
   static const int INITIAL_DATA_REQUEST = 3;
-
   static const int SYNCABLE_MODIFY = 4;
-
   static const int DATA_CHANGE = 5;
+  static const int SEND_SESSION = 6;
 }

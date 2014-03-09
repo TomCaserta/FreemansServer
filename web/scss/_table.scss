@@ -1,5 +1,5 @@
 
-.tr {
+.csstr {
   position: relative;
   display: table-row;
   counter-reset: tablenum;  
@@ -9,13 +9,13 @@
     border-top: 2px solid black;
   }
 }
-.table {
+.csstable {
   position: relative;
   display: table;
   table-layout: fixed;
   overflow: auto;
 }
-.td {
+.csstd {
   height: 35px;
   line-height: 35px;
   border-right: 1px solid #CCCCCC;
@@ -29,14 +29,14 @@
     display: block;
   }
 }
-.tr:nth-child(odd) {
+.csstr:nth-child(odd) {
   background-color: #DDDDDD;
 }
 
-.tr:nth-child(even) {
+.csstr:nth-child(even) {
   background-color: #FFFFFF;
 }
-.th {
+.cssth {
   padding-left: 5px;
   border-right: 1px solid #CCC;
   border-top: 1px solid #CCC;
@@ -54,15 +54,15 @@
     text-align: center;
   }
 }
-.tr > .th:first-child, .tr > .td:first-child { 
+.csstr > .cssth:first-child, .csstr > .csstd:first-child { 
   border-left: 1px solid #CCC;
 }
-.table > .tr:last-child > .td {
+.csstable > .csstr:last-child > .csstd {
   
   border-bottom: 1px solid #CCC;
 }
 
-.table input, .table select, .table button, .table .form-control {
+.csstable input, .csstable select, .csstable button, .csstable .form-control {
   box-shadow: inset 0px 1px 4px rgba(200,200,200,0.3);
 /*  -webkit-box-shadow: inset -2px -2px 14px 0px rgba(108, 175, 200, 0.05);
   -moz-box-shadow: inset -2px -2px 14px 0px rgba(108, 175, 200, 0.05);

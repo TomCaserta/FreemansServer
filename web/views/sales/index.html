@@ -1,8 +1,8 @@
 <div class="col-lg-10 col-lg-offset-1 well well-sm">
-  <a href="#salesclassic" role="button" class="btn btn-default">Product List View</a>
+  <a href="#sheetview" role="button" class="btn btn-default">Product List View</a>
 </div>
 
-<section class="col-lg-5 col-lg-offset-1" salesinput>
+<section class="col-lg-5 col-lg-offset-1 no-gutter-left" salesinput>
   <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">Enter Single Sale</h3>
@@ -14,41 +14,35 @@
         <div class=" col-md-10"><select id="customer" class="form-control"><option>Customer</option></select></div>
       </div>
       
-        <div class="table">
-          <div class="tr">
-            <div class="th" style="width:40%;">Item</div>
-            <div class="th" style="width:15%;">Amount</div>
-            <div class="th" style="width:15%;">Cost</div>
-            <div class="th" style="width:30%;">Transport</div>
+        <div class="csstable" style="width: 100%;">
+          <div class="csstr">
+            <div class="cssth" style="width:40%;">Item</div>
+            <div class="cssth" style="width:15%;">Amount</div>
+            <div class="cssth" style="width:15%;">Cost</div>
+            <div class="cssth" style="width:30%;">Transport</div>
           </div>       
           
-          <div class="tr">
-            <div class="td">Cauliflower</div>
-            <div class="td">55</div>
-            <div class="td">&pound;2.20</div>
-            <div class="td">PEARSONS</div>
+          <div class="csstr">
+            <div class="csstd">Cauliflower</div>
+            <div class="csstd">55</div>
+            <div class="csstd">&pound;2.20</div>
+            <div class="csstd">PEARSONS</div>
           </div>      
           
           
-           <div class="tr">
-            <div class="td">Cauliflower</div>
-            <div class="td">55</div>
-            <div class="td">&pound;2.20</div>
-            <div class="td">PEARSONS</div>
+           <div class="csstr">
+            <div class="csstd">Cauliflower</div>
+            <div class="csstd">55</div>
+            <div class="csstd">&pound;2.20</div>
+            <div class="csstd">PEARSONS</div>
           </div>      
-           <div class="tr">
-            <div class="td">Cauliflower</div>
-            <div class="td">55</div>
-            <div class="td">&pound;2.20</div>
-            <div class="td">PEARSONS</div>
+           <div class="csstr">
+            <div class="csstd">Cauliflower</div>
+            <div class="csstd">55</div>
+            <div class="csstd">&pound;2.20</div>
+            <div class="csstd">PEARSONS</div>
           </div>      
           
-           <div class="tr">
-            <div class="td"><div class="form-group"><div id="product" class="form-control" auto-completer rows="3" row1="sales.productList" row2="sales.weightList" row3="sales.packagingList"></div></div></div>
-            <div class="td"><div class="form-group"><input type="number" class="form-control"></div></div>
-            <div class="td"><div class="form-group"><input type="number" class="form-control"></div></div>
-            <div class="td"><div class="form-group"><select class="form-control"><option>Haulier</option></select></div></div>
-          </div>     
         </div>
       </form>
       <form>
@@ -58,7 +52,7 @@
         </div>
         <div class="form-group">
           <label for="product">Product:</label>
-          <div id="product" class="form-control" auto-completer rows="3" row1="sales.productList" row2="sales.weightList" row3="sales.packagingList"></div>
+          <div id="product" class="form-control" auto-completer rows="3" row1="sales.state.activeProductList" row2="sales.state.activeWeightList" row3="sales.state.activePackagingList"></div>
         </div>
         <div class="form-group">
           <label for="haulier">Haulier:</label>
@@ -76,6 +70,11 @@
           </div>
         </div>
         <div class="form-group">
+          <label for="cost">Cost:</label>
+          <input type="number" id="cost" class="form-control" />
+        </div>
+        
+        <div class="form-group">
           <label for="qty">Quantity:</label>
           <input type="number" id="qty" class="form-control" />
         </div>
@@ -83,7 +82,7 @@
     </div>
   </div>
 </section>
-<section class="col-lg-5">
+<section class="col-lg-5  no-gutter-right">
   <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">Previous Orders</h3>

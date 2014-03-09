@@ -28,6 +28,8 @@ part 'controller/main/multilistselectbox.dart';
 part 'controller/workbook/workbook.dart';
 part 'controller/transport/transport.dart';
 part 'controller/sales/sales.dart';
+part 'controller/sales/salesclassic.dart';
+
 
 
 void main() {
@@ -52,6 +54,7 @@ class FreemansModule extends Module {
     type(Login);
     type(ListButtons);
     type(SalesController);
+    type(SalesClassicController);
     type(ListEditor);
     type(MultiListSelectBox);
     factory(NgRoutingUsePushState,
@@ -67,16 +70,20 @@ freemansRouteInitializer(Router router, ViewFactory views) {
           path: 'overview',
           view: 'views/overview.html'),
        'workbook': ngRoute(
-        path: 'workbook',
-        view: 'views/workbook/index.html'
+          path: 'workbook',
+          view: 'views/workbook/index.html'
        ),
-       'sales/classic': ngRoute(
-          path: 'sales/classic',
+       'sheetview': ngRoute(
+          path: 'sheetview',
           view: 'views/sales/classic.html'
        ),
        'sales': ngRoute(
           path: 'sales',
           view: 'views/sales/index.html'
+       ),
+       'purchases': ngRoute(
+          path: 'purchases',
+          view: 'views/purchases/purchases.html'
        ),
        'lists': ngRoute(
           path: 'lists',

@@ -459,6 +459,7 @@ class Product extends Syncable<Product> {
     this._category = category.ID;
     requiresDatabaseSync();
   }
+
   Future<bool> updateDatabase (DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer();
     if (this.isNew) {
@@ -496,14 +497,3 @@ class Product extends Syncable<Product> {
 
 }
 
-
-class ProductGroup extends Syncable<ProductGroup> {
-  Product product;
-  ProductWeight item;
-  ProductPackaging packaging;
-  ProductGroup(this.product, this.item, this.packaging):super(0) {
-
-  }
-
-
-}

@@ -252,7 +252,16 @@ class Supplier extends Syncable<Supplier> {
             ffpServerLog.warning("Unspecified mysql $e");
           });
     }
-    
+
+
+    Terms term = Syncable.get(Terms, this.termsRef);
+    if (term == null) {
+      this.termsRef = null;
+      this.terms = 0;
+    }
+    else {
+      this.terms = term.stdDueDays;
+    }
 
     Completer quickbooksInt = new Completer();
     if (this.quickbooksName == null || this.quickbooksName.isEmpty) {
@@ -262,6 +271,10 @@ class Supplier extends Syncable<Supplier> {
       qbv.email = this.remittanceEmail;
       qbv.phoneNumber = this.phoneNumber;
       qbv.faxNumber = this.faxNumber;
+      if (this.termsRef != null) {
+        qbv.termsRef = new QBRef();
+        qbv.termsRef.listID = this.termsRef;
+      }
       qbv.vendorAddress = new QBAddress();
       qbv.vendorAddress.lines[0] = this.addressLine1;
       qbv.vendorAddress.lines[1] = this.addressLine2;
@@ -290,6 +303,10 @@ class Supplier extends Syncable<Supplier> {
               qbv.email = this.remittanceEmail;
               qbv.phoneNumber = this.phoneNumber;
               qbv.faxNumber = this.faxNumber;
+              if (this.termsRef != null) {
+                qbv.termsRef = new QBRef();
+                qbv.termsRef.listID = this.termsRef;
+              }
               qbv.vendorAddress = new QBAddress();
               qbv.vendorAddress.lines[0] = this.addressLine1;
               qbv.vendorAddress.lines[1] = this.addressLine2;

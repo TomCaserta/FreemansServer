@@ -17,7 +17,8 @@
           "clipboardWrite",
           "geolocation",
           "notifications",
-          "unlimitedStorage"
+          "unlimitedStorage",
+          "storage"
      ],
      "manifest_version": 2
 }

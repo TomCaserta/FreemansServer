@@ -57,8 +57,6 @@ class DataChangeClientPacket extends RequireResponseClientPacket {
   }
 }
 
-
-
 class SyncableModifyClientPacket extends RequireResponseClientPacket {
   static int ID = CLIENT_PACKET_IDS.SYNCABLE_MODIFY;
 
@@ -71,6 +69,16 @@ class SyncableModifyClientPacket extends RequireResponseClientPacket {
     return super.toJsonDefault(ID)..addAll({ "add": add, "type": type, "payload": payload });
   }
 
+}
+
+class SendSessionClientPacket extends ClientPacket {
+  static int ID = CLIENT_PACKET_IDS.SEND_SESSION;
+  String sessionID;
+  SendSessionClientPacket (this.sessionID);
+  
+  Map<String, dynamic> toJson () {
+    return super.toJsonDefault(ID)..addAll({ "sessionID": sessionID });
+  }
 }
 
 class SyncableTypes {
@@ -93,4 +101,5 @@ class CLIENT_PACKET_IDS {
   static const int INITIAL_DATA_REQUEST = 3;
   static const int SYNCABLE_MODIFY = 4;
   static const int DATA_CHANGE = 5;
+  static const int SEND_SESSION = 6;
 }

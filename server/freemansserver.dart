@@ -29,6 +29,7 @@ part 'syncables/customer.dart';
 part 'syncables/transport.dart';
 part 'syncables/product.dart';
 part 'syncables/location.dart';
+part 'syncables/product_group.dart';
 part 'syncables/transport_haulage_costs.dart';
 part 'utils/syncable.dart';
 part 'syncables/workbook_data.dart';

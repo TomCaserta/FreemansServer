@@ -37,14 +37,7 @@ class Login {
           });
         }
         else if (packet is LoggedInServerPacket) {
-             loggingin = true;  
-             service.loggedIn = true;
-             service.currUser = new User.fromJson(packet.user); 
-             service.wsh.sendGetResponse(new InitialDataRequestClientPacket()).then((ServerPacket packet) {
-               if (packet is InitialDataResponseServerPacket) {
-                  service.parseInitializationPacket(packet);
-                }               
-             });
+          service.handleLogin(packet);
         }
       });
     }

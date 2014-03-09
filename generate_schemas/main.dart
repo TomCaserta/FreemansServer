@@ -132,7 +132,7 @@ class JsonTypeDefinition {
         type = "boolean";
         break;
       case "DateTime":
-        type = "int";
+        type = "integer";
         break;
       case "List":
         type = "array";
@@ -186,7 +186,7 @@ class JsonTypeDefinition {
 
   toJson() {
     if (isAny) {
-        return { "$propName": { "oneOf": [
+        return { "$propName": { "anyOf": [
                                           { "type": "null" },
                                           { "type": "boolean" },
                                           { "type": "integer" },

@@ -60,10 +60,20 @@ body { padding-top: 70px; }
 input[type="color"] {
   padding: 0;
 }
-.no-gutter {
-  padding:0;
-  margin: 0;
+.no-gutter-left {
+  padding-left:0;
 }
+.no-gutter-right {
+  padding-right: 0;
+}
+.no-gutter {
+  @extend .no-gutter-left;
+  @extend .no-gutter-right;
+}
+.no-padding {
+  padding: 0;
+}
+
 
 .alert-top {
   margin-bottom: 0;

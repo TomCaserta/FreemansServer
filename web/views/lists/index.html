@@ -82,7 +82,7 @@
                 <label for="terms" class="col-md-2">Terms:</label>
 
                 <div class="col-md-10">
-                    <select id="terms" ng-model="listoverview.activeList.activeItem.termsRef" class="form-control">
+                    <select id="terms" required ng-model="listoverview.activeList.activeItem.termsRef" class="form-control">
                         <option ng-repeat="term in listoverview.state.termsList" value="{{term.key}}">{{term.name}}</option>
                     </select>
                 </div>
@@ -286,9 +286,9 @@
                     <label for="terms" class="col-md-2">Terms</label>
 
                     <div class="col-md-10">
-                        <select id="terms" class="form-control">
-                            <option>Terms</option>
-                        </select>
+                      <select id="terms" required ng-model="listoverview.activeList.activeItem.termsRef" class="form-control">
+                          <option ng-repeat="term in listoverview.state.termsList" value="{{term.key}}">{{term.name}}</option>
+                      </select>
                     </div>
                 </div>
             </div>
@@ -426,9 +426,9 @@
                     <label for="terms" class="col-md-2">Terms</label>
 
                     <div class="col-md-10">
-                        <select id="terms" class="form-control">
-                            <option>Terms</option>
-                        </select>
+                      <select id="terms" required ng-model="listoverview.activeList.activeItem.termsRef" class="form-control">
+                          <option ng-repeat="term in listoverview.state.termsList" value="{{term.key}}">{{term.name}}</option>
+                      </select>
                     </div>
                 </div>
             </div>

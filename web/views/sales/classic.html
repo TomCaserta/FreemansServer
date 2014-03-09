@@ -1,27 +1,82 @@
 <div class="col-lg-10 col-lg-offset-1 well well-sm">
   <a href="#sales" role="button" class="btn btn-default">Individual Sale</a>
+  <a href="#purchases" role="button" class="btn btn-default">Purchase</a>
 </div>
 
-<section class="col-lg-10 col-lg-offset-1 ">
+<section sales-classic class="col-lg-10 col-lg-offset-1  no-gutter">
   <div class="panel panel-default">
       
     <div class="panel-heading">
-      <h3 class="panel-title">Product List</h3>
+      <h3 class="panel-title">Products</h3>
     </div>
-    <div class="panel-body row no-gutter">
-      <div class="col-sm-12 row no-gutter">
-           <div class="classic-sales textfill"><button>CAULIFLOWER</button></div>
-           <div class="classic-sales textfill"><button>CALABRESE</button></div>
-           <div class="classic-sales textfill"><button>GREEN/LEEKS</button></div>
-           <div class="classic-sales textfill"><button>CABBAGE</button></div>
-           <div class="classic-sales textfill"><button>POTATOES</button></div>
-           <div class="classic-sales textfill"><button>SWEET POTS</button></div>
-           <div class="classic-sales textfill"><button>RED ONIONS</button></div>
-           <div class="classic-sales textfill"><button>ONIONS</button></div>
-           <div class="classic-sales textfill"><button>PARSNIPS</button></div>
-           <div class="classic-sales textfill"><button>CARROT</button></div>
-           <div class="classic-sales textfill"><button>SWEDES</button></div>
+    <div class="panel-body no-padding">
+      <div class="col-sm-12 no-gutter">
+      <!-- style="background-color: {{item.categoryColour}}" -->
+           <div class="classic-sales textfill" ng-repeat="item in productlist.state.activeProductCategoryList"><button >{{item.categoryName}}</button></div>
       </div>
     </div>
+      
   </div>
+  
+  <div ng-repeat="product in productlist.activeCategory.products" class="panel panel-default">
+    <div ng-click="product.toggleView()" class="panel-heading">
+      <h4>{{ product.fullName }}</h4>
+      <button class="pull-right btn btn-alert"><span class="glyphicon glyphicon-remove"></span></button>
+    </div>
+    <div ng-if="product.active" class="table-responsive">
+       <table class="table table-striped">
+          <thead>
+            <tr><th>Grower</th><th>Qty</th><th>Price</th><th>Haulier</th><th>Rate</th><th>Customer</th><th>Price</th><th>Qty</th><th>Date</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Test</td>
+              <td>55</td>
+              <td>&pound;5.00</td>
+              <td>PEARSONS</td>
+              <td>&pound;34.10</td>
+              <td>Bentley</td>
+              <td>&pound;6.00</td>
+              <td>55</td>
+              <td>08/03</td>
+            </tr>
+            <tr>
+              <td>Test</td>
+              <td>55</td>
+              <td>&pound;5.00</td>
+              <td>PEARSONS</td>
+              <td>&pound;34.10</td>
+              <td>Bentley</td>
+              <td>&pound;6.00</td>
+              <td>55</td>
+              <td>08/03</td>
+            </tr>
+            <tr>
+              <td>Test</td>
+              <td>55</td>
+              <td>&pound;5.00</td>
+              <td>PEARSONS</td>
+              <td>&pound;34.10</td>
+              <td>Bentley</td>
+              <td>&pound;6.00</td>
+              <td>55</td>
+              <td>08/03</td>
+            </tr>
+            <tr>
+              <td>Test</td>
+              <td>55</td>
+              <td>&pound;5.00</td>
+              <td>PEARSONS</td>
+              <td>&pound;34.10</td>
+              <td>Bentley</td>
+              <td>&pound;6.00</td>
+              <td>55</td>
+              <td>08/03</td>
+            </tr>
+          </tbody>
+        </table>
+      
+     </div>
+  </div>
+     
 </section>

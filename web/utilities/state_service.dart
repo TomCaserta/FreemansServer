@@ -26,6 +26,25 @@ class StateService {
   List<Locations> locationList = new List<Locations>();
   List<TransportHaulageCost> transportHaulageCostList = new List<TransportHaulageCost>();
   
+  
+  List get activeProductList {
+    return this.productList.where((e) => e.isActive).toList();
+  }
+  
+  List get activeWeightList {
+    return this.productWeightsList.where((e) => e.isActive).toList();
+  }
+  
+  List get activePackagingList {
+    return this.productPackagingList.where((e) => e.isActive).toList();
+  }
+  
+  List get activeProductCategoryList {
+    return this.productCategoryList.where((e) => e.isActive).toList();
+  }
+  
+  
+  
   bool get loaded {
     return preloader.loaded;  
   }
@@ -34,6 +53,17 @@ class StateService {
     return wsh.loaded;
   }
   
+  void handleLogin (LoggedInServerPacket packet) {
+     WebsocketHandler.websocketLogger.info("Received login notification from server... parsing packet");
+     this.loggedIn = true;
+     WebsocketHandler.websocketLogger.info(packet.user.toString());
+     this.currUser = new User.fromJson(packet.user); 
+     wsh.sendGetResponse(new InitialDataRequestClientPacket()).then((ServerPacket packet) {
+       if (packet is InitialDataResponseServerPacket) {
+          this.parseInitializationPacket(packet);
+        }               
+     });
+  }
   
   void parseInitializationPacket (InitialDataResponseServerPacket packet) {
     print("Parsing packet");
@@ -86,7 +116,11 @@ class StateService {
   }
      
   StateService () { 
-    preloader.addMethod(new PreloadElement("ServerPacket", ServerPacket.init));
+    wsh.ss = this;
+    if (ServerPacket.init()) { 
+      preloader.addMethod(new PreloadElement("Dummy", () { return true; }));
+      wsh.connect();
+    }
   }
 
 }

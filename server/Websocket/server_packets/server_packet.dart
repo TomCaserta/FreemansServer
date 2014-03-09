@@ -158,6 +158,25 @@ class ResponsePacketTimeoutServerPacket extends ServerPacket {
 }
 */
 
+class SetSessionServerPacket extends ServerPacket {
+  static int ID = SERVER_PACKET_IDS.SET_SESSION;
+  String sessionID;
+  SetSessionServerPacket (this.sessionID);
+  
+  toJson () {
+    return toJsonDefault(ID)..addAll({ "sessionID": sessionID });    
+  }
+}
+
+class DeleteSessionServerPacket extends ServerPacket {
+  static int ID = SERVER_PACKET_IDS.DELETE_SESSION;
+  DeleteSessionServerPacket ();
+  
+  toJson() {
+    return toJsonDefault(ID);
+  }
+}
+
 class SERVER_PACKET_IDS {
   //1 - REMOVED PACKET
   //2
@@ -170,4 +189,6 @@ class SERVER_PACKET_IDS {
   static const int TRANSPORT_ADD = 8;
   static const int ACTION_RESPONSE = 9;
   static const int PING_PONG = 10;
+  static const int SET_SESSION = 11;
+  static const int DELETE_SESSION = 12;
 }
