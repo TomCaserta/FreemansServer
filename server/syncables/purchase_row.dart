@@ -143,20 +143,29 @@ class PurchaseRow extends Syncable<PurchaseRow> {
   Future<bool> updateDatabase(DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer();
 
-    List<Future<bool>> futures = new List<Future<bool>>();
-    _sales.forEach((SalesRow sr) {
-      futures.add(sr.updateDatabase(dbh, qbc));
-    });
+    List<Future> futures = new List<Future>();
+    if (_sales != null) {
+      _sales.forEach((SalesRow sr) {
+        futures.add(sr.updateDatabase(dbh, qbc));
+      });
+    }
     // Fake completer/future to ensure that we always have atleast one future waiting on.
     // Whilst its a bit hacky its easier than doing a check.
     Completer fakeCompleter = new Completer();
     futures.add(fakeCompleter.future);
     if (supplier != null) futures.add(supplier.updateDatabase(dbh, qbc));
     if (product != null && product.isNew) futures.add(product.updateDatabase(dbh, qbc));
-    Future.wait(futures).then((List<bool> returnVal) {
-      bool all = returnVal.every((e) {
-        return e;
+    Future.wait(futures).then((List returnVal) {
+      bool all = true;
+      returnVal.forEach((elem)  {
+        if (elem is List) {
+          bool ev = elem.every((e) => e == true);
+          if (ev == false) all = false;
+        }
+        else if (elem is bool && elem == false) all = false;
       });
+
+      ffpServerLog.info("Sync method called on ${this.runtimeType} Result on all other rows: $all ${purchaseTime.millisecondsSinceEpoch}");
       if (all) {
         if (this.isNew) {
 
@@ -186,7 +195,7 @@ class PurchaseRow extends Syncable<PurchaseRow> {
             c.completeError(e);
           });
         }
-      } else c.completeError("Unknown SalesRow db update error");
+      } else c.completeError("Unknown ${this.runtimeType} db update error");
     }).catchError((e) => c.completeError(e));
     fakeCompleter.complete(true);
     return c.future;

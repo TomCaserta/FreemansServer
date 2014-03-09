@@ -11,12 +11,16 @@ class PurchasesController {
   DateTime _purchaseTime = new DateTime.now();
   String get purDate => new DateFormat('yyyy-MM-dd').format(_purchaseTime);
   set purDate (String purchaseDate) {
+    print("parsing date $purchaseDate");
+    if (purchaseDate != null && purchaseDate.isNotEmpty) {
     try {
-      DateTime parseDT = new DateTime.parse(purchaseDate);
+      DateTime parseDT = DateTime.parse(purchaseDate);
       _purchaseTime = parseDT;
     }
     catch (E) {
+      print("Date conversion error occured");
       // TODO: handle this error
+    }
     }
   }
   Supplier activeSupplier;
@@ -35,13 +39,16 @@ class PurchasesController {
   }
   
   void addPurchase () {
+    print("Attempting add");
+    print(activeSupplier);
+    print(activeProduct);
     if (activeSupplier != null && activeProduct != null) {
       PurchaseRow nPurRow = new PurchaseRow();
       nPurRow.supplierID = activeSupplier.ID;
       nPurRow.cost = cost;
       nPurRow.amount = qty;
       nPurRow.productID = activeProduct.ID;
-      nPurRow.purchaseTime = _purchaseTime.toUtc().millisecondsSinceEpoch;
+      nPurRow.purchaseTime = _purchaseTime.toUtc();
       if (activeWeight != null) nPurRow.weightID = activeWeight.ID;
       if (activePackaging != null) nPurRow.packagingID = activePackaging.ID;
       if (isAdd) {

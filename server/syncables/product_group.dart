@@ -37,8 +37,10 @@ class ProductGroup extends Syncable<ProductGroup> {
     }
   }
 
-  ProductGroup._create(int ID, this._productID, this._weightID, this._packagingID):super(ID, ("${this._productID}:${this._weightID}:${this._packagingID}")) {
-
+  ProductGroup._create(int ID, int productID, int weightID, int packagingID):super(ID, ("${productID}:${weightID}:${packagingID}")) {
+    this._productID = productID;
+    this._weightID = weightID;
+    this._packagingID = packagingID;
   }
 
   factory ProductGroup (int ID, int productID, int weightID, int packagingID) {

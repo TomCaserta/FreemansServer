@@ -28,7 +28,7 @@
         {endIf}
 
         {if::phoneNumber != null}<Phone>{$::phoneNumber}</Phone>{endIf}
-        {if::altPhone != null}<AltPhone>{$::altPhoneNumber}</AltPhone>{endIf}
+        {if::altPhoneNumber != null}<AltPhone>{$::altPhoneNumber}</AltPhone>{endIf}
         {if::faxNumber != null}<Fax>{$::faxNumber}</Fax>{endIf}
         {if::email != null}<Email>{$::email}</Email>{endIf}
         {if::contact != null}<Contact>{$::contact}</Contact>{endIf}

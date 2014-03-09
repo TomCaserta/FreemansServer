@@ -26,7 +26,7 @@ class PurchasesController {
   num cost;
   num qty;
 
-  List<String> notifications = new List<String>();
+  List<String> notifications;
   bool isError = false;
   bool isAdd = true;
   

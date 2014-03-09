@@ -243,7 +243,10 @@ class SyncableModifyClientPacket extends ClientPacket {
             if (comp) {
               client.sendPacket(new ActionResponseServerPacket(this.rID, true, [s]));
             } else client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Unspecified error"]));
-          }).catchError((e) => client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Unspecified error"])));
+          }).catchError((e) {
+            ffpServerLog.warning("Error: $e");
+            client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["There was a server error whilst processing your request. The request may not have gone through. Please notify Tom."]));
+          });
         } else {
           client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["The request could not validate. For security reasons it has been denied. Please try again later."]));
         }

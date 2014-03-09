@@ -171,7 +171,7 @@ class QBIdentifier {
             value = param[1];
           }
           else 
-            if (doThrow == true) throw new ArgumentError("No such identifier '$identifier'");
+            if (doThrow == true) throw new ArgumentError("No such identifier '$identifier' in $m");
           break;
     }
   }
