@@ -37,10 +37,33 @@ class ProductGroup extends Syncable<ProductGroup> {
     }
   }
 
-  ProductGroup(int ID):super(ID) {
+  ProductGroup._create(int ID, this._productID, this._weightID, this._packagingID):super(ID, ("${this._productID}:${this._weightID}:${this._packagingID}")) {
 
   }
 
+  factory ProductGroup (int ID, int productID, int weightID, int packagingID) {
+    if (exists(productID, weightID, packagingID)) {
+      if (ID != 0) {
+        ffpServerLog.warning("Duplicate product group detected, $productID $weightID $packagingID");
+      }
+      return get(productID, weightID, packagingID);
+    }
+    else return new ProductGroup._create(ID, productID, weightID, packagingID);
+  }
+
+
+  static exists (int productID, int weightID, int packagingID) => Syncable.exists(ProductGroup, ("${productID}:${weightID}:${packagingID}"));
+  static get (int productID, int weightID, int packagingID) => Syncable.get(ProductGroup, ("${productID}:${weightID}:${packagingID}"));
+
+  void mergeJson (Map jsonMap) {
+    this._productID = jsonMap["productID"];
+    this._weightID = jsonMap["weightID"];
+    this._packagingID = jsonMap["packagingID"];
+    if (jsonMap["lastUsed"] != null) {
+      this._lastUsed = new DateTime.fromMillisecondsSinceEpoch(jsonMap["lastUsed"], isUtc: true);
+    }
+    super.mergeJson(jsonMap);
+  }
 
   Future<bool> updateDatabase (DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer();
@@ -81,10 +104,7 @@ class ProductGroup extends Syncable<ProductGroup> {
     ffpServerLog.info("Loading product list...");
     dbHandler.query("SELECT ID, productID, weightID, packagingID, lastUsed, isActive FROM productgroups").then((Results results){
       results.listen((Row row) {
-         ProductGroup prodGroup = new ProductGroup(row[0]);
-        prodGroup._productID = row[1];
-        prodGroup._weightID = row[2];
-        prodGroup._packagingID = row[3];
+         ProductGroup prodGroup = new ProductGroup(row[0], row[1], row[2], row[3]);
         prodGroup._lastUsed = new DateTime.fromMillisecondsSinceEpoch(row[4], isUtc: true);
         prodGroup._isActive = row[5] == 1;
       },

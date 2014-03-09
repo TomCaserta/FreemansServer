@@ -81,14 +81,17 @@ class DataChangeClientPacket extends ClientPacket {
 
   String identifier = "";
 
-  DataChangeClientPacket.create (this.change, this.type, this.identifier, this.rID);
+  bool isAdd = false;
+
+  DataChangeClientPacket.create (this.change, this.type, this.identifier, this.rID, this.isAdd);
 
   void handlePacket(WebsocketHandler wsh, Client client) {
     if (!client.user.isGuest && client.user.hasPermission("data-change.$type")) {
+
       wsh.clients.values.where((cli) {
         return cli != client;
       }).forEach((e) {
-        e.sendPacket(new DataChangeServerPacket(client.user.ID, change, type, identifier));
+        e.sendPacket(new DataChangeServerPacket(client.user.ID, change, type, identifier, isAdd));
       });
       client.sendPacket(new ActionResponseServerPacket(rID, true));
     } else {
@@ -110,6 +113,8 @@ class SyncableTypes {
   static const int TERMS = 9;
   static const int LOCATION = 10;
   static const int TRANSPORT_HAULAGE_COST = 11;
+  static const int PURCHASE_ROW = 12;
+  static const int SALE_ROW = 13;
 }
 
 class SyncableModifyClientPacket extends ClientPacket {
@@ -163,6 +168,12 @@ class SyncableModifyClientPacket extends ClientPacket {
         case SyncableTypes.TRANSPORT_HAULAGE_COST:
           schema = TRANSPORTHAULAGECOST_SCHEMA;
           break;
+        case SyncableTypes.PURCHASE_ROW:
+          schema = PURCHASEROW_SCHEMA;
+          break;
+        case SyncableTypes.SALE_ROW:
+          schema = SALESROW_SCHEMA;
+          break;
         default:
           client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Unknown type $type"]));
           return;
@@ -208,7 +219,12 @@ class SyncableModifyClientPacket extends ClientPacket {
               case SyncableTypes.TRANSPORT_HAULAGE_COST:
                 s = new TransportHaulageCost.fromJson(payload);
                 break;
-              
+              case SyncableTypes.PURCHASE_ROW:
+                s = new PurchaseRow.fromJson(payload);
+                break;
+              case SyncableTypes.SALE_ROW:
+                s = new SalesRow.fromJson(payload);
+                break;
             }
           } else {
             s = Syncable.getByUuid(payload["Uuid"], type);
@@ -235,7 +251,6 @@ class SyncableModifyClientPacket extends ClientPacket {
     }
   }
 }
-
 
 class SendSessionClientPacket extends ClientPacket {
   static int ID = CLIENT_PACKET_IDS.SEND_SESSION;

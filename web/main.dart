@@ -29,13 +29,14 @@ part 'controller/workbook/workbook.dart';
 part 'controller/transport/transport.dart';
 part 'controller/sales/sales.dart';
 part 'controller/sales/salesclassic.dart';
+part 'controller/purchases/purchases.dart';
 
 
 
 void main() {
   Logger.root.level = Level.FINE;
   Logger.root.onRecord.listen((LogRecord r) { print("[${new DateFormat("hh:mm:ss").format(r.time)}][${r.level}][${r.loggerName != "" ? r.loggerName : "ROOT"}]: ${r.message}"); });
-
+ 
 
   ngBootstrap(module: new FreemansModule());
 }
@@ -54,6 +55,7 @@ class FreemansModule extends Module {
     type(Login);
     type(ListButtons);
     type(SalesController);
+    type(PurchasesController);
     type(SalesClassicController);
     type(ListEditor);
     type(MultiListSelectBox);

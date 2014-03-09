@@ -118,18 +118,17 @@ class Transport extends Syncable<Transport> {
     }
   }
   
-  Transport._create (int ID, String name, this._quickbooksName, this._surcharges, this._transportSheetEmail, this._remittanceEmail, this._termsRef, this._terms):super(ID, name) {
-    this._name = name;
-  }
+  Transport._create (int ID, String this._name, this._quickbooksName, this._surcharges, this._transportSheetEmail, this._remittanceEmail, this._termsRef, this._terms):super(ID);
+
   Transport.fromJson (Map params):super.fromJson(params);
 
 
 
   factory Transport (int ID, String name, String quickbooksName, List<Surcharge> surcharges, String transportSheetEmail, String remittanceEmail, String termsRef, int terms) {
-    if (!exists(name)) {
+    if (!exists(ID)) {
       return new Transport._create(ID, name, quickbooksName, surcharges, transportSheetEmail, remittanceEmail, termsRef, terms);
     }
-    else return get(name);
+    else return get(ID);
   }
 
 
@@ -165,8 +164,8 @@ class Transport extends Syncable<Transport> {
     return c.future;
   }
 
-  static bool exists(String name) => Syncable.exists(Transport, name);
-  static Transport get (String name) => Syncable.get(Transport, name);
+  static bool exists(int ID) => Syncable.exists(Transport, ID);
+  static Transport get (int ID) => Syncable.get(Transport, ID);
 
   static Future<bool> init () {
     Completer c = new Completer();

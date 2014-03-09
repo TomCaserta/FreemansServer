@@ -26,6 +26,9 @@ class StateService {
   List<Locations> locationList = new List<Locations>();
   List<TransportHaulageCost> transportHaulageCostList = new List<TransportHaulageCost>();
   
+  List get activeSupplierList {
+    return this.supplierList.where((e) => e.isActive).toList();
+  }
   
   List get activeProductList {
     return this.productList.where((e) => e.isActive).toList();

@@ -12,15 +12,20 @@ import 'package:ansicolor/ansicolor.dart';
 import 'package:xml/xml.dart';
 import 'package:utf/utf.dart';
 import 'package:uuid/uuid.dart' as uuid;
-import 'package:json_schema/json_schema.dart';
 import 'utils/permissions.dart';
 import 'utils/preloader.dart';
+import 'utils/functions.dart';
+
+/* QUICKBOOKS INTEGRATION */
 import 'package:QBXMLRP2_DART/QBXMLRP2_DART.dart';
 import 'quickbooks/quickbooks_integration/qb_integration.dart';
-import 'utils/functions.dart';
+
+/* OBJECT VALIDATION SCHEMAS */
+import 'package:json_schema/json_schema.dart';
 import 'schema_annotations/annotations.dart';
 import 'schema_annotations/generated_schemas.dart';
 
+/* DATABASE OBJECTS */
 part 'syncables/terms.dart';
 part 'syncables/accounts.dart';
 part 'syncables/user.dart';
@@ -31,10 +36,17 @@ part 'syncables/product.dart';
 part 'syncables/location.dart';
 part 'syncables/product_group.dart';
 part 'syncables/transport_haulage_costs.dart';
-part 'utils/syncable.dart';
 part 'syncables/workbook_data.dart';
+part 'syncables/purchase_row.dart';
+part 'syncables/sales_row.dart';
+part 'syncables/transport_row.dart';
+
+/* UTILITIES */
+part 'utils/syncable.dart';
 part 'config/config.dart';
 part 'utils/database_handler.dart';
+
+/* WEBSOCKET */
 part 'websocket/websocket_handler.dart';
 part 'websocket/client.dart';
 part 'websocket/client_packets/packets.dart';

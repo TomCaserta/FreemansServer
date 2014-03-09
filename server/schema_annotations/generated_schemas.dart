@@ -28,11 +28,11 @@ Map WORKBOOKROW_SCHEMA = {"type":"object","name":"WorkbookRow","additionalProper
 // ProductWeight Schema: 
 Map PRODUCTWEIGHT_SCHEMA = {"type":"object","name":"ProductWeight","additionalProperties":true,"properties":{"description":{"type":"string"},"kg":{"type":"number"},"ID":{"type":"integer"},"Uuid":{"type":"string"},"key":{"anyOf":[{"type":"null"},{"type":"boolean"},{"type":"integer"},{"type":"array"},{"type":"number"},{"type":"object"},{"type":"string"}]},"isActive":{"type":"boolean"}}};
 
+// PurchaseRow Schema: 
+Map PURCHASEROW_SCHEMA = {"type":"object","name":"PurchaseRow","additionalProperties":true,"properties":{"amount":{"type":"number"},"cost":{"oneOf":[{"type":"number"},{"type":"null"}]},"purchaseTime":{"type":"integer"},"productID":{"type":"integer"},"weightID":{"oneOf":[{"type":"integer"},{"type":"null"}]},"packagingID":{"oneOf":[{"type":"integer"},{"type":"null"}]},"supplierID":{"type":"integer"},"collectingHaulierID":{"oneOf":[{"type":"integer"},{"type":"null"}]},"ID":{"type":"integer"},"Uuid":{"type":"string"},"key":{"anyOf":[{"type":"null"},{"type":"boolean"},{"type":"integer"},{"type":"array"},{"type":"number"},{"type":"object"},{"type":"string"}]},"isActive":{"type":"boolean"}}};
+
 // SalesRow Schema: 
 Map SALESROW_SCHEMA = {"type":"object","name":"SalesRow","additionalProperties":true,"properties":{"ID":{"type":"integer"},"Uuid":{"type":"string"},"key":{"anyOf":[{"type":"null"},{"type":"boolean"},{"type":"integer"},{"type":"array"},{"type":"number"},{"type":"object"},{"type":"string"}]},"isActive":{"type":"boolean"}}};
-
-// PurchaseRow Schema: 
-Map PURCHASEROW_SCHEMA = {"type":"object","name":"PurchaseRow","additionalProperties":true,"properties":{"ID":{"type":"integer"},"Uuid":{"type":"string"},"key":{"anyOf":[{"type":"null"},{"type":"boolean"},{"type":"integer"},{"type":"array"},{"type":"number"},{"type":"object"},{"type":"string"}]},"isActive":{"type":"boolean"}}};
 
 // TransportRow Schema: 
 Map TRANSPORTROW_SCHEMA = {"type":"object","name":"TransportRow","additionalProperties":true,"properties":{"ID":{"type":"integer"},"Uuid":{"type":"string"},"key":{"anyOf":[{"type":"null"},{"type":"boolean"},{"type":"integer"},{"type":"array"},{"type":"number"},{"type":"object"},{"type":"string"}]},"isActive":{"type":"boolean"}}};

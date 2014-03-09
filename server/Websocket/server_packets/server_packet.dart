@@ -85,45 +85,21 @@ class LoggedInServerPacket extends ServerPacket {
   }
 }
 
+class DataChangeTypes {
+  static const int PURCHASE = 0;
+  static const int SALE = 1;
+}
+
 class DataChangeServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.DATA_CHANGE;
   int userID = 0;
   String change = "";
   int type = 0;
   String identifier = "";
-  DataChangeServerPacket (this.userID, this.change, this.type, this.identifier);
+  bool isAdd = false;
+  DataChangeServerPacket (this.userID, this.change, this.type, this.identifier, this.isAdd);
   toJson () {
-    return super.toJsonDefault(ID)..addAll({ "uID": userID, "type": type, "identifier": identifier, "data": change});
-  }
-}
-
-class SupplierAddServerPacket extends ServerPacket {
-  static int ID  = SERVER_PACKET_IDS.SUPPLIER_ADD;
-  int supplierID = 0;
-  String supplierName = "";
-  SupplierAddServerPacket (this.supplierID, this.supplierName);
-  toJson () {
-    return super.toJsonDefault(ID)..addAll({ "supplierID": supplierID, "supplierName": supplierName });
-  }
-}
-
-class CustomerAddServerPacket extends ServerPacket {
-  static int ID = SERVER_PACKET_IDS.CUSTOMER_ADD;
-   int customerID = 0;
-   String customerName = "";
-   CustomerAddServerPacket(this.customerID, this.customerName);
-   toJson () {
-     return super.toJsonDefault(ID)..addAll({ "customerID": customerID, "customerName": customerName });
-   }
-}
-
-class TransportAddServerPacket extends ServerPacket {
-  static int ID = SERVER_PACKET_IDS.TRANSPORT_ADD;
-  int transportID = 0;
-  String transportName = "";
-  TransportAddServerPacket(this.transportID, this.transportName);
-  toJson () {
-    return super.toJsonDefault(ID)..addAll({ "transportID": transportID, "transportName": transportName });
+    return super.toJsonDefault(ID)..addAll({ "uID": userID, "type": type, "identifier": identifier, "data": change, "isAdd": isAdd });
   }
 }
 

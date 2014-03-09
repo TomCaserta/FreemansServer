@@ -180,19 +180,17 @@ class Supplier extends Syncable<Supplier> {
     }
   }
   
-  Supplier._create (int ID, String name):super(ID, name) {
-    this.name = name;
+  Supplier._create (int ID):super(ID) {
   }
   Supplier.fromJson (Map params):super.fromJson(params);
 
 
-  factory Supplier (int ID, String name) {
-    if (!exists(name)) {
-      return new Supplier._create(ID, name);
+  factory Supplier (int ID) {
+    if (!exists(ID)) {
+      return new Supplier._create(ID);
     }
     else {
-      ffpServerLog.severe("Duplicate Supplier Entry Found... $name");
-      return get(name);
+      return get(ID);
     }
   }
 
@@ -331,8 +329,8 @@ class Supplier extends Syncable<Supplier> {
     return Future.wait(waitingFor);
   }
 
-  static exists (String name) => Syncable.exists(Supplier, name);
-  static get (String name) => Syncable.get(Supplier, name);
+  static exists (int ID) => Syncable.exists(Supplier, ID);
+  static get (int ID) => Syncable.get(Supplier, ID);
 
 
   /// Initializes the suppliers for use by retreiving them from the database
@@ -343,7 +341,8 @@ class Supplier extends Syncable<Supplier> {
                     "confirmationEmail, phoneNumber, faxNumber, addressLine1, addressLine2, "
                     "addressLine3, addressLine4, addressLine5, termsRef, isEmailedRemittance, isEmailedConfirmation, active FROM suppliers").then((Results results){
       results.listen((Row row) {
-        Supplier sup = new Supplier(row[0], row[1]);
+        Supplier sup = new Supplier(row[0]);
+        sup._name = row[1];
         sup._quickbooksName = row[2];
         sup._terms = row[3];
         sup._remittanceEmail = row[4];

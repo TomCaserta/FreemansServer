@@ -50,10 +50,11 @@ class DataChangeClientPacket extends RequireResponseClientPacket {
   String change = "";
   int type = 0;
   String identifier = "";
-  DataChangeClientPacket (this.change, this.type, this.identifier);
+  bool isAdd = false;
+  DataChangeClientPacket (this.change, this.type, this.identifier, this.isAdd);
   
   Map<String, dynamic>  toJson () {
-    return super.toJsonDefault(ID)..addAll({ "identifier": this.identifier, "type": this.type, "change": this.change });
+    return super.toJsonDefault(ID)..addAll({ "identifier": this.identifier, "type": this.type, "change": this.change, "isAdd": isAdd });
   }
 }
 
@@ -93,6 +94,9 @@ class SyncableTypes {
   static const int TERMS = 9;
   static const int LOCATION = 10;
   static const int TRANSPORT_HAULAGE_COST = 11;
+  static const int PURCHASE_ROW = 12;
+  static const int SALE_ROW = 13;
+  
 }
 
 class CLIENT_PACKET_IDS {

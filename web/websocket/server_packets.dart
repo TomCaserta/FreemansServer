@@ -220,7 +220,8 @@ class DataChangeServerPacket extends ServerPacket {
   String change = "";
   int type = 0;
   String identifier = "";
-  DataChangeServerPacket.create (this.userID, this.change, this.type, this.identifier);
+  bool isAdd = false;
+  DataChangeServerPacket.create (this.userID, this.change, this.type, this.identifier, tgus,isAdd);
   void handlePacket (WebsocketHandler ws) {
     
   }

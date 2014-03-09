@@ -1,6 +1,7 @@
 library DataObjects;
 
 import "dart:async";
+import "package:intl/intl.dart";
 import "../utilities/permissions.dart";
 import "../utilities/date_functions.dart";
 import "../websocket/websocket_handler.dart";
@@ -13,6 +14,8 @@ part "user.dart";
 part "terms.dart";
 part "location.dart";
 part "transport_haulage_costs.dart";
+part "purchase_row.dart";
+part "sales_row.dart";
 
 abstract class Syncable {
   final int type = 0;
