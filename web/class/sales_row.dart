@@ -33,7 +33,7 @@ class SalesRow extends Syncable {
     this.deliveryCost = jsonMap["deliveryCost"];
 
     if (jsonMap["deliveryDate"] != null) {
-      this.deliveryDate = new DateTime.millisecondsSinceEpoch(jsonMap["deliveryDate"], isUtc: true);
+      this.deliveryDate = new DateTime.fromMillisecondsSinceEpoch(jsonMap["deliveryDate"], isUtc: true);
     }
     super.mergeJson(jsonMap);
   }

@@ -55,7 +55,7 @@ class PurchaseRow extends Syncable<PurchaseRow> {
   num _cost;
   DateTime _purchaseTime;
   Supplier _supplier;
-  List<SalesRow> _sales;
+  List<SalesRow> _sales = new List<SalesRow>();
   ProductGroup _product;
   Transport _collectingHaulier;
 
@@ -79,6 +79,19 @@ class PurchaseRow extends Syncable<PurchaseRow> {
   int get supplierID => supplier.ID;
   @IncludeSchema(isOptional: true)
   int get collectingHaulierID => (collectingHaulier != null ? collectingHaulier.ID : null);
+
+  Future<bool> fetchSalesRows (DatabaseHandler dbh) {
+    Completer c = new Completer();
+    dbh.prepareExecute("${SalesRow.selector} WHERE produceID=?", [this.ID]).then((Results res) {
+      this._sales.clear();
+      res.forEach((Row r) {
+        SalesRow sr = new SalesRow.fromRow(r);
+        this._sales.add(sr);
+      });
+      c.complete(true);
+    }).catchError((e) => c.completeError(e));
+    return c.future;
+  }
 
   /*
    * SETTERS
@@ -129,14 +142,20 @@ class PurchaseRow extends Syncable<PurchaseRow> {
   void detatchSalesRow(SalesRow row) {
     if (_sales.contains(row)) {
       _sales.remove(row);
-      row.detatchParent();
-      requiresDatabaseSync();
+      row.produceID = null;
+      row.requiresDatabaseSync();
       ffpServerLog.info("Marking detatchment of row ID ${row.ID}");
     }
   }
 
+  void attachSalesRow (SalesRow row) {
+     row.produceID = this.ID;
+     row.requiresDatabaseSync();
+     requiresDatabaseSync();
+  }
 
-  static String selector = "SELECT `ID`, `productID`, `supplierID`, `haulageID`, `cost`, `weightID`, `packagingID`, `timeofpurchase`, `insertedBy`, `active` from produce";
+
+  static String selector = "SELECT `ID`, `productID`, `supplierID`, `haulageID`, `cost`, `weightID`, `packagingID`, `timeofpurchase`, `insertedBy`, `amount`, `active` from produce";
   PurchaseRow.fromRow(Row row):super(row.ID) {
     this.ID = row.ID;
     int supplierID = row.supplierID;
@@ -155,6 +174,7 @@ class PurchaseRow extends Syncable<PurchaseRow> {
     if (weightID == null) weightID = 0;
     if (packagingID == null) packagingID = 0;
     this.product = new ProductGroup(0, productID, weightID, packagingID);
+    this.amount = row.amount;
     this.purchaseTime = new DateTime.fromMillisecondsSinceEpoch(row.timeofpurchase);
     this.isActive = row.active == 1;
   }
@@ -188,7 +208,7 @@ class PurchaseRow extends Syncable<PurchaseRow> {
       if (all) {
         if (this.isNew) {
 
-          dbh.prepareExecute("INSERT INTO `produce` (`productID`, `supplierID`, `haulageID`, `cost`, `weightID`, `packagingID`, `timeofpurchase`, `insertedBy`, `active`) VALUES (?,?,?,?,?,?,?,?,?)", [productID, supplierID, collectingHaulierID, cost, weightID, packagingID, purchaseTime.millisecondsSinceEpoch, null, (isActive ? 1 : 0)]).then((Results res) {
+          dbh.prepareExecute("INSERT INTO `produce` (`productID`, `supplierID`, `haulageID`, `cost`, `weightID`, `packagingID`, `timeofpurchase`, `insertedBy`, `amount`, `active`) VALUES (?,?,?,?,?,?,?,?,?,?)", [productID, supplierID, collectingHaulierID, cost, weightID, packagingID, purchaseTime.millisecondsSinceEpoch, null, amount, (isActive ? 1 : 0)]).then((Results res) {
             if (res.insertId != 0) {
               this._firstInsert(res.insertId);
               c.complete(true);
@@ -202,7 +222,7 @@ class PurchaseRow extends Syncable<PurchaseRow> {
             ffpServerLog.severe("Error whilst creating ${this.runtimeType}:", e);
           });
         } else {
-          dbh.prepareExecute("UPDATE `produce` SET `productID`=?, `supplierID`=?, `haulageID`=?, `cost`=?, `weightID`=?, `packagingID`=?, `timeofpurchase`=?, `insertedBy`=?, `active`=? WHERE ID=?", [productID, supplierID, collectingHaulierID, cost, weightID, packagingID, purchaseTime.millisecondsSinceEpoch, null, (isActive ? 1 : 0), ID]).then((res) {
+          dbh.prepareExecute("UPDATE `produce` SET `productID`=?, `supplierID`=?, `haulageID`=?, `cost`=?, `weightID`=?, `packagingID`=?, `timeofpurchase`=?, `insertedBy`=?, `amount`=?, `active`=? WHERE ID=?", [productID, supplierID, collectingHaulierID, cost, weightID, packagingID, purchaseTime.millisecondsSinceEpoch, null, amount, (isActive ? 1 : 0), ID]).then((res) {
             if (res.affectedRows <= 1) {
               this.synced();
               c.complete(true);

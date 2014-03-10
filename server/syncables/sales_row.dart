@@ -29,18 +29,17 @@ class SalesRow extends Syncable<SalesRow> {
     this.amount = jsonMap["amount"];
     this.salePrice = jsonMap["salePrice"];
     if (jsonMap["produceID"] != null) {
-      this._parent = PurchaseRow.get(jsonMap["produceID"]);
-      this.product = (this._parent != null && this._parent is PurchaseRow ? this._parent.product : null);
+      this.produceID = jsonMap["produceID"];
     }
-    else {
-      int productID = jsonMap["productID"];
-      int weightID = jsonMap["weightID"];
-      int packagingID = jsonMap["packagingID"];
-      if (productID == null) productID = 0;
-      if (weightID == null) weightID = 0;
-      if (packagingID == null) packagingID = 0;
-      this.product = new ProductGroup(0, productID, weightID, packagingID);
-    }
+
+    int productID = jsonMap["productID"];
+    int weightID = jsonMap["weightID"];
+    int packagingID = jsonMap["packagingID"];
+    if (productID == null) productID = 0;
+    if (weightID == null) weightID = 0;
+    if (packagingID == null) packagingID = 0;
+    this.product = new ProductGroup(0, productID, weightID, packagingID);
+
     if (jsonMap["deliveryDate"] != null) {
       this.deliveryDate = new DateTime.fromMillisecondsSinceEpoch(jsonMap["deliveryDate"], isUtc: true);
     }
@@ -71,6 +70,7 @@ class SalesRow extends Syncable<SalesRow> {
   DateTime _deliveryDate;
   num _deliveryCost;
   ProductGroup product;
+  int _produceID;
 
   TransportRow get transport => _transport;
   Customer get customer => _customer;
@@ -86,7 +86,7 @@ class SalesRow extends Syncable<SalesRow> {
   @IncludeSchema(isOptional: true)
   DateTime get deliveryDate => _deliveryDate;
   @IncludeSchema(isOptional: true)
-  int get produceID => (this._parent is PurchaseRow ? this._parent.ID : null);
+  int get produceID => _produceID;
   @IncludeSchema(isOptional: true)
   int get productID => (product != null ? product.productID : null);
   @IncludeSchema(isOptional: true)
@@ -106,7 +106,6 @@ class SalesRow extends Syncable<SalesRow> {
   set transport(TransportRow transport) {
     if (transport != _transport) {
       _transport = transport;
-      if (transport != null) transport.addParent(this);
       requiresDatabaseSync();
     }
   }
@@ -139,10 +138,18 @@ class SalesRow extends Syncable<SalesRow> {
     }
   }
 
+  set produceID (int produceID) {
+    if (produceID != _produceID) {
+      _produceID = produceID;
+      requiresDatabaseSync();
+    }
+  }
+
   static String selector = "SELECT ID, customerID, produceID, haulageID, amount, cost, deliveryCost, deliveryDate, active, productID, weightID, packagingID FROM sales";
   SalesRow.fromRow(Row row):super(row.ID) {
     this.ID = row.ID;
     this.customer = Customer.get(row.customerID);
+
     this.produceID = row.produceID;
     int transportID = row.haulageID;
     if (transportID != null) {
@@ -171,6 +178,7 @@ class SalesRow extends Syncable<SalesRow> {
     Completer fakeCompleter = new Completer();
     futures.add(fakeCompleter.future);
     if (_customer != null) futures.add(_customer.updateDatabase(dbh, qbc));
+    if (product != null) futures.add(product.updateDatabase(dbh, qbc));
     Future.wait(futures).then((List returnVal) {
       bool all = returnVal.every((e) {
         if (e is bool) {
@@ -187,10 +195,6 @@ class SalesRow extends Syncable<SalesRow> {
         int customerID;
         if (_customer != null) {
           customerID = _customer.ID;
-        }
-        int produceID;
-        if (this._parent is PurchaseRow) {
-          produceID = _parent.ID;
         }
 
         if (this.isNew) {

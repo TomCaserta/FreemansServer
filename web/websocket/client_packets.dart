@@ -82,6 +82,63 @@ class SendSessionClientPacket extends ClientPacket {
   }
 }
 
+
+class FetchPurchaseRowDataClientPacket extends RequireResponseClientPacket {
+  static int ID = CLIENT_PACKET_IDS.PURCHASE_ROW_DATA;
+  int start;
+  int max;
+  String groupBy;
+  num amount;
+  String amountOperator = "=";
+  num cost;
+  String costOperator = "=";
+  int supplierID;
+  int productID;
+  int weightID;
+  int packagingID;
+  int collectingHaulierID;
+  int purchaseTimeFrom;
+  int purchaseTimeTo;
+  bool getSales = false;
+FetchPurchaseRowDataClientPacket ({
+                                  this.start,
+                                  this.max,
+                                  this.groupBy,
+                                  this.amount,
+                                  this.amountOperator: "=",
+                                  this.cost,
+                                  this.costOperator: "=",
+                                  this.supplierID,
+                                  this.productID,
+                                  this.weightID,
+                                  this.packagingID,
+                                  this.collectingHaulierID,
+                                  this.purchaseTimeFrom,
+                                  this.purchaseTimeTo,
+                                  this.getSales
+                                  });
+
+
+  Map<String, dynamic> toJson () {
+    return super.toJsonDefault(ID)..addAll({ "start": start,
+                                             "max": max,
+                                             "groupBy": groupBy,
+                                             "amount": amount,
+                                             "amountOperator": amountOperator,
+                                             "cost": cost,
+                                             "costOperator": costOperator,
+                                             "supplierID": supplierID,
+                                             "productID": productID,
+                                             "weightID": weightID,
+                                             "packagingID": packagingID,
+                                             "collectingHailierID": collectingHaulierID,
+                                             "purchaseTimeFrom": purchaseTimeFrom,
+                                             "purchaseTimeTo": purchaseTimeTo,
+                                             "getSales": getSales
+                                          });
+  }
+}
+
 class SyncableTypes {
   static const int CUSTOMER = 1;
   static const int SUPPLIER = 2;
@@ -106,4 +163,5 @@ class CLIENT_PACKET_IDS {
   static const int SYNCABLE_MODIFY = 4;
   static const int DATA_CHANGE = 5;
   static const int SEND_SESSION = 6;
+  static const int PURCHASE_ROW_DATA = 7;
 }

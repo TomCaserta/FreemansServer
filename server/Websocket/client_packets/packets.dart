@@ -255,6 +255,142 @@ class SyncableModifyClientPacket extends ClientPacket {
   }
 }
 
+class FetchPurchaseRowDataClientPacket extends ClientPacket {
+  static int ID = CLIENT_PACKET_IDS.PURCHASE_ROW_DATA;
+  int start;
+  int max;
+  String groupBy;
+  num amount;
+  String amountOperator = "=";
+  num cost;
+  String costOperator = "=";
+  int supplierID;
+  int productID;
+  int weightID;
+  int packagingID;
+  int collectingHaulierID;
+  int purchaseTimeFrom;
+  int purchaseTimeTo;
+  bool getSales = false;
+  String rID;
+  FetchPurchaseRowDataClientPacket.create (this.rID,
+                                           this.start,
+                                           this.max,
+                                           this.groupBy,
+                                           this.amount,
+                                           this.amountOperator,
+                                           this.cost,
+                                           this.costOperator,
+                                           this.supplierID,
+                                           this.productID,
+                                           this.weightID,
+                                           this.packagingID,
+                                           this.collectingHaulierID,
+                                           this.purchaseTimeFrom,
+                                           this.purchaseTimeTo,
+                                           this.getSales
+  );
+
+  void handlePacket(WebsocketHandler wsh, Client client) {
+    if (!client.user.isGuest && client.user.hasPermission("purchaserow.select")) {
+      if (!isValidOperator(this.amountOperator)) this.amountOperator = "=";
+      if (!isValidOperator(this.costOperator)) this.costOperator = "=";
+      StringBuffer buffer = new StringBuffer();
+      List params = [];
+      if (amount != null) {
+        if (buffer.length > 0) buffer.write(" AND ");
+        else buffer.write(" WHERE ");
+        buffer.write("amount $amountOperator ?");
+        params.add(amount);
+      }
+      if (cost != null) {
+        if (buffer.length > 0) buffer.write(" AND ");
+        else buffer.write(" WHERE ");
+        buffer.write("cost $costOperator ?");
+        params.add(cost);
+      }
+      if (supplierID != null) {
+        if (buffer.length > 0) buffer.write(" AND ");
+        else buffer.write(" WHERE ");
+        buffer.write("supplierID=?");
+        params.add(supplierID);
+      }
+      if (productID != null) {
+        if (buffer.length > 0) buffer.write(" AND ");
+        else buffer.write(" WHERE ");
+        buffer.write("productID=?");
+        params.add(productID);
+      }
+      if (weightID != null) {
+        if (buffer.length > 0) buffer.write(" AND ");
+        else buffer.write(" WHERE ");
+        buffer.write("weightID=?");
+        params.add(weightID);
+      }
+      if (packagingID != null) {
+        if (buffer.length > 0) buffer.write(" AND ");
+        else buffer.write(" WHERE ");
+        buffer.write("packagingID=?");
+        params.add(packagingID);
+      }
+      if (collectingHaulierID != null) {
+        if (buffer.length > 0) buffer.write(" AND ");
+        else buffer.write(" WHERE ");
+        buffer.write("haulageID=?");
+        params.add(collectingHaulierID);
+      }
+      if (purchaseTimeFrom != null) {
+        if (buffer.length > 0) buffer.write(" AND ");
+        else buffer.write(" WHERE ");
+        buffer.write("timeofpurchase > ?");
+        params.add(purchaseTimeFrom);
+      }
+
+      if (purchaseTimeTo != null) {
+        if (buffer.length > 0) buffer.write(" AND ");
+        else buffer.write(" WHERE ");
+        buffer.write("timeofpurchase < ?");
+        params.add(purchaseTimeTo);
+      }
+      if (groupBy != null && groupBy.isNotEmpty) {
+        // TODO: SQL Sanitation
+        buffer.write(" GROUP BY $groupBy");
+      }
+      if (start != null && max != null && start is int && max is int) {
+         buffer.write(" LIMIT $start,$max");
+      }
+      String fullSql = "${PurchaseRow.selector} ${buffer.toString()}";
+      if (getSales == null) getSales = false;
+
+      dbHandler.prepareExecute(fullSql, params).then((Results res) {
+        List<PurchaseRow> purchaseRows = [];
+        List<Future> salesRowFetchers = [];
+        res.forEach((Row r) {
+          PurchaseRow pr = new PurchaseRow.fromRow(r);
+          purchaseRows.add(pr);
+          // TODO: Fix this
+          if (this.getSales) salesRowFetchers.add(pr.fetchSalesRows(dbHandler));
+        });
+        if (this.getSales == false) {
+          client.sendPacket(new ActionResponseServerPacket(this.rID,true,purchaseRows));
+        }
+        else {
+          Future.wait(salesRowFetchers).then((List responses) {
+            client.sendPacket(new ActionResponseServerPacket(this.rID,true,purchaseRows));
+          }).catchError((e) {
+            client.sendPacket(new ActionResponseServerPacket(this.rID,false,[e]));
+          });
+        }
+      });
+    }
+  }
+}
+
+bool isValidOperator (String operator) {
+  List ops = const ["=",">",">=","<","<=","LIKE","NOT LIKE","!="];
+  return ops.contains(operator);
+}
+
 class SendSessionClientPacket extends ClientPacket {
   static int ID = CLIENT_PACKET_IDS.SEND_SESSION;
   String sessionID;
@@ -298,4 +434,5 @@ class CLIENT_PACKET_IDS {
   static const int SYNCABLE_MODIFY = 4;
   static const int DATA_CHANGE = 5;
   static const int SEND_SESSION = 6;
+  static const int PURCHASE_ROW_DATA = 7;
 }

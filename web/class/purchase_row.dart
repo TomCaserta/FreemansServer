@@ -11,6 +11,7 @@ class PurchaseRow extends Syncable {
   int packagingID;
   int collectingHaulierID;
   DateTime purchaseTime = new DateTime.now().toUtc();
+  List<SalesRow> sr = [];
 
   PurchaseRow ();
 
@@ -25,7 +26,7 @@ class PurchaseRow extends Syncable {
     this.packagingID = jsonMap["packagingID"];
     this.collectingHaulierID = jsonMap["collectingHaulierID"];
     if (jsonMap["purchaseTime"] != null) {
-      this.purchaseTime = new DateTime.millisecondsSinceEpoch(jsonMap["purchaseTime"], isUtc: true);
+      this.purchaseTime = new DateTime.fromMillisecondsSinceEpoch(jsonMap["purchaseTime"], isUtc: true);
     }
     else purchaseTime = new DateTime.now().toUtc();
     super.mergeJson(jsonMap);
@@ -43,5 +44,13 @@ class PurchaseRow extends Syncable {
        "collectingHaulierID": collectingHaulierID,
        "purchaseTime": purchaseTime.millisecondsSinceEpoch
     });
+  }
+
+  static List<PurchaseRow> processList (List data) {
+    var prList = [];
+    data.forEach((Map purchaseRowData) {
+      prList.add(new PurchaseRow.fromJson(purchaseRowData));
+    });
+    return prList;
   }
 }
