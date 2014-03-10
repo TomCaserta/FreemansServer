@@ -12,7 +12,14 @@ class SalesRow extends Syncable {
   int transportID;
   num amount;
   num salePrice;
+  num deliveryCost;
   DateTime deliveryDate;
+
+  int produceID;
+  //or
+  int productID;
+  int weightID;
+  int packagingID;
 
   SalesRow ();
 
@@ -20,12 +27,14 @@ class SalesRow extends Syncable {
 
   void mergeJson (Map jsonMap) {
     this.amount = jsonMap["amount"];
-    this.cost = jsonMap["cost"];
-    this.supplierID = jsonMap["supplierID"];
-    this.productID = jsonMap["productID"];
-    this.weightID = jsonMap["weightID"];
-    this.packagingID = jsonMap["packagingID"];
-    this.collectingHaulierID = jsonMap["collectingHaulierID"];
+    this.customerID = jsonMap["customerID"];
+    this.transportID = jsonMap["transportID"];
+    this.salePrice = jsonMap["salePrice"];
+    this.deliveryCost = jsonMap["deliveryCost"];
+
+    if (jsonMap["deliveryDate"] != null) {
+      this.deliveryDate = new DateTime.millisecondsSinceEpoch(jsonMap["deliveryDate"], isUtc: true);
+    }
     super.mergeJson(jsonMap);
   }
 
@@ -33,12 +42,15 @@ class SalesRow extends Syncable {
   Map toJson () {
     return super.toJson()..addAll({
         "amount": amount,
-        "cost": cost,
-        "supplierID": supplierID,
+        "customerID": customerID,
+        "transportID": transportID,
+        "salePrice": salePrice,
+        "deliveryDate": (deliveryDate != null ? deliveryDate.millisecondsSinceEpoch : null),
+        "deliveryCost": deliveryCost,
+        "produceID": produceID,
         "productID": productID,
         "weightID": weightID,
-        "packagingID": packagingID,
-        "collectingHaulierID": collectingHaulierID
+        "packagingID": packagingID
     });
   }
 }

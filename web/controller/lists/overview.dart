@@ -8,6 +8,7 @@ import "dart:js";
 import "../../utilities/state_service.dart";
 import "../../class/main.dart";
 import "../../websocket/websocket_handler.dart";
+import "package:intl/intl.dart";
 
 part "list_container.dart";
 part "list_buttons.dart";
@@ -33,8 +34,7 @@ class ListEditor {
       this.scopeElem = scopeElem;
       lists.add(new ListContainer<Customer>("Customer", state, state.customerList));
       lists.add(new ListContainer<Supplier>("Suppliers", state, state.supplierList));
-//      lists.add(new ListContainer("Transport", state));
-//      lists.add(new ListContainer("Products", state));
+      lists.add(new TransportListContainer("Transport", state, state.transportList));
       lists.add(new ListContainer<Product>("Products", state, state.productList));
       lists.add(new ListContainer<ProductCategory>("Product Categories", state, state.productCategoryList));
       lists.add(new ListContainer<ProductWeight>("Weights", state, state.productWeightsList));

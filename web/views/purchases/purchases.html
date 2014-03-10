@@ -13,13 +13,13 @@
           <div class="form-group">
               <label for="purchaseDate" class="col-md-2">Purchase Date:</label>
               <div class="col-md-10">
-                  <input type="date" id="purchaseDate" ng-model="purchases.purDate" class="form-control">
+                  <input type="date" id="purchaseDate" ng-model="purchases.purDate" ng-value="purchases.purDate" required class="form-control">
               </div>
           </div>
         <div class="form-group">
           <label for="supplier" class="col-md-2">Supplier:</label>
           <div class="col-md-10">
-            <select id="supplier" ng-model="purchases.activeSupplier" class="form-control">
+            <select id="supplier" ng-model="purchases.activeSupplier" required class="form-control">
               <option ng-repeat="supplier in purchases.state.activeSupplierList" ng-value="supplier">{{supplier.name}}</option>
             </select>
           </div>
@@ -27,7 +27,7 @@
         <div class="form-group">
           <label for="product" class="col-md-2">Product:</label>
           <div class="col-md-10">
-          <select id="product" ng-model="purchases.activeProduct" class="form-control">
+          <select id="product" ng-model="purchases.activeProduct" required class="form-control">
             <option ng-repeat="product in purchases.state.activeProductList" ng-value="product">{{product.name}}</option>
           </select>
           </div>
@@ -49,6 +49,14 @@
           </select>
           </div>
         </div>
+          <div class="form-group">
+              <label for="transport" class="col-md-2">Transport Company:</label>
+              <div class="col-md-10">
+                  <select id="transport" ng-model="purchases.activeTransport" class="form-control">
+                      <option ng-repeat="transport in purchases.state.activeTransportList" ng-value="transport">{{transport.name}}</option>
+                  </select>
+              </div>
+          </div>
         <div class="form-group">
           <label for="cost" class="col-md-2">Quantity:</label>
           <div class="col-md-10"><input type="number" ng-model="purchases.qty" id="cost" step="0.01" min="0.00" max="5000.00" class="form-control" /></div>

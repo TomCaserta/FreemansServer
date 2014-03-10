@@ -9,10 +9,14 @@
     </div>
     <div class="panel-body">
       <form class="form-horizontal">
-      <div class="form-group">
-        <label for="customer" class="col-md-2">Customer:</label>
-        <div class=" col-md-10"><select id="customer" class="form-control"><option>Customer</option></select></div>
-      </div>
+          <div class="form-group">
+              <label for="customer" class="col-md-2">Customer:</label>
+              <div class="col-md-10">
+                  <select id="customer" ng-model="sales.activeCustomer" required class="form-control">
+                      <option ng-repeat="customer in sales.state.activeCustomerList" ng-value="customer">{{customer.name}}</option>
+                  </select>
+              </div>
+          </div>
       
         <div class="csstable" style="width: 100%;">
           <div class="csstr">
@@ -21,63 +25,84 @@
             <div class="cssth" style="width:15%;">Cost</div>
             <div class="cssth" style="width:30%;">Transport</div>
           </div>       
-          
-          <div class="csstr">
-            <div class="csstd">Cauliflower</div>
-            <div class="csstd">55</div>
-            <div class="csstd">&pound;2.20</div>
-            <div class="csstd">PEARSONS</div>
-          </div>      
-          
-          
-           <div class="csstr">
-            <div class="csstd">Cauliflower</div>
-            <div class="csstd">55</div>
-            <div class="csstd">&pound;2.20</div>
-            <div class="csstd">PEARSONS</div>
-          </div>      
-           <div class="csstr">
-            <div class="csstd">Cauliflower</div>
-            <div class="csstd">55</div>
-            <div class="csstd">&pound;2.20</div>
-            <div class="csstd">PEARSONS</div>
-          </div>      
+
+          <!--<div class="csstr">-->
+            <!--<div class="csstd">Cauliflower</div>-->
+            <!--<div class="csstd">55</div>-->
+            <!--<div class="csstd">&pound;2.20</div>-->
+            <!--<div class="csstd">PEARSONS</div>-->
+          <!--</div>      -->
+
+
           
         </div>
       </form>
       <form>
-        <div class="form-group">
-          <label for="customer">Customer:</label>
-          <select id="customer" class="form-control"><option>Customer</option></select>
-        </div>
-        <div class="form-group">
-          <label for="product">Product:</label>
-          <div id="product" class="form-control" auto-completer rows="3" row1="sales.state.activeProductList" row2="sales.state.activeWeightList" row3="sales.state.activePackagingList"></div>
-        </div>
-        <div class="form-group">
-          <label for="haulier">Haulier:</label>
-          <select id="haulier" class="form-control"><option>Transport Company</option></select>
-        </div>
+          <div class="form-group">
+              <label for="product">Product:</label>
+              <div>
+                  <select id="product" ng-model="sales.activeProduct" required class="form-control">
+                      <option ng-repeat="product in sales.state.activeProductList" ng-value="product">{{product.name}}</option>
+                  </select>
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label for="weight">Weight:</label>
+              <div>
+                  <select id="weight" ng-model="sales.activeWeight" class="form-control">
+                      <option ng-repeat="weight in sales.state.activeWeightList" ng-value="weight">{{weight.name}}</option>
+                  </select>
+              </div>
+          </div>
+          <div class="form-group">
+              <label for="packaging">Packaging:</label>
+              <div>
+                  <select id="packaging" ng-model="sales.activePackaging" class="form-control">
+                      <option ng-repeat="packaging in sales.state.activePackagingList" ng-value="packaging">{{packaging.name}}</option>
+                  </select>
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label for="transport">Haulier:</label>
+              <div>
+                  <select id="transport" ng-model="sales.activeTransport" class="form-control">
+                      <option ng-repeat="transport in sales.state.activeTransportList" ng-value="transport">{{transport.name}}</option>
+                  </select>
+              </div>
+          </div>
          <div class="form-group">
           <label for="haulageCost">Haulage Cost:</label>
           <div class="input-group">
             <span class="input-group-addon">&pound;</span>
-            <input id="haulageCost" class="form-control" />
+            <input id="haulageCost" type="number" ng-model="sales.haulageCost" step="0.01" class="form-control" />
             <span class="input-group-btn">
-              <button class="btn btn-default" type="button">-</button>
-              <button class="btn btn-default" type="button">+</button>
+              <button ng-click="sales.removeSurcharge()" class="btn btn-default" type="button">-</button>
+              <button ng-click="sales.addSurcharge()" class="btn btn-default" type="button">+</button>
             </span>
           </div>
         </div>
         <div class="form-group">
           <label for="cost">Cost:</label>
-          <input type="number" id="cost" class="form-control" />
+          <input type="number" ng-model="sales.cost" id="cost" class="form-control" />
         </div>
         
         <div class="form-group">
           <label for="qty">Quantity:</label>
-          <input type="number" id="qty" class="form-control" />
+          <input type="number" ng-model="sales.qty" id="qty" class="form-control" />
         </div>
+          <div class="col-lg-12">
+              <div ng-if="sales.notifications.length > 0"
+                   ng-class="{ 'alert-success': !sales.isError, 'alert-danger': sales.isError }"
+                   class="alert">
+                  <div ng-repeat="notification in sales.notifications">{{notification}}</div>
+              </div>
+
+          </div>
+          <div class="form-group pull-right col-md-12">
+              <button ng-click="sales.addSale()" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-tag"></span> Add Sale</button>
+          </div>
       </form>
     </div>
   </div>

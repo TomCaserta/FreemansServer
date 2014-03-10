@@ -19,7 +19,7 @@ class QBAddress {
       address.lines[4] = getQbxmlContainer(addressData, "Addr5", optional: true).text;
       address.city = getQbxmlContainer(addressData, "City", optional:true).text;
       address.state = getQbxmlContainer(addressData, "State", optional:true).text;
-      address.postalCode = getQbxmlContainer(addressData, "postalCode", optional:true).text;
+      address.postalCode = getQbxmlContainer(addressData, "PostalCode", optional:true).text;
       address.country = getQbxmlContainer(addressData, "Country", optional:true).text;
       address.note = getQbxmlContainer(addressData, "Note", optional:true).text;   
       if (blockData != null) {

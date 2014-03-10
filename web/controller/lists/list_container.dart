@@ -1,5 +1,35 @@
 part of ListOverview;
 
+//Special case transport container:
+class TransportListContainer extends ListContainer<Transport> {
+  TransportListContainer(name, stateService, allNames):super(name, stateService, allNames);
+
+  int activeResult;
+
+  DateTime surchargeDate = new DateTime.now();
+  String get surDateStr => new DateFormat('yyyy-MM-dd').format(surchargeDate);
+  set surDateStr (String surchargeDate) {
+    if (surchargeDate != null && surchargeDate.isNotEmpty) {
+      this.surchargeDate = DateTime.parse(surchargeDate);
+    }
+  }
+  num surcharge = 0.0;
+
+  void addSurcharge () {
+    if (surcharge != null && surcharge > 0) {
+      Transport t = this._activeItem;
+      t.surcharges.add(new Surcharge(surchargeDate, surcharge));
+    }
+  }
+
+  void removeSurcharge () {
+    if (activeResult != null) {
+      Transport t = this._activeItem;
+      t.surcharges.removeAt(activeResult);
+    }
+  }
+}
+
 class ListContainer<T> {
   String name = "";
 
@@ -50,6 +80,7 @@ class ListContainer<T> {
       }
     });
   }
+
 
   void onAdd() {
     activeItem.isActive = true;

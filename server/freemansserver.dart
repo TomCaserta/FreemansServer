@@ -89,6 +89,7 @@ void main() {
     ffpServerLog.info("Initializing database values");
     Preloader prel = new Preloader();
     prel.addFuture(new PreloadElement("UserInit", User.init));
+    prel.addFuture(new PreloadElement("TermsInit", Terms.init));
     prel.addFuture(new PreloadElement("SupplierInit", Supplier.init));
     prel.addFuture(new PreloadElement("CustomerInit", Customer.init));
     prel.addFuture(new PreloadElement("TransportInit", Transport.init));
@@ -97,7 +98,6 @@ void main() {
     prel.addFuture(new PreloadElement("ProductWeightInit", ProductWeight.init));
     prel.addFuture(new PreloadElement("ProductPackagingInit", ProductPackaging.init));
     prel.addFuture(new PreloadElement("ProductCategoryInit", ProductCategory.init));
-    prel.addFuture(new PreloadElement("TermsInit", Terms.init));
     prel.addFuture(new PreloadElement("LocationInit", Location.init));
     prel.addFuture(new PreloadElement("TransportHaulageCostInit", TransportHaulageCost.init));
     prel.addMethod(new PreloadElement("PacketInit", ClientPacket.init));
@@ -118,6 +118,11 @@ void main() {
 void afterLoading() {
   WebsocketHandler wsh = new WebsocketHandler ();
   wsh.start(GLOBAL_CONFIG["ws_bind_ip"], GLOBAL_CONFIG["ws_bind_port"]);
+
+
+  // INITIAL QB SYNC
+  //Customer.syncWithQuickbooks(dbHandler, qbHandler);
+ // Supplier.syncWithQuickbooks(dbHandler, qbHandler);
 }
 
 

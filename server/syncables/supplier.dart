@@ -373,4 +373,41 @@ class Supplier extends Syncable<Supplier> {
     });
     return c.future;
   }
+
+  static Future<bool> syncWithQuickbooks (DatabaseHandler dbh, QuickbooksConnector qbc) {
+    QBVendorList qbVendorQuery = new QBVendorList(qbc, 10);
+    List<Supplier> supplierList = Syncable.getVals(Supplier);
+
+    qbVendorQuery.forEach().listen((QBVendor qbVendor) {
+      Iterable qbID2Vendor = supplierList.where((e) => e.quickbooksName == qbVendor.listID);
+      Supplier c;
+      if (qbID2Vendor.length > 0) {
+        c = qbID2Vendor.elementAt(0);
+      }
+      else {
+        c = new Supplier(0);
+      }
+      if (c != null) {
+        c.name = qbVendor.name;
+        c.quickbooksName = qbVendor.listID;
+        if (qbVendor.termsRef != null) {
+          c.termsRef = qbVendor.termsRef.listID;
+          c.terms = Terms.get(qbVendor.termsRef.listID).stdDueDays;
+        }
+        c.remittanceEmail = qbVendor.email;
+        c.confirmationEmail = qbVendor.email;
+        c.phoneNumber = qbVendor.phoneNumber;
+        c.faxNumber = qbVendor.faxNumber;
+        if (qbVendor.vendorAddress != null) {
+          c.addressLine1 = qbVendor.vendorAddress.lines[0];
+          c.addressLine2 = qbVendor.vendorAddress.lines[1];
+          c.addressLine3 = qbVendor.vendorAddress.lines[2];
+          c.addressLine4 = qbVendor.vendorAddress.city;
+          c.addressLine5 = qbVendor.vendorAddress.postalCode;
+        }
+        c.isActive = qbVendor.isActive;
+        c.updateDatabase(dbh, qbc);
+      }
+    });
+  }
 }

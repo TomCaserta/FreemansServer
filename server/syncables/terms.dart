@@ -35,7 +35,9 @@ class Terms extends Syncable<Terms> {
     this.discountPct = jsonMap["discountPct"];
     super.mergeJson(jsonMap);
   }
-  
+  static Terms get(String termsRef) {
+     return Syncable.get(Terms, termsRef);
+  }
   Future<bool> updateDatabase(DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer();
     if (isNew) {

@@ -135,10 +135,29 @@ class PurchaseRow extends Syncable<PurchaseRow> {
     }
   }
 
-  void addSalesRow(SalesRow row) {
-    row.requiresDatabaseSync();
-  }
 
+  static String selector = "SELECT `ID`, `productID`, `supplierID`, `haulageID`, `cost`, `weightID`, `packagingID`, `timeofpurchase`, `insertedBy`, `active` from produce";
+  PurchaseRow.fromRow(Row row):super(row.ID) {
+    this.ID = row.ID;
+    int supplierID = row.supplierID;
+    if (supplierID != null) {
+      this.supplierID = Supplier.get(supplierID);
+    }
+    int haulageID = row.haulageID;
+    if (haulageID != null) {
+      this.collectingHaulier = row.haulageID;
+    }
+    this.cost = row.cost;
+    int productID = row.productID;
+    int weightID = row.weightID;
+    int packagingID = row.packagingID;
+    if (productID == null) productID = 0;
+    if (weightID == null) weightID = 0;
+    if (packagingID == null) packagingID = 0;
+    this.product = new ProductGroup(0, productID, weightID, packagingID);
+    this.purchaseTime = new DateTime.fromMillisecondsSinceEpoch(row.timeofpurchase);
+    this.isActive = row.active == 1;
+  }
 
   Future<bool> updateDatabase(DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer();
@@ -174,7 +193,6 @@ class PurchaseRow extends Syncable<PurchaseRow> {
               this._firstInsert(res.insertId);
               c.complete(true);
               ffpServerLog.info("Created new ${this.runtimeType}");
-
             } else {
               c.completeError("Unspecified mysql error");
               ffpServerLog.severe("Unspecified mysql error");

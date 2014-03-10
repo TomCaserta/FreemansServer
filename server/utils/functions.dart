@@ -1,25 +1,6 @@
 library functions;
 
-
-String dateToFFPD (DateTime d) {
-  d = d.toUtc();
-  StringBuffer sb = new StringBuffer();
-  sb.write(d.year);
-  sb.write("/");
-  sb.write(add_padding(d.month,"0",2));
-  sb.write("/");
-  sb.write(add_padding(d.day,"0",2));
-  return sb.toString();
-}
-
-String add_padding (dynamic val, String paddChar, int amt) {
-  String value = val.toString();
-  StringBuffer sb = new StringBuffer();
-  sb.write(str_repeat(paddChar, (amt - value.length)));
-  sb.write(value);
-  return sb.toString();
-}
-
+import "package:intl/intl.dart";
 
 String str_repeat(String s, int repeat) {
   StringBuffer sb = new StringBuffer();
@@ -29,14 +10,14 @@ String str_repeat(String s, int repeat) {
   return sb.toString();
 }
 
+String dateToFFPD (DateTime d) {
+  return new DateFormat("yyyy-MM-dd").format(d);
+}
+
 
 DateTime FFPDToDate (String d) {
-  List<String> splitD = d.split("/");
-  if (splitD.length == 3) {
-    int year = int.parse(splitD[0], onError: (e) {});
-    int month = int.parse(splitD[1], onError: (e) {});
-    int day = int.parse(splitD[2], onError: (e) {});
-    DateTime date = new DateTime.utc(year, month, day);
-    return date;
+  if (d != null && d.isNotEmpty) {
+    return new DateFormat("yyyy-MM-dd").parse(d);
   }
+  return null;
 }

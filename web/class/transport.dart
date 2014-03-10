@@ -2,15 +2,19 @@ part of DataObjects;
 
 class Surcharge {
   DateTime dateBefore;
-  int surcharge;
+  num surcharge;
   Surcharge (DateTime this.dateBefore, this.surcharge);
   Surcharge.parse(String dateBefore, String surcharge) {
-      this.surcharge = int.parse(surcharge, onError: (e) {
+    print("$dateBefore $surcharge");
+      this.surcharge = num.parse(surcharge, (e) {
         print("Could not parse surcharge");
       });
       this.dateBefore = FFPDToDate(dateBefore);
    }
-  
+
+  toString () {
+    return "${dateToFFPD(dateBefore)}:$surcharge";
+  }
   List toJson () { 
           return [dateBefore.toUtc().millisecondsSinceEpoch, surcharge];
   }
@@ -20,6 +24,7 @@ class Surcharge {
 class Transport extends Syncable {
   final int type = SyncableTypes.TRANSPORT;
   List<Surcharge> surcharges = new List<Surcharge>();
+  List<List> get surchargesArray => surcharges.map((e) => [new DateFormat("dd/MM/yy").format(e.dateBefore), e.surcharge]).toList();
   String name = "";
   String quickbooksName = "";
   String transportSheetEmail = "";
@@ -31,10 +36,12 @@ class Transport extends Syncable {
   Transport.fromJson (Map jsonMap):super.fromJson(jsonMap) {
         
   }
+
   void mergeJson(Map jsonMap) {
-    if (jsonMap["surcharges"] != null && jsonMap["surcharges"] is String) {
+    if (jsonMap["surcharges"] != null && jsonMap["surcharges"] is String && jsonMap["surcharges"].isNotEmpty) {
       String surchargeStr = jsonMap["surcharges"];
       List<String> splitS = surchargeStr.split(",");
+      surcharges.clear();
       splitS.forEach((String sur) {
        List<String> splitSur = sur.split(":");
        surcharges.add(new Surcharge.parse(splitSur[0], splitSur[1]));
@@ -48,15 +55,40 @@ class Transport extends Syncable {
     this.termsRef = jsonMap["termsRef"];
     super.mergeJson(jsonMap);
   }
+  num applySurcharge (num value, DateTime t) {
+    if (surcharges != null) {
+      num oput = value;
+      surcharges.sort((Surcharge a, Surcharge b) => a.dateBefore.compareTo(b.dateBefore));
+      surcharges.forEach((Surcharge s) {
+        if (s.dateBefore.compareTo(t) < 0) {
+          print(((value / 100) * s.surcharge));
+          oput = value + ((value / 100) * s.surcharge);
+        }
+      });
+      return oput;
+    }
+    return value;
+  }
+  num removeSurcharge (num value, DateTime t) {
+    if (surcharges != null) {
+      num oput = value;
+      surcharges.sort((Surcharge a, Surcharge b) => a.dateBefore.compareTo(b.dateBefore));
+      surcharges.forEach((Surcharge s) {
+        if (s.dateBefore.compareTo(t) < 0) {
+          oput = value /  ((s.surcharge / 100) + 1);
+        }
+      });
+      return oput;
+    }
+    return value;
+  }
   Map<String, dynamic> toJson () {
     return super.toJson()..addAll({
-      "surcharges": surcharges, 
+      "surcharges": surcharges.join(","),
       "name": name,
       "quickbooksName": quickbooksName,
       "transportSheetEmail": transportSheetEmail,
-      "remittanceEmail": remittanceEmail,
-      "terms": terms,
-      "termsRef": termsRef
+      "remittanceEmail": (remittanceEmail != null ? remittanceEmail : "")
     });
   }
 }

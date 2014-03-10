@@ -29,7 +29,11 @@ class StateService {
   List get activeSupplierList {
     return this.supplierList.where((e) => e.isActive).toList();
   }
-  
+
+  List get activeCustomerList {
+    return this.customerList.where((e) => e.isActive).toList();
+  }
+
   List get activeProductList {
     return this.productList.where((e) => e.isActive).toList();
   }
@@ -45,8 +49,12 @@ class StateService {
   List get activeProductCategoryList {
     return this.productCategoryList.where((e) => e.isActive).toList();
   }
-  
-  
+
+  List get activeTransportList {
+    return this.transportList.where((e) => e.isActive).toList();
+  }
+
+
   
   bool get loaded {
     return preloader.loaded;  

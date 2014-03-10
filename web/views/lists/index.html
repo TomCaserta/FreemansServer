@@ -406,31 +406,24 @@
             <div class="panel-heading"><h4>General Information</h4></div>
             <div class="panel-body">
                 <fieldset>
-                    <div ng-hide="listoverview.activeList.isAdd" class="form-group">
-                        <label for="globalID" class="col-md-2">Global ID:</label>
+                    <div class="form-group">
+                        <label for="supplier" class="col-md-2">Link to Supplier:</label>
 
                         <div class="col-md-10">
-                            <input type="text" class="form-control" id="globalID" disabled
-                                   placeholder="{XXXX99-XXXX-XXX-XX99}">
+                            <select id="supplier" ng-model="listoverview.activeList.activeItem.quickbooksName" required class="form-control">
+                                <option ng-repeat="supplier in listoverview.state.activeSupplierList" ng-value="supplier.quickbooksName">{{supplier.name}}</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="globalID" class="col-md-2">Name:</label>
 
                         <div class="col-md-10">
-                            <input type="text" class="form-control" id="name" placeholder="Haulier Name">
+                            <input type="text" ng-model="listoverview.activeList.activeItem.name" class="form-control" id="name" placeholder="Haulier Name">
                         </div>
                     </div>
                 </fieldset>
-                <div class="form-group">
-                    <label for="terms" class="col-md-2">Terms</label>
 
-                    <div class="col-md-10">
-                      <select id="terms" required ng-model="listoverview.activeList.activeItem.termsRef" class="form-control">
-                          <option ng-repeat="term in listoverview.state.termsList" value="{{term.key}}">{{term.name}}</option>
-                      </select>
-                    </div>
-                </div>
             </div>
         </div>
         <div class="panel panel-default">
@@ -439,12 +432,12 @@
                 <fieldset class="row">
                     <div class="col-md-12 col-lg-3 surcharge-container">
                         <div class="form-group col-md-12">
-                            <multi-select header="listoverview.activeList.colHeader"
-                                          column-data="listoverview.activeList.colData">
+                            <multi-select header="['Date Before', 'Surcharge']" output="listoverview.activeList.activeResult"
+                                          column-data="listoverview.activeList.activeItem.surchargesArray">
 
                             </multi-select>
 
-                            <button class="btn btn-block btn-danger">
+                            <button  ng-click="listoverview.activeList.removeSurcharge()" class="btn btn-block btn-danger">
                                 Remove Selected Surcharge
                             </button>
                         </div>
@@ -454,7 +447,7 @@
                             <label for="surchargeBefore" class="col-md-2">Date Before</label>
 
                             <div class="col-md-10">
-                                <input type="date" class="form-control" id="surchargeBefore">
+                                <input type="date" ng-model="listoverview.activeList.surDateStr" class="form-control" id="surchargeBefore">
                             </div>
                         </div>
                         <div class="form-group">
@@ -462,7 +455,7 @@
 
                             <div class="col-md-10">
                                 <div class="input-group">
-                                    <input type="number" class="form-control" id="surcharge">
+                                    <input type="number" ng-model="listoverview.activeList.surcharge" class="form-control" id="surcharge">
                                 <span class="input-group-addon">
                                   %
                                 </span>
@@ -472,7 +465,7 @@
 
                         <div class="form-group">
                             <div class="col-md-2 col-md-offset-10">
-                                <button class="btn btn-block btn-success">
+                                <button ng-click="listoverview.activeList.addSurcharge()" class="btn btn-block btn-success">
                                     Add Surcharge
                                 </button>
                             </div>
@@ -488,18 +481,10 @@
             <div class="panel-body">
                 <fieldset>
                     <div class="form-group">
-                        <label for="remittanceEmail" class="col-md-2">Remittance Email:</label>
+                        <label for="transportSheetEmail" class="col-md-2">Transport Sheet Email:</label>
 
                         <div class="col-md-10">
-                            <input type="text" class="form-control" id="remittanceEmail"
-                                   placeholder="transport@transportsite.com">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="transportSheetEmail" class="col-md-2">Remittance Email:</label>
-
-                        <div class="col-md-10">
-                            <input type="text" class="form-control" id="transportSheetEmail"
+                            <input  ng-model="listoverview.activeList.activeItem.transportSheetEmail" type="text" class="form-control" id="transportSheetEmail"
                                    placeholder="transport@transportsite.com">
                         </div>
                     </div>

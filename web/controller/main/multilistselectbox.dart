@@ -12,19 +12,32 @@ class MultiListSelectBox {
   MultiListSelectBox (Scope this.scope) {
     
   }
+  String _colD;
   
   @NgAttr("column-data")
   set colData (String data) {
     if (data != null) {
       dynamic r = scope.$parent.$eval(data);
+      scope.$parent.$watch(data, (r, p, Scope scope) {
+        if (r != p) {
+        if (r is List) {
+                rows = r;
+        }
+        else {
+          print("$data : ${r.runtimeType} is not a List");
+        }  
+        }
+      });
       if (r is List) {
         rows = r;
       }
       else {
         print("$data : ${r.runtimeType} is not a List");
       }
+      _colD = data;
     }
   }
+  String get colData => _colD;
   
   @NgAttr("header")
   set colHeader (String data) {
@@ -46,7 +59,10 @@ class MultiListSelectBox {
   
   @NgAttr("active")
   int active;
-  
+
+  @NgAttr("output")
+  String output = "";
+
   String classVal;
 
   void setValue (int value) {
@@ -54,6 +70,9 @@ class MultiListSelectBox {
       active = null;
     }
     else  active = value;
+    if (output.isNotEmpty) {
+      scope.$parent.$eval("$output = $active");
+    }
   }
   
 }

@@ -62,7 +62,7 @@ packages:
   sqljocky:
     description: sqljocky
     source: hosted
-    version: "0.9.0"
+    version: "0.10.0"
   stack_trace:
     description: stack_trace
     source: hosted

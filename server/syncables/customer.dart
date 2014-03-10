@@ -463,4 +463,57 @@ class Customer extends Syncable<Customer> {
     });
     return c.future;
   }
+
+  static Future<bool> syncWithQuickbooks (DatabaseHandler dbh, QuickbooksConnector qbc) {
+      QBCustomerList qbCustQuery = new QBCustomerList(qbc, 10);
+      List<Customer> custList = Syncable.getVals(Customer);
+      print(custList);
+
+      qbCustQuery.forEach().listen((QBCustomer qbCust) {
+        ffpServerLog.info("Syncing ${qbCust.fullName} with the Customer List");
+        Iterable qbID2Customer = custList.where((e) => e.quickbooksName == qbCust.listID);
+        Customer c;
+        print(qbCust.listID);
+        if (qbID2Customer.length > 0) {
+          ffpServerLog.info("Where clause is stating there is a matching element ${qbID2Customer.length}");
+          c = qbID2Customer.elementAt(0);
+        }
+        else {
+          c = new Customer(0);
+        }
+        if (c != null) {
+          ffpServerLog.info("Modifying data values");
+          c.name = qbCust.fullName;
+          c.quickbooksName = qbCust.listID;
+          c.invoiceEmail = qbCust.email;
+          c.confirmationEmail = qbCust.email;
+          if (qbCust.billAddress != null) {
+            c.billto1 = qbCust.billAddress.lines[0];
+            c.billto2 = qbCust.billAddress.lines[1];
+            c.billto3 = qbCust.billAddress.lines[2];
+            c.billto4 = qbCust.billAddress.city;
+            c.billto5 = qbCust.billAddress.postalCode;
+          }
+          if (qbCust.shipAddress != null) {
+            c.shipto1 = qbCust.shipAddress.lines[0];
+            c.shipto2 = qbCust.shipAddress.lines[1];
+            c.shipto3 = qbCust.shipAddress.lines[2];
+            c.shipto4 = qbCust.shipAddress.city;
+            c.shipto5 = qbCust.shipAddress.postalCode;
+          }
+          if (qbCust.termsRef != null) {
+            c.termsRef = qbCust.termsRef.listID;
+            c.terms = Terms.get(c.termsRef).stdDueDays;
+           }
+          c.faxNumber = qbCust.faxNumber;
+          c.phoneNumber = qbCust.phoneNumber;
+          c.isActive = qbCust.isActive;
+          c.updateDatabase(dbh, qbc);
+        }
+        else {
+
+          ffpServerLog.warning("Failed sync");
+        }
+      });
+  }
 }

@@ -23,6 +23,7 @@ class PurchasesController {
   ProductWeight activeWeight;
   Product activeProduct;
   ProductPackaging activePackaging;
+  Transport activeTransport;
   num cost;
   num qty;
 
@@ -36,12 +37,14 @@ class PurchasesController {
   
   void addPurchase () {
     if (activeSupplier != null && activeProduct != null) {
+      isError = false;
       PurchaseRow nPurRow = new PurchaseRow();
       nPurRow.supplierID = activeSupplier.ID;
       nPurRow.cost = cost;
       nPurRow.amount = qty;
       nPurRow.productID = activeProduct.ID;
-      nPurRow.purchaseTime = _purchaseTime.toUtc().millisecondsSinceEpoch;
+      if (activeTransport != null) nPurRow.collectingHaulierID = activeTransport.ID;
+      nPurRow.purchaseTime = _purchaseTime.toUtc();
       if (activeWeight != null) nPurRow.weightID = activeWeight.ID;
       if (activePackaging != null) nPurRow.packagingID = activePackaging.ID;
       if (isAdd) {
@@ -70,9 +73,15 @@ class PurchasesController {
         });
       }
     }
-
+      else {
+        notifications.clear();
+        if (activeSupplier == null) notifications.add("You need to provide a supplier.");
+        if (activeProduct == null) notifications.add("You need to provide a product");
+        isError = true;
+      }
+  }
     void refreshPurchases ([DateTime date, Supplier supplierName]) {
 
     }
-  }
+
 }

@@ -6,8 +6,7 @@ class SalesRow extends Syncable<SalesRow> {
    * CONSTRUCTOR
    */
   SalesRow._createNew (int id, TransportRow this._transport, Customer this._customer):super(id) {
-    this.addChild(_transport);
-    this.addChild(_customer);
+
   }
 
   /// Factory constructor for the SalesRow to avoid duplicate objects in memory. If it already exists it will use the old object.
@@ -29,12 +28,38 @@ class SalesRow extends Syncable<SalesRow> {
     }
     this.amount = jsonMap["amount"];
     this.salePrice = jsonMap["salePrice"];
-    this.deliveryDate = new DateTime.fromMillisecondsSinceEpoch(jsonMap["deliveryDate"], isUtc: true);
+    if (jsonMap["produceID"] != null) {
+      this._parent = PurchaseRow.get(jsonMap["produceID"]);
+      this.product = (this._parent != null && this._parent is PurchaseRow ? this._parent.product : null);
+    }
+    else {
+      int productID = jsonMap["productID"];
+      int weightID = jsonMap["weightID"];
+      int packagingID = jsonMap["packagingID"];
+      if (productID == null) productID = 0;
+      if (weightID == null) weightID = 0;
+      if (packagingID == null) packagingID = 0;
+      this.product = new ProductGroup(0, productID, weightID, packagingID);
+    }
+    if (jsonMap["deliveryDate"] != null) {
+      this.deliveryDate = new DateTime.fromMillisecondsSinceEpoch(jsonMap["deliveryDate"], isUtc: true);
+    }
+    this.deliveryCost = jsonMap["deliveryCost"];
     super.mergeJson(jsonMap);
   }
 
   Map toJson () {
-    return super.toJson()..addAll({ "customerID": (customer != null ? customer.ID : null), "transportID": (transport != null ? transport.ID : null), "amount": amount, "salePrice": salePrice, "deliveryDate": deliveryDate.millisecondsSinceEpoch });
+    return super.toJson()..addAll({
+        "customerID": (customer != null ? customer.ID : null),
+        "transportID": (transport != null ? transport.ID : null),
+        "amount": amount,
+        "salePrice": salePrice,
+        "deliveryDate": deliveryDate.millisecondsSinceEpoch,
+        "deliveryCost": deliveryCost,
+        "productID": productID,
+        "weightID": weightID,
+        "packagingID": packagingID
+    });
   }
   /*
    * SALES ROW
@@ -43,12 +68,33 @@ class SalesRow extends Syncable<SalesRow> {
   Customer _customer;
   num _amount;
   num _salePrice;
-  DateTime deliveryDate;
+  DateTime _deliveryDate;
+  num _deliveryCost;
+  ProductGroup product;
 
   TransportRow get transport => _transport;
   Customer get customer => _customer;
+
+  @IncludeSchema(isOptional: true)
   num get amount => _amount;
+  @IncludeSchema(isOptional: true)
   num get salePrice => _salePrice;
+  @IncludeSchema()
+  int get customerID => (customer != null ? customer.ID : null);
+  @IncludeSchema(isOptional: true)
+  int get transportID => (transport != null? transport.ID : transport);
+  @IncludeSchema(isOptional: true)
+  DateTime get deliveryDate => _deliveryDate;
+  @IncludeSchema(isOptional: true)
+  int get produceID => (this._parent is PurchaseRow ? this._parent.ID : null);
+  @IncludeSchema(isOptional: true)
+  int get productID => (product != null ? product.productID : null);
+  @IncludeSchema(isOptional: true)
+  int get weightID =>  (product != null ? product.weightID : null);
+  @IncludeSchema(isOptional: true)
+  int get packagingID =>  (product != null ? product.packagingID : null);
+  @IncludeSchema(isOptional: true)
+  num get deliveryCost => _deliveryCost;
 
   set customer(Customer cust) {
     if (cust != _customer) {
@@ -59,7 +105,6 @@ class SalesRow extends Syncable<SalesRow> {
 
   set transport(TransportRow transport) {
     if (transport != _transport) {
-      _transport.detatchParent();
       _transport = transport;
       if (transport != null) transport.addParent(this);
       requiresDatabaseSync();
@@ -80,6 +125,44 @@ class SalesRow extends Syncable<SalesRow> {
     }
   }
 
+  set deliveryDate (DateTime deliveryDate) {
+    if (deliveryDate != _deliveryDate) {
+      _deliveryDate = deliveryDate;
+      requiresDatabaseSync();
+    }
+  }
+
+  set deliveryCost (num deliveryCost) {
+    if (deliveryCost != _deliveryCost) {
+      _deliveryCost =  deliveryCost;
+      requiresDatabaseSync();
+    }
+  }
+
+  static String selector = "SELECT ID, customerID, produceID, haulageID, amount, cost, deliveryCost, deliveryDate, active, productID, weightID, packagingID FROM sales";
+  SalesRow.fromRow(Row row):super(row.ID) {
+    this.ID = row.ID;
+    this.customer = Customer.get(row.customerID);
+    this.produceID = row.produceID;
+    int transportID = row.haulageID;
+    if (transportID != null) {
+      this.transport = Transport.get(transportID);
+    }
+    this.amount = row.amount;
+    this.salePrice = row.cost;
+    this.deliveryCost = row.deliveryCost;
+    this._isActive = row.active == 1;
+
+    int productID = row.productID;
+    int weightID = row.weightID;
+    int packagingID = row.packagingID;
+    if (productID == null) productID = 0;
+    if (weightID == null) weightID = 0;
+    if (packagingID == null) packagingID = 0;
+    this.product = new ProductGroup(0, productID, weightID, packagingID);
+
+  }
+
   Future<bool> updateDatabase(DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer();
     List<Future<dynamic>> futures = new List<Future<bool>>();
@@ -98,10 +181,8 @@ class SalesRow extends Syncable<SalesRow> {
       });
       if (all) {
         int haulageID;
-        int deliveryCost;
         if (_transport != null) {
           haulageID = _transport.ID;
-          deliveryCost = _transport.deliveryCost;
         }
         int customerID;
         if (_customer != null) {
@@ -113,7 +194,7 @@ class SalesRow extends Syncable<SalesRow> {
         }
 
         if (this.isNew) {
-          dbh.prepareExecute("INSERT INTO sales (customerID, produceID, haulageID, amount, cost, deliveryCost, deliveryDate, active) VALUES (?,?,?,?,?,?,?,?)", [customerID, produceID, haulageID, _amount, _salePrice, deliveryCost, deliveryDate.millisecondsSinceEpoch, (this.isActive ? 1 : 0)]).then((Results res) {
+          dbh.prepareExecute("INSERT INTO sales (customerID, produceID, haulageID, amount, cost, deliveryCost, deliveryDate, active, productID, weightID, packagingID) VALUES (?,?,?,?,?,?,?,?,?,?,?)", [customerID, produceID, haulageID, _amount, _salePrice, deliveryCost, (deliveryDate != null ? deliveryDate.millisecondsSinceEpoch : null), (this.isActive ? 1 : 0),productID,weightID,packagingID]).then((Results res) {
             if (res.insertId != 0) {
               this._firstInsert(res.insertId);
               c.complete(true);
@@ -128,7 +209,7 @@ class SalesRow extends Syncable<SalesRow> {
             ffpServerLog.severe("Error whilst creating ${this.runtimeType}:", e);
           });
         } else {
-          dbh.prepareExecute("UPDATE sales SET customerID=?, produceID=?, haulageID=?, amount=?, cost=?, deliveryCost=?, deliveryDate=?, active=? WHERE ID=?", [customerID, produceID, haulageID, _amount, _salePrice, deliveryCost, deliveryDate.millisecondsSinceEpoch, (this.isActive ? 1 : 0), ID]).then((res) {
+          dbh.prepareExecute("UPDATE sales SET customerID=?, produceID=?, haulageID=?, amount=?, cost=?, deliveryCost=?, deliveryDate=?, active=?, productID=?, weightID=?, packagingID=? WHERE ID=?", [customerID, produceID, haulageID, _amount, _salePrice, deliveryCost, (deliveryDate != null ? deliveryDate.millisecondsSinceEpoch : null), (this.isActive ? 1 : 0),productID,weightID,packagingID, ID]).then((res) {
             if (res.affectedRows <= 1) {
               this.synced();
               c.complete(true);
@@ -146,4 +227,5 @@ class SalesRow extends Syncable<SalesRow> {
     fakeCompleter.complete(true);
     return c.future;
   }
+
 }
