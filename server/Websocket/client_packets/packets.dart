@@ -248,7 +248,7 @@ class SyncableModifyClientPacket extends ClientPacket {
             client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["There was a server error whilst processing your request. The request may not have gone through. Please notify Tom."]));
           });
         } else {
-          client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["The request could not validate. For security reasons it has been denied. Please try again later."]));
+          client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Sorry one of the required fields was not entered correctly. Please try again. (If you see this notify Tom to add a more descriptive error message)"]));
         }
       });
     }
@@ -273,7 +273,7 @@ class FetchPurchaseRowDataClientPacket extends ClientPacket {
   int purchaseTimeTo;
   bool getSales = false;
   String rID;
-  FetchPurchaseRowDataClientPacket.create (this.rID,
+  FetchPurchaseRowDataClientPacket.create ({this.rID,
                                            this.start,
                                            this.max,
                                            this.groupBy,
@@ -288,7 +288,7 @@ class FetchPurchaseRowDataClientPacket extends ClientPacket {
                                            this.collectingHaulierID,
                                            this.purchaseTimeFrom,
                                            this.purchaseTimeTo,
-                                           this.getSales
+                                           this.getSales}
   );
 
   void handlePacket(WebsocketHandler wsh, Client client) {
@@ -359,28 +359,29 @@ class FetchPurchaseRowDataClientPacket extends ClientPacket {
       if (start != null && max != null && start is int && max is int) {
          buffer.write(" LIMIT $start,$max");
       }
-      String fullSql = "${PurchaseRow.selector} ${buffer.toString()}";
+      String fullSql = "${PurchaseRow.selector}${buffer.toString()}";
       if (getSales == null) getSales = false;
-
+      ffpServerLog.info("Fetching $fullSql from the database!");
       dbHandler.prepareExecute(fullSql, params).then((Results res) {
         List<PurchaseRow> purchaseRows = [];
         List<Future> salesRowFetchers = [];
-        res.forEach((Row r) {
+        res.listen((Row r) {
+          ffpServerLog.info("Found row $r");
           PurchaseRow pr = new PurchaseRow.fromRow(r);
           purchaseRows.add(pr);
-          // TODO: Fix this
           if (this.getSales) salesRowFetchers.add(pr.fetchSalesRows(dbHandler));
-        });
-        if (this.getSales == false) {
-          client.sendPacket(new ActionResponseServerPacket(this.rID,true,purchaseRows));
-        }
-        else {
-          Future.wait(salesRowFetchers).then((List responses) {
+        }, onDone: () {
+          if (this.getSales == false) {
             client.sendPacket(new ActionResponseServerPacket(this.rID,true,purchaseRows));
-          }).catchError((e) {
-            client.sendPacket(new ActionResponseServerPacket(this.rID,false,[e]));
-          });
-        }
+          }
+          else {
+            Future.wait(salesRowFetchers).then((List responses) {
+              client.sendPacket(new ActionResponseServerPacket(this.rID,true,purchaseRows));
+            }).catchError((e) {
+              client.sendPacket(new ActionResponseServerPacket(this.rID,false,[e]));
+            });
+          }
+        });
       });
     }
   }

@@ -58,8 +58,15 @@ class PacketInstancer {
         if (compareTypes(obj, paramType)) {
           posArguments.add(obj);
         }
+        else {
+          ffpServerLog.info("$parameterName: $obj != $paramType");
+        }
+      }
+      else {
+        ffpServerLog.info("$parameterName does not exist");
       }
     });
+
     Map<Symbol, dynamic> namedParams = new Map<Symbol, dynamic>();
     named.forEach((String parameterName, String paramType) { 
       if (params.containsKey(parameterName)) {

@@ -24,6 +24,7 @@ class PurchasesController {
   Product activeProduct;
   ProductPackaging activePackaging;
   Transport activeTransport;
+  List<PurchaseRow> previousPurchases = [];
   num cost;
   num qty;
 
@@ -42,6 +43,7 @@ class PurchasesController {
       nPurRow.supplierID = activeSupplier.ID;
       nPurRow.cost = cost;
       nPurRow.amount = qty;
+      nPurRow.isActive = true;
       nPurRow.productID = activeProduct.ID;
       if (activeTransport != null) nPurRow.collectingHaulierID = activeTransport.ID;
       nPurRow.purchaseTime = _purchaseTime.toUtc();
@@ -60,6 +62,7 @@ class PurchasesController {
             this.cost = null;
             this.qty = null;
             nPurRow.mergeJson(response.payload[0]);
+            this.refreshPurchases();
           }
           else {
             isError = true;
@@ -80,8 +83,16 @@ class PurchasesController {
         isError = true;
       }
   }
-    void refreshPurchases ([DateTime date, Supplier supplierName]) {
+    void refreshPurchases () {
+      if (_purchaseTime != null) {
+        int t = _purchaseTime.millisecondsSinceEpoch;
+        int dayBegin = t - (t % 86400000);
+        int dayEnd = dayBegin + 86400000;
 
+        PurchaseRow.searchData(this.state.wsh, supplierID: (this.activeSupplier != null ? this.activeSupplier.ID : null), purchaseTimeFrom: dayBegin, purchaseTimeTo: dayEnd).then((List<PurchaseRow> data) {
+          previousPurchases = data;
+        });
+      }
     }
 
 }

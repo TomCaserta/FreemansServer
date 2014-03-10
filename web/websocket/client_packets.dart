@@ -131,7 +131,7 @@ FetchPurchaseRowDataClientPacket ({
                                              "productID": productID,
                                              "weightID": weightID,
                                              "packagingID": packagingID,
-                                             "collectingHailierID": collectingHaulierID,
+                                             "collectingHaulierID": collectingHaulierID,
                                              "purchaseTimeFrom": purchaseTimeFrom,
                                              "purchaseTimeTo": purchaseTimeTo,
                                              "getSales": getSales

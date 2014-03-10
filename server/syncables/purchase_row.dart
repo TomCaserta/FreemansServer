@@ -44,7 +44,21 @@ class PurchaseRow extends Syncable<PurchaseRow> {
   }
 
   Map toJson () {
-    return super.toJson()..addAll({ "amount": amount, "cost": cost, "supplierID": supplierID, "productID": productID, "weightID": weightID, "packagingID": packagingID, "collectingHaulierID": collectingHaulierID, "purchaseTime": (purchaseTime != null ? purchaseTime.millisecondsSinceEpoch : null) });
+    return super.toJson()..addAll({
+        "salesRow": _sales,
+        "amount": amount,
+        "cost": cost,
+        "supplierID": supplierID,
+        "productID": productID,
+        "weightID": weightID,
+        "packagingID": packagingID,
+        "collectingHaulierID": collectingHaulierID,
+        "purchaseTime": (purchaseTime != null ? purchaseTime.millisecondsSinceEpoch : null)
+    });
+  }
+
+  toString () {
+    return toJson().toString();
   }
 
   /*
@@ -84,11 +98,12 @@ class PurchaseRow extends Syncable<PurchaseRow> {
     Completer c = new Completer();
     dbh.prepareExecute("${SalesRow.selector} WHERE produceID=?", [this.ID]).then((Results res) {
       this._sales.clear();
-      res.forEach((Row r) {
+      res.listen((Row r) {
         SalesRow sr = new SalesRow.fromRow(r);
         this._sales.add(sr);
+      }, onDone: () {
+        c.complete(true);
       });
-      c.complete(true);
     }).catchError((e) => c.completeError(e));
     return c.future;
   }
@@ -156,15 +171,25 @@ class PurchaseRow extends Syncable<PurchaseRow> {
 
 
   static String selector = "SELECT `ID`, `productID`, `supplierID`, `haulageID`, `cost`, `weightID`, `packagingID`, `timeofpurchase`, `insertedBy`, `amount`, `active` from produce";
-  PurchaseRow.fromRow(Row row):super(row.ID) {
+  PurchaseRow._fromRow(Row row):super(row.ID) {
+    mergeRow(row);
+  }
+  factory PurchaseRow.fromRow (Row row) {
+    int id = row.ID;
+    if (exists(id) && id != 0) {
+      return get(id)..mergeRow(row);
+    } else return new PurchaseRow._fromRow(row);
+  }
+
+  void mergeRow (Row row) {
     this.ID = row.ID;
     int supplierID = row.supplierID;
     if (supplierID != null) {
-      this.supplierID = Supplier.get(supplierID);
+      this.supplier = Supplier.get(supplierID);
     }
     int haulageID = row.haulageID;
     if (haulageID != null) {
-      this.collectingHaulier = row.haulageID;
+      this.collectingHaulier = Transport.get(row.haulageID);
     }
     this.cost = row.cost;
     int productID = row.productID;
