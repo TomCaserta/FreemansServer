@@ -73,7 +73,7 @@ class ProductCategory extends Syncable<ProductCategory>  {
   Future<bool> updateDatabase (DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer();
     if (this.isNew) {
-      dbh.prepareExecute("INSERT INTO productcategories (categoryName, categoryColour, active) VALUES (?,?, ?)", [this._categoryName, this._categoryColour, this._isActive]).then((res) {
+      dbh.prepareExecute("INSERT INTO productcategories (categoryName, categoryColour, active) VALUES (?,?, ?)", [this._categoryName, this._categoryColour, this._isActive ? 1 : 0]).then((res) {
         if (res.insertId != 0) {
           this._firstInsert(res.insertId);
           c.complete(true);
@@ -88,7 +88,7 @@ class ProductCategory extends Syncable<ProductCategory>  {
       });
     }
     else {
-      dbh.prepareExecute("UPDATE productcategories SET categoryName=?, categoryColour=?, active=? WHERE ID=?", [this._categoryName, this._categoryColour, this._isActive, this.ID]).then((res) {
+      dbh.prepareExecute("UPDATE productcategories SET categoryName=?, categoryColour=?, active=? WHERE ID=?", [this._categoryName, this._categoryColour, this._isActive ? 1 : 0, this.ID]).then((res) {
         if (res.affectedRows <= 1) {
           this.synced();
           c.complete(true);
