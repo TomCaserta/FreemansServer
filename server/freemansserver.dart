@@ -40,6 +40,10 @@ part 'syncables/workbook_data.dart';
 part 'syncables/purchase_row.dart';
 part 'syncables/sales_row.dart';
 part 'syncables/transport_row.dart';
+part 'syncables/product_descriptors.dart';
+part 'syncables/product_packaging.dart';
+part 'syncables/product_weight.dart';
+part 'syncables/product_categories.dart';
 
 /* UTILITIES */
 part 'utils/syncable.dart';
