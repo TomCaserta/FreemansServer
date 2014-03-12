@@ -57,6 +57,7 @@ class InitialDataRequest extends ClientPacket {
       List pL = Syncable.getVals(Product);
       List pWL = Syncable.getVals(ProductWeight);
       List pPL = Syncable.getVals(ProductPackaging);
+      List pD = Syncable.getVals(ProductDescriptor);
       List pCL = Syncable.getVals(ProductCategory);
       List tL = Syncable.getVals(Transport);
       List uL = Syncable.getVals(User);
@@ -64,8 +65,9 @@ class InitialDataRequest extends ClientPacket {
       List terL = Syncable.getVals(Terms);
       List locL = Syncable.getVals(Location);
       List thcL = Syncable.getVals(TransportHaulageCost);
+
       
-      client.sendPacket(new InitialDataResponseServerPacket(rID, aL, cL, pL, pWL, pPL, pCL, tL, uL, sL, terL, locL, thcL));
+      client.sendPacket(new InitialDataResponseServerPacket(rID, aL, cL, pL, pWL, pPL, pD, pCL, tL, uL, sL, terL, locL, thcL));
     }
   }
 }
@@ -278,6 +280,7 @@ class FetchPurchaseRowDataClientPacket extends ClientPacket {
   int productID;
   int weightID;
   int packagingID;
+  int descriptorID;
   int collectingHaulierID;
   int purchaseTimeFrom;
   int purchaseTimeTo;
@@ -298,6 +301,7 @@ class FetchPurchaseRowDataClientPacket extends ClientPacket {
                                            this.productID,
                                            this.weightID,
                                            this.packagingID,
+                                           this.descriptorID,
                                            this.collectingHaulierID,
                                            this.purchaseTimeFrom,
                                            this.purchaseTimeTo,
@@ -348,6 +352,12 @@ class FetchPurchaseRowDataClientPacket extends ClientPacket {
         else buffer.write(" WHERE ");
         buffer.write("weightID=?");
         params.add(weightID);
+      }
+      if (descriptorID != null) {
+        if (buffer.length > 0) buffer.write(" AND ");
+        else buffer.write(" WHERE ");
+        buffer.write("descriptorID=?");
+        params.add(descriptorID);
       }
       if (packagingID != null) {
         if (buffer.length > 0) buffer.write(" AND ");

@@ -16,10 +16,10 @@ class SalesRow extends Syncable {
   DateTime deliveryDate;
 
   int produceID;
-  //or
   int productID;
   int weightID;
   int packagingID;
+  int descriptorID;
 
   SalesRow ();
 
@@ -31,7 +31,11 @@ class SalesRow extends Syncable {
     this.transportID = jsonMap["transportID"];
     this.salePrice = jsonMap["salePrice"];
     this.deliveryCost = jsonMap["deliveryCost"];
-
+    this.descriptorID = jsonMap["descriptorID"];
+    this.produceID = jsonMap["produceID"];
+    this.productID = jsonMap["productID"];
+    this.weightID = jsonMap["weightID"];
+    this.packagingID = jsonMap["packagingID"];
     if (jsonMap["deliveryDate"] != null) {
       this.deliveryDate = new DateTime.fromMillisecondsSinceEpoch(jsonMap["deliveryDate"], isUtc: true);
     }
@@ -50,7 +54,8 @@ class SalesRow extends Syncable {
         "produceID": produceID,
         "productID": productID,
         "weightID": weightID,
-        "packagingID": packagingID
+        "packagingID": packagingID,
+        "descriptorID": descriptorID
     });
   }
 }

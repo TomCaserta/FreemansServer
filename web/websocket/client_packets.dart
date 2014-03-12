@@ -97,6 +97,7 @@ class FetchPurchaseRowDataClientPacket extends RequireResponseClientPacket {
   int productID;
   int weightID;
   int packagingID;
+  int descriptorID;
   int collectingHaulierID;
   int purchaseTimeFrom;
   int purchaseTimeTo;
@@ -115,6 +116,7 @@ FetchPurchaseRowDataClientPacket ({
                                   this.productID,
                                   this.weightID,
                                   this.packagingID,
+                                  this.descriptorID,
                                   this.collectingHaulierID,
                                   this.purchaseTimeFrom,
                                   this.purchaseTimeTo,
@@ -134,6 +136,7 @@ FetchPurchaseRowDataClientPacket ({
                                              "costOperator": costOperator,
                                              "supplierID": supplierID,
                                              "productID": productID,
+                                             "descriptorID": descriptorID,
                                              "weightID": weightID,
                                              "packagingID": packagingID,
                                              "collectingHaulierID": collectingHaulierID,

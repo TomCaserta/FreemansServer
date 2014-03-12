@@ -4,6 +4,39 @@ part of FreemansServer;
 class PurchaseRow extends Syncable<PurchaseRow> {
 
   int type = SyncableTypes.PURCHASE_ROW;
+
+  num _amount;
+  num _cost;
+  DateTime _purchaseTime;
+  Supplier _supplier;
+  List<SalesRow> _sales = new List<SalesRow>();
+  ProductGroup _product;
+  Transport _collectingHaulier;
+
+  @IncludeSchema(isOptional: true)
+  num get amount => _amount;
+  @IncludeSchema(isOptional: true)
+  num get cost => _cost;
+  @IncludeSchema()
+  DateTime get purchaseTime => _purchaseTime;
+  Supplier get supplier => _supplier;
+  ProductGroup get product => _product;
+  Transport get collectingHaulier => _collectingHaulier;
+
+  int get groupID => product.ID;
+  @IncludeSchema()
+  int get productID => product.productID;
+  @IncludeSchema(isOptional: true)
+  int get weightID => product.weightID;
+  @IncludeSchema(isOptional: true)
+  int get descriptorID => product.descriptorID;
+  @IncludeSchema(isOptional: true)
+  int get packagingID => product.packagingID;
+  @IncludeSchema()
+  int get supplierID => supplier.ID;
+  @IncludeSchema(isOptional: true)
+  int get collectingHaulierID => (collectingHaulier != null ? collectingHaulier.ID : null);
+
   /*
    * CONSTRUCTOR
    */
@@ -23,14 +56,17 @@ class PurchaseRow extends Syncable<PurchaseRow> {
   void mergeJson (Map jsonMap) {
     this.amount = jsonMap["amount"];
     this.cost = jsonMap["cost"];
+
     int productID = jsonMap["productID"];
     int weightID = jsonMap["weightID"];
     int packagingID = jsonMap["packagingID"];
+    int descriptorID = jsonMap["descriptorID"];
     if (productID == null) productID = 0;
     if (weightID == null) weightID = 0;
     if (packagingID == null) packagingID = 0;
+    if (descriptorID == null) descriptorID = 0;
 
-    this.product = new ProductGroup(0, productID, weightID, packagingID);
+    this.product = new ProductGroup(0, productID, weightID, packagingID, descriptorID);
 
     int supplierID = jsonMap["supplierID"];
     this.supplier = Supplier.get(supplierID);
@@ -51,8 +87,10 @@ class PurchaseRow extends Syncable<PurchaseRow> {
         "cost": cost,
         "supplierID": supplierID,
         "productID": productID,
+        "groupID": groupID,
         "weightID": weightID,
         "packagingID": packagingID,
+        "descriptorID": descriptorID,
         "collectingHaulierID": collectingHaulierID,
         "purchaseTime": (purchaseTime != null ? purchaseTime.millisecondsSinceEpoch : null)
     });
@@ -62,38 +100,6 @@ class PurchaseRow extends Syncable<PurchaseRow> {
     return toJson().toString();
   }
 
-  /*
-   * PURCHASE ROW
-   */
-
-  num _amount;
-  num _cost;
-  DateTime _purchaseTime;
-  Supplier _supplier;
-  List<SalesRow> _sales = new List<SalesRow>();
-  ProductGroup _product;
-  Transport _collectingHaulier;
-
-  @IncludeSchema(isOptional: true)
-  num get amount => _amount;
-  @IncludeSchema(isOptional: true)
-  num get cost => _cost;
-  @IncludeSchema()
-  DateTime get purchaseTime => _purchaseTime;
-  Supplier get supplier => _supplier;
-  ProductGroup get product => _product;
-  Transport get collectingHaulier => _collectingHaulier;
-
-  @IncludeSchema()
-  int get productID => product.productID;
-  @IncludeSchema(isOptional: true)
-  int get weightID => product.weightID;
-  @IncludeSchema(isOptional: true)
-  int get packagingID => product.packagingID;
-  @IncludeSchema()
-  int get supplierID => supplier.ID;
-  @IncludeSchema(isOptional: true)
-  int get collectingHaulierID => (collectingHaulier != null ? collectingHaulier.ID : null);
 
   Future<bool> fetchSalesRows (DatabaseHandler dbh) {
     Completer c = new Completer();
@@ -171,7 +177,7 @@ class PurchaseRow extends Syncable<PurchaseRow> {
   }
 
 
-  static String selector = "SELECT `ID`, `productID`, `supplierID`, `haulageID`, `cost`, `weightID`, `packagingID`, `timeofpurchase`, `insertedBy`, `amount`, `active` from produce";
+  static String selector = "SELECT `ID`, `productID`, `supplierID`, `haulageID`, `cost`, `groupID`, `weightID`, `packagingID`, `descriptorID`, `timeofpurchase`, `insertedBy`, `amount`, `active` from produce";
   PurchaseRow._fromRow(Row row):super(row.ID) {
     mergeRow(row);
   }
@@ -197,10 +203,12 @@ class PurchaseRow extends Syncable<PurchaseRow> {
     int productID = row.productID;
     int weightID = row.weightID;
     int packagingID = row.packagingID;
+    int descriptorID = row.descriptorID;
     if (productID == null) productID = 0;
     if (weightID == null) weightID = 0;
     if (packagingID == null) packagingID = 0;
-    this.product = new ProductGroup(0, productID, weightID, packagingID);
+    if (descriptorID == null) descriptorID = 0;
+    this.product = new ProductGroup(0, productID, weightID, packagingID, descriptorID);
     this.amount = row.amount;
     this.purchaseTime = new DateTime.fromMillisecondsSinceEpoch(row.timeofpurchase);
     this.isActive = row.active == 1;
@@ -235,7 +243,7 @@ class PurchaseRow extends Syncable<PurchaseRow> {
       if (all) {
         if (this.isNew) {
 
-          dbh.prepareExecute("INSERT INTO `produce` (`productID`, `supplierID`, `haulageID`, `cost`, `weightID`, `packagingID`, `timeofpurchase`, `insertedBy`, `amount`, `active`) VALUES (?,?,?,?,?,?,?,?,?,?)", [productID, supplierID, collectingHaulierID, cost, weightID, packagingID, purchaseTime.millisecondsSinceEpoch, null, amount, (isActive ? 1 : 0)]).then((Results res) {
+          dbh.prepareExecute("INSERT INTO `produce` (`productID`, `supplierID`, `haulageID`, `cost`, `groupID`, `weightID`, `packagingID`, `descriptorID`, `timeofpurchase`, `insertedBy`, `amount`, `active`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", [productID, supplierID, collectingHaulierID, cost, groupID, weightID, packagingID, descriptorID, purchaseTime.millisecondsSinceEpoch, null, amount, (isActive ? 1 : 0)]).then((Results res) {
             if (res.insertId != 0) {
               this._firstInsert(res.insertId);
               c.complete(true);
@@ -249,7 +257,7 @@ class PurchaseRow extends Syncable<PurchaseRow> {
             ffpServerLog.severe("Error whilst creating ${this.runtimeType}:", e);
           });
         } else {
-          dbh.prepareExecute("UPDATE `produce` SET `productID`=?, `supplierID`=?, `haulageID`=?, `cost`=?, `weightID`=?, `packagingID`=?, `timeofpurchase`=?, `insertedBy`=?, `amount`=?, `active`=? WHERE ID=?", [productID, supplierID, collectingHaulierID, cost, weightID, packagingID, purchaseTime.millisecondsSinceEpoch, null, amount, (isActive ? 1 : 0), ID]).then((res) {
+          dbh.prepareExecute("UPDATE `produce` SET `productID`=?, `supplierID`=?, `haulageID`=?, `cost`=?, `groupID`=?, `weightID`=?, `packagingID`=?, `descriptorID`=?, `timeofpurchase`=?, `insertedBy`=?, `amount`=?, `active`=? WHERE ID=?", [productID, supplierID, collectingHaulierID, cost, groupID, weightID, packagingID, descriptorID, purchaseTime.millisecondsSinceEpoch, null, amount, (isActive ? 1 : 0), ID]).then((res) {
             if (res.affectedRows <= 1) {
               this.synced();
               c.complete(true);

@@ -9,7 +9,9 @@ class PurchaseRow extends Syncable {
   int productID;
   int weightID;
   int packagingID;
+  int descriptorID;
   int collectingHaulierID;
+
   DateTime purchaseTime = new DateTime.now().toUtc();
   String get formattedPurchaseTime => new DateFormat("dd/MM").format(purchaseTime.toLocal());
 
@@ -17,6 +19,7 @@ class PurchaseRow extends Syncable {
   Product get product => Syncable.get(SyncableTypes.PRODUCT, productID);
   ProductWeight get weight => Syncable.get(SyncableTypes.PRODUCT_WEIGHT, weightID);
   ProductPackaging get packaging => Syncable.get(SyncableTypes.PRODUCT_PACKAGING, packagingID);
+  ProductDescriptors get descriptor => Syncable.get(SyncableTypes.PRODUCT_DESCRIPTOR, descriptorID);
   Transport get collectingHaulier => Syncable.get(SyncableTypes.TRANSPORT, collectingHaulierID);
 
   static PurchaseRow get(int ID) => Syncable.get(SyncableTypes.PURCHASE_ROW, ID);
@@ -38,6 +41,7 @@ class PurchaseRow extends Syncable {
     this.productID = jsonMap["productID"];
     this.weightID = jsonMap["weightID"];
     this.packagingID = jsonMap["packagingID"];
+    this.descriptorID = jsonMap["descriptorID"];
     this.collectingHaulierID = jsonMap["collectingHaulierID"];
 
     if (jsonMap["salesRow"] != null && jsonMap["salesRow"] is List) {
@@ -63,6 +67,7 @@ class PurchaseRow extends Syncable {
        "productID": productID,
        "weightID": weightID,
        "packagingID": packagingID,
+        "descriptorID": descriptorID,
        "collectingHaulierID": collectingHaulierID,
        "purchaseTime": purchaseTime.millisecondsSinceEpoch
     });
@@ -87,6 +92,7 @@ class PurchaseRow extends Syncable {
                                                 int productID,
                                                 int weightID,
                                                 int packagingID,
+                                                int descriptorID,
                                                 int collectingHaulierID,
                                                 int purchaseTimeFrom,
                                                 int purchaseTimeTo,
@@ -103,6 +109,7 @@ class PurchaseRow extends Syncable {
                                                                                    costOperator: "=",
                                                                                    supplierID: supplierID,
                                                                                    productID: productID,
+                                                                                   descriptorID: descriptorID,
                                                                                    weightID: weightID,
                                                                                    packagingID: packagingID,
                                                                                    collectingHaulierID: collectingHaulierID,

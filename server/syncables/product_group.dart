@@ -5,11 +5,13 @@ class ProductGroup extends Syncable<ProductGroup> {
   int _productID;
   int _weightID;
   int _packagingID;
+  int _descriptorID;
   DateTime _lastUsed;
 
   int get productID => _productID;
   int get weightID => _weightID;
   int get packagingID => _packagingID;
+  int get descriptorID => _descriptorID;
   DateTime get lastUsed => _lastUsed;
 
   set productID (int productID) {
@@ -30,6 +32,14 @@ class ProductGroup extends Syncable<ProductGroup> {
       requiresDatabaseSync();
     }
   }
+
+  set descriptorID (int descriptorID) {
+    if (descriptorID != _descriptorID) {
+      _descriptorID = descriptorID;
+      requiresDatabaseSync();
+    }
+  }
+
   set lastUsed (DateTime lastUsed) {
     if (lastUsed != _lastUsed) {
       _lastUsed = lastUsed;
@@ -37,30 +47,32 @@ class ProductGroup extends Syncable<ProductGroup> {
     }
   }
 
-  ProductGroup._create(int ID, int productID, int weightID, int packagingID):super(ID, ("${productID}:${weightID}:${packagingID}")) {
+  ProductGroup._create(int ID, int productID, int weightID, int packagingID, int descriptorID):super(ID, ("${productID}:${weightID}:${packagingID}:${descriptorID}")) {
     this._productID = productID;
     this._weightID = weightID;
     this._packagingID = packagingID;
+    this._descriptorID = descriptorID;
   }
 
-  factory ProductGroup (int ID, int productID, int weightID, int packagingID) {
-    if (exists(productID, weightID, packagingID)) {
+  factory ProductGroup (int ID, int productID, int weightID, int packagingID, int descriptorID) {
+    if (exists(productID, weightID, packagingID, descriptorID)) {
       if (ID != 0) {
-        ffpServerLog.warning("Duplicate product group detected, $productID $weightID $packagingID");
+        ffpServerLog.warning("Duplicate product group detected, $productID $weightID $packagingID $descriptorID");
       }
-      return get(productID, weightID, packagingID);
+      return get(productID, weightID, packagingID, descriptorID);
     }
-    else return new ProductGroup._create(ID, productID, weightID, packagingID);
+    else return new ProductGroup._create(ID, productID, weightID, packagingID, descriptorID);
   }
 
 
-  static exists (int productID, int weightID, int packagingID) => Syncable.exists(ProductGroup, ("${productID}:${weightID}:${packagingID}"));
-  static get (int productID, int weightID, int packagingID) => Syncable.get(ProductGroup, ("${productID}:${weightID}:${packagingID}"));
+  static exists (int productID, int weightID, int packagingID, int descriptorID) => Syncable.exists(ProductGroup, ("${productID}:${weightID}:${packagingID}:${descriptorID}"));
+  static get (int productID, int weightID, int packagingID, int descriptorID) => Syncable.get(ProductGroup, ("${productID}:${weightID}:${packagingID}:${descriptorID}"));
 
   void mergeJson (Map jsonMap) {
     this._productID = jsonMap["productID"];
     this._weightID = jsonMap["weightID"];
     this._packagingID = jsonMap["packagingID"];
+    this._descriptorID = jsonMap["descriptorID"];
     if (jsonMap["lastUsed"] != null) {
       this._lastUsed = new DateTime.fromMillisecondsSinceEpoch(jsonMap["lastUsed"], isUtc: true);
     }
@@ -70,7 +82,7 @@ class ProductGroup extends Syncable<ProductGroup> {
   Future<bool> updateDatabase (DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer();
     if (this.isNew) {
-      dbh.prepareExecute("INSERT INTO productgroups (productID, weightID, packagingID, lastUsed, isActive) VALUES (?,?,?,?,?)", [productID, weightID, packagingID, (lastUsed != null ? lastUsed.millisecondsSinceEpoch : null), (isActive ? 1 : 0)]).then((res) {
+      dbh.prepareExecute("INSERT INTO productgroups (productID, weightID, packagingID, descriptorID, lastUsed, isActive) VALUES (?,?,?,?,?,?)", [productID, weightID, packagingID, descriptorID, (lastUsed != null ? lastUsed.millisecondsSinceEpoch : null), (isActive ? 1 : 0)]).then((res) {
         if (res.insertId != 0) {
           this._firstInsert(res.insertId);
           c.complete(true);
@@ -80,12 +92,12 @@ class ProductGroup extends Syncable<ProductGroup> {
           c.completeError("Unspecified mysql error");
         }
       }).catchError((e) {
-        ffpServerLog.warning("Error whilst creating ${this.runtimeType} $name :", e);
+        ffpServerLog.warning("Error whilst creating ${this.runtimeType} :", e);
         c.completeError(e);
       });
     }
     else {
-      dbh.prepareExecute("UPDATE productgroupss SET productID=?, weightID=?. packagingID=? lastUsed=?, isActive=? WHERE ID=?", [productID,weightID,packagingID, (lastUsed != null ? lastUsed.millisecondsSinceEpoch : null), (isActive ? 1 : 0), ID]).then((res) {
+      dbh.prepareExecute("UPDATE productgroupss SET productID=?, weightID=?, packagingID=?, descriptorID=?, lastUsed=?, isActive=? WHERE ID=?", [productID,weightID,packagingID, descriptorID, (lastUsed != null ? lastUsed.millisecondsSinceEpoch : null), (isActive ? 1 : 0), ID]).then((res) {
         if (res.affectedRows <= 1) {
           this.synced();
           c.complete(true);
@@ -104,11 +116,11 @@ class ProductGroup extends Syncable<ProductGroup> {
   static Future<bool> init() {
     Completer c = new Completer();
     ffpServerLog.info("Loading product list...");
-    dbHandler.query("SELECT ID, productID, weightID, packagingID, lastUsed, isActive FROM productgroups").then((Results results){
+    dbHandler.query("SELECT ID, productID, weightID, packagingID, descriptorID, lastUsed, isActive FROM productgroups").then((Results results){
       results.listen((Row row) {
-         ProductGroup prodGroup = new ProductGroup(row[0], row[1], row[2], row[3]);
-        prodGroup._lastUsed = new DateTime.fromMillisecondsSinceEpoch(row[4], isUtc: true);
-        prodGroup._isActive = row[5] == 1;
+         ProductGroup prodGroup = new ProductGroup(row[0], row[1], row[2], row[3], row[4]);
+        prodGroup._lastUsed = new DateTime.fromMillisecondsSinceEpoch(row[5], isUtc: true);
+        prodGroup._isActive = row[6] == 1;
       },
       onDone: () {
         ffpServerLog.info("List loaded.");
@@ -125,6 +137,6 @@ class ProductGroup extends Syncable<ProductGroup> {
   }
 
   Map toJson () {
-    return super.toJson()..addAll({ "productID": productID,  "weightID": weightID,  "packagingID": packagingID,  "lastUsed": (lastUsed != null ? lastUsed.millisecondsSinceEpoch : null ) });
+    return super.toJson()..addAll({ "productID": productID,  "weightID": weightID,  "packagingID": packagingID, "descriptorID": descriptorID,  "lastUsed": (lastUsed != null ? lastUsed.millisecondsSinceEpoch : null ) });
   }
 }

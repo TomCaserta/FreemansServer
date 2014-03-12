@@ -36,10 +36,12 @@ class SalesRow extends Syncable<SalesRow> {
     int productID = jsonMap["productID"];
     int weightID = jsonMap["weightID"];
     int packagingID = jsonMap["packagingID"];
+    int descriptorID = jsonMap["descriptorID"];
     if (productID == null) productID = 0;
     if (weightID == null) weightID = 0;
     if (packagingID == null) packagingID = 0;
-    this.product = new ProductGroup(0, productID, weightID, packagingID);
+    if (descriptorID == null) descriptorID = 0;
+    this.product = new ProductGroup(0, productID, weightID, packagingID, descriptorID);
 
     if (jsonMap["deliveryDate"] != null) {
       this.deliveryDate = new DateTime.fromMillisecondsSinceEpoch(jsonMap["deliveryDate"], isUtc: true);
@@ -54,12 +56,16 @@ class SalesRow extends Syncable<SalesRow> {
         "transportID": (transport != null ? transport.ID : null),
         "amount": amount,
         "salePrice": salePrice,
-        "deliveryDate": deliveryDate.millisecondsSinceEpoch,
+        "deliveryDate": (deliveryDate != null ? deliveryDate.millisecondsSinceEpoch : null),
         "deliveryCost": deliveryCost,
         "productID": productID,
         "weightID": weightID,
-        "packagingID": packagingID
+        "packagingID": packagingID,
+        "descriptorID": descriptorID
     });
+  }
+  toString () {
+    return toJson().toString();
   }
   /*
    * SALES ROW
@@ -87,6 +93,9 @@ class SalesRow extends Syncable<SalesRow> {
   @IncludeSchema(isOptional: true)
   DateTime get deliveryDate => _deliveryDate;
   @IncludeSchema(isOptional: true)
+  int get groupID => (product != null ? product.ID : null);
+
+
   int get produceID => _produceID;
   @IncludeSchema(isOptional: true)
   int get productID => (product != null ? product.productID : null);
@@ -94,6 +103,8 @@ class SalesRow extends Syncable<SalesRow> {
   int get weightID =>  (product != null ? product.weightID : null);
   @IncludeSchema(isOptional: true)
   int get packagingID =>  (product != null ? product.packagingID : null);
+  @IncludeSchema(isOptional: true)
+  int get descriptorID =>  (product != null ? product.descriptorID : null);
   @IncludeSchema(isOptional: true)
   num get deliveryCost => _deliveryCost;
 
@@ -146,8 +157,21 @@ class SalesRow extends Syncable<SalesRow> {
     }
   }
 
-  static String selector = "SELECT ID, customerID, produceID, haulageID, amount, cost, deliveryCost, deliveryDate, active, productID, weightID, packagingID FROM sales";
-  SalesRow.fromRow(Row row):super(row.ID) {
+  static String selector = "SELECT ID, customerID, produceID, haulageID, amount, cost, deliveryCost, deliveryDate, productID, weightID, packagingID, descriptorID, active FROM sales";
+
+  SalesRow._fromRow(Row row):super(row.ID) {
+    mergeRow(row);
+  }
+
+  factory SalesRow.fromRow (Row row) {
+    int id = row.ID;
+    if (exists(id) && id != 0) {
+      return get(id)..mergeRow(row);
+    } else return new SalesRow._fromRow(row);
+  }
+
+
+  void mergeRow(Row row) {
     this.ID = row.ID;
     this.customer = Customer.get(row.customerID);
 
@@ -159,15 +183,20 @@ class SalesRow extends Syncable<SalesRow> {
     this.amount = row.amount;
     this.salePrice = row.cost;
     this.deliveryCost = row.deliveryCost;
+    if (row.deliveryDate != null) {
+      this.deliveryDate = new DateTime.fromMillisecondsSinceEpoch(row.deliveryDate, isUtc: true);
+    }
     this._isActive = row.active == 1;
 
     int productID = row.productID;
     int weightID = row.weightID;
     int packagingID = row.packagingID;
+    int descriptorID = row.descriptorID;
     if (productID == null) productID = 0;
     if (weightID == null) weightID = 0;
     if (packagingID == null) packagingID = 0;
-    this.product = new ProductGroup(0, productID, weightID, packagingID);
+    if (descriptorID == null) descriptorID = 0;
+    this.product = new ProductGroup(0, productID, weightID, packagingID, descriptorID);
 
   }
 
@@ -199,7 +228,7 @@ class SalesRow extends Syncable<SalesRow> {
         }
 
         if (this.isNew) {
-          dbh.prepareExecute("INSERT INTO sales (customerID, produceID, haulageID, amount, cost, deliveryCost, deliveryDate, active, productID, weightID, packagingID) VALUES (?,?,?,?,?,?,?,?,?,?,?)", [customerID, produceID, haulageID, _amount, _salePrice, deliveryCost, (deliveryDate != null ? deliveryDate.millisecondsSinceEpoch : null), (this.isActive ? 1 : 0),productID,weightID,packagingID]).then((Results res) {
+          dbh.prepareExecute("INSERT INTO sales (customerID, produceID, haulageID, amount, cost, deliveryCost, deliveryDate, active, productID, weightID, packagingID, descriptorID) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", [customerID, produceID, haulageID, _amount, _salePrice, deliveryCost, (deliveryDate != null ? deliveryDate.millisecondsSinceEpoch : null), (this.isActive ? 1 : 0),productID,weightID,packagingID, descriptorID]).then((Results res) {
             if (res.insertId != 0) {
               this._firstInsert(res.insertId);
               c.complete(true);
@@ -214,7 +243,7 @@ class SalesRow extends Syncable<SalesRow> {
             ffpServerLog.severe("Error whilst creating ${this.runtimeType}:", e);
           });
         } else {
-          dbh.prepareExecute("UPDATE sales SET customerID=?, produceID=?, haulageID=?, amount=?, cost=?, deliveryCost=?, deliveryDate=?, active=?, productID=?, weightID=?, packagingID=? WHERE ID=?", [customerID, produceID, haulageID, _amount, _salePrice, deliveryCost, (deliveryDate != null ? deliveryDate.millisecondsSinceEpoch : null), (this.isActive ? 1 : 0),productID,weightID,packagingID, ID]).then((res) {
+          dbh.prepareExecute("UPDATE sales SET customerID=?, produceID=?, haulageID=?, amount=?, cost=?, deliveryCost=?, deliveryDate=?, active=?, productID=?, weightID=?, packagingID=?, descriptorID=? WHERE ID=?", [customerID, produceID, haulageID, _amount, _salePrice, deliveryCost, (deliveryDate != null ? deliveryDate.millisecondsSinceEpoch : null), (this.isActive ? 1 : 0), productID, weightID, packagingID, descriptorID, ID]).then((res) {
             if (res.affectedRows <= 1) {
               this.synced();
               c.complete(true);
