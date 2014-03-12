@@ -56,7 +56,7 @@ class ProductDropdown {
      if (this.stateservice != null) {
       pL = s.$watch("$state.activeProductList",(c, p, ws) { 
         
-        if (c != p) { 
+        if (c.hashCode != p.hashCode) { 
           updateList();
           print("Updated");        
           print(c);
@@ -336,6 +336,7 @@ class ProductDropdown {
           return false;
         }        
       }).toList();
+      if (filteredList.length > 0) selectedElement = filteredList[0];
       
       int x = 0;
       filteredList.forEach((Syncable s) {
