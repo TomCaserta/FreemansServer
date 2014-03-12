@@ -37,7 +37,8 @@ class ListEditor {
       lists.add(new TransportListContainer("Transport", state, state.transportList));
       lists.add(new ListContainer<Product>("Products", state, state.productList));
       lists.add(new ListContainer<ProductCategory>("Product Categories", state, state.productCategoryList));
-      lists.add(new ListContainer<ProductWeight>("Weights/Description", state, state.productWeightsList));
+      lists.add(new ListContainer<ProductWeight>("Product Description", state, state.productDescriptorList));
+      lists.add(new ListContainer<ProductWeight>("Weights/Amounts", state, state.productWeightsList));
       lists.add(new ListContainer<ProductPackaging>("Packaging", state, state.productPackagingList));
       lists.add(new ListContainer<Terms>("Terms", state, state.termsList));
       lists.add(new ListContainer<Locations>("Locations", state, state.locationList));

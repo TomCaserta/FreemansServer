@@ -32,7 +32,6 @@ part 'controller/sales/salesclassic.dart';
 part 'controller/purchases/purchases.dart';
 
 
-
 void main() {
   Logger.root.level = Level.FINE;
   Logger.root.onRecord.listen((LogRecord r) { print("[${new DateFormat("hh:mm:ss").format(r.time)}][${r.level}][${r.loggerName != "" ? r.loggerName : "ROOT"}]: ${r.message}"); });

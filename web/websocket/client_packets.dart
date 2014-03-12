@@ -159,7 +159,7 @@ class SyncableTypes {
   static const int TRANSPORT_HAULAGE_COST = 11;
   static const int PURCHASE_ROW = 12;
   static const int SALE_ROW = 13;
-  
+  static const int PRODUCT_DESCRIPTOR = 14;
 }
 
 class CLIENT_PACKET_IDS {

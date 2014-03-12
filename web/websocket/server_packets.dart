@@ -170,6 +170,7 @@ class InitialDataResponseServerPacket extends ServerPacket {
   List productList = new List();
   List productWeightsList = new List();
   List productPackagingList = new List();
+  List productDescriptorList = new List();
   List productCategoryList = new List();
   List transportList = new List();
   List userList = new List();
@@ -183,6 +184,7 @@ class InitialDataResponseServerPacket extends ServerPacket {
                                          this.productList,
                                          this.productWeightsList,
                                          this.productPackagingList,
+                                         this.productDescriptorList,
                                          this.productCategoryList,
                                          this.transportList,
                                          this.userList,

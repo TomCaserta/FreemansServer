@@ -18,6 +18,7 @@ class StateService {
   List<ProductWeight> productWeightsList = new List<ProductWeight>();
   List<ProductCategory> productCategoryList = new List<ProductCategory>();
   List<ProductPackaging> productPackagingList = new List<ProductPackaging>();
+  List<ProductDescriptors> productDescriptorList = new List<ProductDescriptors>();
   List<Product> productList = new List<Product>();
   List<Supplier> supplierList = new List<Supplier>();
   List<Transport> transportList = new List<Transport>();
@@ -25,7 +26,7 @@ class StateService {
   List<Terms> termsList = new List<Terms>();
   List<Locations> locationList = new List<Locations>();
   List<TransportHaulageCost> transportHaulageCostList = new List<TransportHaulageCost>();
-  
+
   List get activeSupplierList {
     return this.supplierList.where((e) => e.isActive).toList();
   }
@@ -49,6 +50,11 @@ class StateService {
   List get activeProductCategoryList {
     return this.productCategoryList.where((e) => e.isActive).toList();
   }
+
+  List get activeProductDescriptorList {
+    return this.productDescriptorList.where((e) => e.isActive).toList();
+  }
+
 
   List get activeTransportList {
     return this.transportList.where((e) => e.isActive).toList();
@@ -111,6 +117,9 @@ class StateService {
     });
     packet.termsList.forEach((Map thcList) { 
       this.transportHaulageCostList.add(new TransportHaulageCost.fromJson(thcList));
+    });
+    packet.productDescriptorList.forEach((Map productDescriptorList) {
+      this.productDescriptorList.add(new ProductDescriptors.fromJson(productDescriptorList));
     });
   }
   

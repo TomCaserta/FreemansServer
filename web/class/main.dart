@@ -16,6 +16,11 @@ part "location.dart";
 part "transport_haulage_costs.dart";
 part "purchase_row.dart";
 part "sales_row.dart";
+part "product_categories.dart";
+part "product_weight.dart";
+part "product_packaging.dart";
+part "product_descriptors.dart";
+part "product_group.dart";
 
 abstract class Syncable {
   static Map<int,Map<int, Syncable>> _cached = new Map<int, Map<int, Syncable>>();

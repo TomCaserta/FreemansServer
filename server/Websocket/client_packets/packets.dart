@@ -115,6 +115,7 @@ class SyncableTypes {
   static const int TRANSPORT_HAULAGE_COST = 11;
   static const int PURCHASE_ROW = 12;
   static const int SALE_ROW = 13;
+  static const int PRODUCT_DESCRIPTOR = 14;
 }
 
 class SyncableModifyClientPacket extends ClientPacket {
@@ -174,6 +175,9 @@ class SyncableModifyClientPacket extends ClientPacket {
         case SyncableTypes.SALE_ROW:
           schema = SALESROW_SCHEMA;
           break;
+        case SyncableTypes.PRODUCT_DESCRIPTOR:
+          schema = PRODUCTDESCRIPTOR_SCHEMA;
+          break;
         default:
           client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Unknown type $type"]));
           return;
@@ -224,6 +228,9 @@ class SyncableModifyClientPacket extends ClientPacket {
                 break;
               case SyncableTypes.SALE_ROW:
                 s = new SalesRow.fromJson(payload);
+                break;
+              case SyncableTypes.PRODUCT_DESCRIPTOR:
+                s = new ProductDescriptor.fromJson(payload);
                 break;
             }
           } else {

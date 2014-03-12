@@ -741,7 +741,7 @@
                         <label for="discountPct" class="col-md-2">Discount (%):</label>
 
                         <div class="col-md-10">
-                            <input type="number" class="form-control" id="stdDueDays"
+                            <input type="number" class="form-control" id="discountPct"
                                    ng-model="listoverview.activeList.activeItem.discountPct" ng-disabled="!listoverview.activeList.isAdd" placeholder="Percent discount to apply">
                         </div>
                     </div>
@@ -762,6 +762,29 @@
     </form>
 </section>
 
+<section class="col-lg-12" ng-if="listoverview.activeList.name == 'Descriptors'">
+    <form role="form" class="form-horizontal">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4>Descriptors</h4></div>
+            <div class="panel-body">
+                <fieldset>
+                    <div class="form-group">
+                        <label for="description" class="col-md-2">Description:</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" id="description" ng-model="listoverview.activeList.activeItem.description" placeholder="Description">
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <listbuttons controller="listoverview.activeList" name="Description"></listbuttons>
+            </div>
+        </div>
+    </form>
+</section>
 
 <section class="col-lg-12" ng-if="listoverview.activeList.name == 'Locations'">
     <form role="form" class="form-horizontal">

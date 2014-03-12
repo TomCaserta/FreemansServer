@@ -24,6 +24,7 @@ class InitialDataResponseServerPacket extends ServerPacket {
   List productList = new List<Product>();
   List productWeightsList = new List<ProductWeight>();
   List productPackagingList = new List<ProductPackaging>();
+  List productDescriptorList = new List<ProductDescriptor>();
   List productCategoryList = new List<ProductCategory>();
   List transportList = new List<Transport>();
   List userList = new List<User>();
@@ -39,6 +40,7 @@ class InitialDataResponseServerPacket extends ServerPacket {
                                   this.productList,
                                   this.productWeightsList,
                                   this.productPackagingList,
+                                  this.productDescriptorList,
                                   this.productCategoryList,
                                   this.transportList,
                                   this.userList,
@@ -55,6 +57,7 @@ class InitialDataResponseServerPacket extends ServerPacket {
                                               "productList": productList,
                                               "productWeightsList": productWeightsList,
                                               "productPackagingList": productPackagingList,
+                                              "productDescriptorList": productDescriptorList,
                                               "productCategoryList": productCategoryList,
                                               "transportList": transportList,
                                               "userList": userList,
