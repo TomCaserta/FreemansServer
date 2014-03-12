@@ -34,7 +34,7 @@
         </div>
 
         <div class="form-group">
-          <label for="weight" class="col-md-2">Weight:</label>
+          <label for="weight" class="col-md-2">Weight/Amt Per:</label>
           <div class="col-md-10">
           <select id="weight" ng-model="purchases.activeWeight" class="form-control">
             <option ng-repeat="weight in purchases.state.activeWeightList" ng-value="weight">{{weight.name}}</option>
@@ -87,9 +87,7 @@
 <section class="col-lg-5  no-gutter-right">
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Purchases on {{ ${purchases.purDate} }} for {{ purchases.activeSupplier.name | "all suppliers" }}</h3>
-        </div>
-        <div class="panel-body">
+            <h3 class="panel-title">Purchases on {{ purchases.purDate }} for {{ purchases.activeSupplier != null ? purchases.activeSupplier.name : "all suppliers" }}</h3>
         </div>
         <table class="table table-striped">
              <thead>
@@ -102,8 +100,19 @@
                  </tr>
              </thead>
             <tbody>
-                <tr>
-                    <td>{{  }}</td>
+                <tr ng-if="purchases.previousPurchases.length <= 0">
+                    <td colspan="5" class="text-center text-info">No results to show</td>
+                </tr>
+            </tbody>
+            <tbody ng-if="purchases.previousPurchases.length > 0">
+                <tr ng-click="purchases.editPreviousPurchase(purchaserow)" ng-repeat="purchaserow in purchases.previousPurchases">
+                    <td>{{ purchaserow.supplier.name }}</td>
+                    <td>{{ purchaserow.product.name}} {{ purchaserow.weight.name}} {{ purchaserow.packaging.name}}</td>
+
+                    <td>{{ purchaserow.amount }}</td>
+
+                    <td>&pound;{{ purchaserow.cost == null ? 0.0 : purchaserow.cost | number:2 }}</td>
+                    <td>{{ purchaserow.collectingHaulier.name }}</td>
                 </tr>
             </tbody>
         </table>

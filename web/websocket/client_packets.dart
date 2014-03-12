@@ -86,6 +86,7 @@ class SendSessionClientPacket extends ClientPacket {
 class FetchPurchaseRowDataClientPacket extends RequireResponseClientPacket {
   static int ID = CLIENT_PACKET_IDS.PURCHASE_ROW_DATA;
   int start;
+  int identifier;
   int max;
   String groupBy;
   num amount;
@@ -100,8 +101,10 @@ class FetchPurchaseRowDataClientPacket extends RequireResponseClientPacket {
   int purchaseTimeFrom;
   int purchaseTimeTo;
   bool getSales = false;
+  String orderBy;
 FetchPurchaseRowDataClientPacket ({
                                   this.start,
+                                  this.identifier,
                                   this.max,
                                   this.groupBy,
                                   this.amount,
@@ -115,12 +118,14 @@ FetchPurchaseRowDataClientPacket ({
                                   this.collectingHaulierID,
                                   this.purchaseTimeFrom,
                                   this.purchaseTimeTo,
-                                  this.getSales
+                                  this.getSales,
+                                  this.orderBy
                                   });
 
 
   Map<String, dynamic> toJson () {
     return super.toJsonDefault(ID)..addAll({ "start": start,
+                                             "identifier": identifier,
                                              "max": max,
                                              "groupBy": groupBy,
                                              "amount": amount,
@@ -134,7 +139,8 @@ FetchPurchaseRowDataClientPacket ({
                                              "collectingHaulierID": collectingHaulierID,
                                              "purchaseTimeFrom": purchaseTimeFrom,
                                              "purchaseTimeTo": purchaseTimeTo,
-                                             "getSales": getSales
+                                             "getSales": getSales,
+                                             "orderBy": orderBy
                                           });
   }
 }

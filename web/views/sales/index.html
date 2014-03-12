@@ -1,8 +1,9 @@
+<div salesinput>
 <div class="col-lg-10 col-lg-offset-1 well well-sm">
   <a href="#sheetview" role="button" class="btn btn-default">Product List View</a>
 </div>
 
-<section class="col-lg-5 col-lg-offset-1 no-gutter-left" salesinput>
+<section class="col-lg-5 col-lg-offset-1 no-gutter-left" >
   <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">Enter Single Sale</h3>
@@ -18,24 +19,7 @@
               </div>
           </div>
       
-        <div class="csstable" style="width: 100%;">
-          <div class="csstr">
-            <div class="cssth" style="width:40%;">Item</div>
-            <div class="cssth" style="width:15%;">Amount</div>
-            <div class="cssth" style="width:15%;">Cost</div>
-            <div class="cssth" style="width:30%;">Transport</div>
-          </div>       
 
-          <!--<div class="csstr">-->
-            <!--<div class="csstd">Cauliflower</div>-->
-            <!--<div class="csstd">55</div>-->
-            <!--<div class="csstd">&pound;2.20</div>-->
-            <!--<div class="csstd">PEARSONS</div>-->
-          <!--</div>      -->
-
-
-          
-        </div>
       </form>
       <form>
           <div class="form-group">
@@ -107,13 +91,58 @@
     </div>
   </div>
 </section>
+    <!--<div class="csstable" style="width: 100%;">-->
+        <!--<div class="csstr">-->
+            <!--<div class="cssth" style="width:40%;">Item</div>-->
+            <!--<div class="cssth" style="width:15%;">Amount</div>-->
+            <!--<div class="cssth" style="width:15%;">Cost</div>-->
+            <!--<div class="cssth" style="width:30%;">Transport</div>-->
+        <!--</div>-->
+
+        <!--&lt;!&ndash;<div class="csstr">&ndash;&gt;-->
+        <!--&lt;!&ndash;<div class="csstd">Cauliflower</div>&ndash;&gt;-->
+        <!--&lt;!&ndash;<div class="csstd">55</div>&ndash;&gt;-->
+        <!--&lt;!&ndash;<div class="csstd">&pound;2.20</div>&ndash;&gt;-->
+        <!--&lt;!&ndash;<div class="csstd">PEARSONS</div>&ndash;&gt;-->
+        <!--&lt;!&ndash;</div>      &ndash;&gt;-->
+
+
+
+    <!--</div>-->
 <section class="col-lg-5  no-gutter-right">
   <div class="panel panel-default">
     <div class="panel-heading">
-      <h3 class="panel-title">Previous Orders</h3>
+      <h3 class="panel-title">{{ sales.purchaseRowID == null ? "All Stock" : "Potential Purchases" }}</h3>
     </div>
-    <div class="panel-body">
-      Panel content
-    </div>
+      <table class="table table-striped">
+          <thead>
+          <tr>
+              <th>Date</th>
+              <th>Supplier</th>
+              <th>Product</th>
+              <th>Qty</th>
+              <th>Price</th>
+              <th>Collector</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr ng-if="sales.purchaseList.length <= 0">
+              <td colspan="6" class="text-center text-info">No results to show</td>
+          </tr>
+          </tbody>
+          <tbody ng-if="sales.purchaseList.length > 0">
+          <tr ng-click="sales.setParent(purchaserow)" class="{{ sales.purchaseRowID == purchaserow.ID ? 'active' : '' }}" ng-repeat="purchaserow in sales.purchaseList">
+              <td>{{ purchaserow.formattedPurchaseTime }}</td>
+              <td>{{ purchaserow.supplier.name }}</td>
+              <td>{{ purchaserow.product.name}} {{ purchaserow.weight.name}} {{ purchaserow.packaging.name}}</td>
+
+              <td>{{ purchaserow.amount }}</td>
+
+              <td>&pound;{{ purchaserow.cost == null ? 0.0 : purchaserow.cost | number:2 }}</td>
+              <td>{{ purchaserow.collectingHaulier.name }}</td>
+          </tr>
+          </tbody>
+      </table>
   </div>
 </section>
+</div>

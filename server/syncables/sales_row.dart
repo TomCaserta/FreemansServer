@@ -2,6 +2,7 @@ part of FreemansServer;
 
 class SalesRow extends Syncable<SalesRow> {
 
+  int type = SyncableTypes.SALE_ROW;
   /*
    * CONSTRUCTOR
    */

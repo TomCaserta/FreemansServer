@@ -3,6 +3,7 @@ part of FreemansServer;
 
 class PurchaseRow extends Syncable<PurchaseRow> {
 
+  int type = SyncableTypes.PURCHASE_ROW;
   /*
    * CONSTRUCTOR
    */
@@ -73,7 +74,7 @@ class PurchaseRow extends Syncable<PurchaseRow> {
   ProductGroup _product;
   Transport _collectingHaulier;
 
-  @IncludeSchema()
+  @IncludeSchema(isOptional: true)
   num get amount => _amount;
   @IncludeSchema(isOptional: true)
   num get cost => _cost;
@@ -174,6 +175,7 @@ class PurchaseRow extends Syncable<PurchaseRow> {
   PurchaseRow._fromRow(Row row):super(row.ID) {
     mergeRow(row);
   }
+
   factory PurchaseRow.fromRow (Row row) {
     int id = row.ID;
     if (exists(id) && id != 0) {

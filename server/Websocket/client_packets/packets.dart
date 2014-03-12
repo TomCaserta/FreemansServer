@@ -231,25 +231,28 @@ class SyncableModifyClientPacket extends ClientPacket {
             if (s != null) {
               s.mergeJson(payload);
             } else {
-              client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Your client sent an invalid packet"]));
+              client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Server -> Interface mismatch. The object you are editing is not currently in the servers memory. Notify Tom..."]));
             }
           }
-
-          s.updateDatabase(dbHandler, qbHandler).then((didComplete) {
-            bool comp = false;
-            if (didComplete is List) {
-              comp = didComplete.every((e) => e == true);
-            } else comp = didComplete;
-            if (comp) {
-              client.sendPacket(new ActionResponseServerPacket(this.rID, true, [s]));
-            } else client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Unspecified error"]));
-          }).catchError((e) {
-            ffpServerLog.warning("Error: $e");
-            client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["There was a server error whilst processing your request. The request may not have gone through. Please notify Tom."]));
-          });
+          if (s != null){
+            s.updateDatabase(dbHandler, qbHandler).then((didComplete) {
+              bool comp = false;
+              if (didComplete is List) {
+                comp = didComplete.every((e) => e == true);
+              } else comp = didComplete;
+              if (comp) {
+                client.sendPacket(new ActionResponseServerPacket(this.rID, true, [s]));
+              } else client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Unspecified error"]));
+            }).catchError((e) {
+              ffpServerLog.warning("Error: $e");
+              client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["There was a server error whilst processing your request. The request may not have gone through. Please notify Tom."]));
+            });
+          }
+          else client.sendPacket(new  ActionResponseServerPacket(this.rID, false, ["Error whilst updating/adding the supplied object. Please notify Tom ASAP. Changes *have not* been updated."]));
         } else {
           client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Sorry one of the required fields was not entered correctly. Please try again. (If you see this notify Tom to add a more descriptive error message)"]));
         }
+
       });
     }
   }
@@ -273,7 +276,10 @@ class FetchPurchaseRowDataClientPacket extends ClientPacket {
   int purchaseTimeTo;
   bool getSales = false;
   String rID;
+  String orderBy = "";
+  int identifier;
   FetchPurchaseRowDataClientPacket.create ({this.rID,
+                                           this.identifier,
                                            this.start,
                                            this.max,
                                            this.groupBy,
@@ -288,7 +294,8 @@ class FetchPurchaseRowDataClientPacket extends ClientPacket {
                                            this.collectingHaulierID,
                                            this.purchaseTimeFrom,
                                            this.purchaseTimeTo,
-                                           this.getSales}
+                                           this.getSales,
+                                           this.orderBy}
   );
 
   void handlePacket(WebsocketHandler wsh, Client client) {
@@ -297,6 +304,14 @@ class FetchPurchaseRowDataClientPacket extends ClientPacket {
       if (!isValidOperator(this.costOperator)) this.costOperator = "=";
       StringBuffer buffer = new StringBuffer();
       List params = [];
+      buffer.write(" WHERE active=? ");
+      params.add(1);
+      if (identifier != null) {
+        if (buffer.length > 0) buffer.write(" AND ");
+        else buffer.write(" WHERE ");
+        buffer.write("ID = ?");
+        params.add(identifier);
+      }
       if (amount != null) {
         if (buffer.length > 0) buffer.write(" AND ");
         else buffer.write(" WHERE ");
@@ -356,9 +371,14 @@ class FetchPurchaseRowDataClientPacket extends ClientPacket {
         // TODO: SQL Sanitation
         buffer.write(" GROUP BY $groupBy");
       }
+      if (orderBy != null) {
+        // TODO: SQL Sanitation
+        buffer.write(" ORDER BY $orderBy");
+      }
       if (start != null && max != null && start is int && max is int) {
          buffer.write(" LIMIT $start,$max");
       }
+
       String fullSql = "${PurchaseRow.selector}${buffer.toString()}";
       if (getSales == null) getSales = false;
       ffpServerLog.info("Fetching $fullSql from the database!");

@@ -11,6 +11,18 @@ class PurchaseRow extends Syncable {
   int packagingID;
   int collectingHaulierID;
   DateTime purchaseTime = new DateTime.now().toUtc();
+  String get formattedPurchaseTime => new DateFormat("dd/MM").format(purchaseTime.toLocal());
+
+  Supplier get supplier => Syncable.get(SyncableTypes.SUPPLIER, supplierID);
+  Product get product => Syncable.get(SyncableTypes.PRODUCT, productID);
+  ProductWeight get weight => Syncable.get(SyncableTypes.PRODUCT_WEIGHT, weightID);
+  ProductPackaging get packaging => Syncable.get(SyncableTypes.PRODUCT_PACKAGING, packagingID);
+  Transport get collectingHaulier => Syncable.get(SyncableTypes.TRANSPORT, collectingHaulierID);
+
+  static PurchaseRow get(int ID) => Syncable.get(SyncableTypes.PURCHASE_ROW, ID);
+  static bool exists(ID) => Syncable.exists(SyncableTypes.PURCHASE_ROW, ID);
+
+
 
   /// Does not sync with server. For ease of selecting only!
   List<SalesRow> salesRow = [];
@@ -64,7 +76,7 @@ class PurchaseRow extends Syncable {
     return prList;
   }
 
-  static Future<List<PurchaseRow>> searchData (WebsocketHandler wsh, {int start,
+  static Future<List<PurchaseRow>> searchData (WebsocketHandler wsh, {int start, int identifier,
                                                 int max,
                                                 String groupBy,
                                                 int amount,
@@ -78,9 +90,11 @@ class PurchaseRow extends Syncable {
                                                 int collectingHaulierID,
                                                 int purchaseTimeFrom,
                                                 int purchaseTimeTo,
-                                                bool getSales}) {
+                                                bool getSales,
+                                                String orderBy}) {
     Completer c = new Completer();
     FetchPurchaseRowDataClientPacket packet = new FetchPurchaseRowDataClientPacket(start: start,
+                                                                                   identifier: identifier,
                                                                                    max: max,
                                                                                    groupBy: groupBy,
                                                                                    amount: amount,
@@ -94,7 +108,8 @@ class PurchaseRow extends Syncable {
                                                                                    collectingHaulierID: collectingHaulierID,
                                                                                    purchaseTimeFrom: purchaseTimeFrom,
                                                                                    purchaseTimeTo: purchaseTimeTo,
-                                                                                   getSales: getSales);
+                                                                                   getSales: getSales,
+                                                                                   orderBy: orderBy);
     wsh.sendGetResponse(packet).then((ActionResponseServerPacket resp) {
       if (resp.complete == true) {
         c.complete(processList(resp.payload));

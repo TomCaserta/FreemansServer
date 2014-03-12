@@ -119,10 +119,6 @@ void afterLoading() {
   WebsocketHandler wsh = new WebsocketHandler ();
   wsh.start(GLOBAL_CONFIG["ws_bind_ip"], GLOBAL_CONFIG["ws_bind_port"]);
 
-
-  // INITIAL QB SYNC
-  //Customer.syncWithQuickbooks(dbHandler, qbHandler);
- // Supplier.syncWithQuickbooks(dbHandler, qbHandler);
 }
 
 

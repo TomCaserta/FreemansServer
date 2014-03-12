@@ -19,7 +19,6 @@ class Client {
     _websocket.add(message);
   }
   void sendPacket (ServerPacket message) {
-    print(message.toJson());
     _websocket.add(encoder.convert(message));
   }
 
