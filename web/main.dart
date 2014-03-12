@@ -30,6 +30,7 @@ part 'controller/transport/transport.dart';
 part 'controller/sales/sales.dart';
 part 'controller/sales/salesclassic.dart';
 part 'controller/purchases/purchases.dart';
+part 'controller/main/productdropdown.dart';
 
 
 void main() {
@@ -58,6 +59,7 @@ class FreemansModule extends Module {
     type(SalesClassicController);
     type(ListEditor);
     type(MultiListSelectBox);
+    type(ProductDropdown);
     factory(NgRoutingUsePushState,
         (_) => new NgRoutingUsePushState.value(false));
    

@@ -27,9 +27,13 @@
         <div class="form-group">
           <label for="product" class="col-md-2">Product:</label>
           <div class="col-md-10">
-          <select id="product" ng-model="purchases.activeProduct" required class="form-control">
-            <option ng-repeat="product in purchases.state.activeProductList" ng-value="product">{{product.name}}</option>
-          </select>
+          <product id="product" class="form-control" 
+                                state="purchases.state"
+                                product="purchases.activeProduct" 
+                                product-weight="purchases.activeWeight" 
+                                product-packaging="purchases.activePackaging" 
+                                product-descriptor="purchases.activeDescriptor">
+          </product>
           </div>
         </div>
 
@@ -107,7 +111,7 @@
             <tbody ng-if="purchases.previousPurchases.length > 0">
                 <tr ng-click="purchases.editPreviousPurchase(purchaserow)" ng-repeat="purchaserow in purchases.previousPurchases">
                     <td>{{ purchaserow.supplier.name }}</td>
-                    <td>{{ purchaserow.product.name}} {{ purchaserow.weight.name}} {{ purchaserow.packaging.name}}</td>
+                    <td>{{ purchaserow.product.name}} {{ purchaserow.weight.name}} {{ purchaserow.descriptor.name}} {{ purchaserow.packaging.name}}</td>
 
                     <td>{{ purchaserow.amount }}</td>
 

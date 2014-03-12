@@ -33,7 +33,9 @@ class PurchasesController {
   ProductWeight activeWeight;
   Product activeProduct;
   ProductPackaging activePackaging;
+  ProductDescriptors activeDescriptor;
   Transport activeTransport;
+  
   List<PurchaseRow> previousPurchases = [];
   num cost;
   num qty;

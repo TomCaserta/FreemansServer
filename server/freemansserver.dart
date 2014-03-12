@@ -102,6 +102,7 @@ void main() {
     prel.addFuture(new PreloadElement("ProductWeightInit", ProductWeight.init));
     prel.addFuture(new PreloadElement("ProductPackagingInit", ProductPackaging.init));
     prel.addFuture(new PreloadElement("ProductCategoryInit", ProductCategory.init));
+    prel.addFuture(new PreloadElement("ProductDescriptor", ProductDescriptor.init));
     prel.addFuture(new PreloadElement("LocationInit", Location.init));
     prel.addFuture(new PreloadElement("TransportHaulageCostInit", TransportHaulageCost.init));
     prel.addMethod(new PreloadElement("PacketInit", ClientPacket.init));
