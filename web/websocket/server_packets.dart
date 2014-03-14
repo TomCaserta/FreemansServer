@@ -219,49 +219,15 @@ class LoggedInServerPacket extends ServerPacket {
 class DataChangeServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.DATA_CHANGE;
   int userID = 0;
-  String change = "";
-  int type = 0;
-  String identifier = "";
   bool isAdd = false;
-  DataChangeServerPacket.create (this.userID, this.change, this.type, this.identifier, tgus,isAdd);
+  List payload = [];
+  DataChangeServerPacket.create (this.userID, this.payload, this.isAdd);
   void handlePacket (WebsocketHandler ws) {
     
   }
 
 }
 
-class SupplierAddServerPacket extends ServerPacket {
-  static int ID  = SERVER_PACKET_IDS.SUPPLIER_ADD;
-  int supplierID = 0;
-  String supplierName = "";
-  SupplierAddServerPacket.create (this.supplierID, this.supplierName);
-  void handlePacket (WebsocketHandler ws) {
-    
-  }
-
-}
-
-class CustomerAddServerPacket extends ServerPacket {
-  static int ID = SERVER_PACKET_IDS.CUSTOMER_ADD;
-   int customerID = 0;
-   String customerName = "";
-   CustomerAddServerPacket.create (this.customerID, this.customerName);
-   void handlePacket (WebsocketHandler ws) {
-     
-   }
-
-}
-
-class TransportAddServerPacket extends ServerPacket {
-  static int ID = SERVER_PACKET_IDS.TRANSPORT_ADD;
-  int transportID = 0;
-  String transportName = "";
-  TransportAddServerPacket.create (this.transportID, this.transportName);
-  void handlePacket (WebsocketHandler ws) {
-    
-  }
-
-}
 
 class ActionResponseServerPacket extends ServerPacket {
   static int ID = SERVER_PACKET_IDS.ACTION_RESPONSE;
@@ -310,9 +276,6 @@ class SERVER_PACKET_IDS {
   static const int DISCONNECT_SERVER = 3;
   static const int LOGGED_IN = 4;
   static const int DATA_CHANGE = 5;
-  static const int SUPPLIER_ADD = 6;
-  static const int CUSTOMER_ADD = 7;
-  static const int TRANSPORT_ADD = 8;
   static const int ACTION_RESPONSE = 9;
   static const int PING_PONG = 10;
   static const int SET_SESSION = 11;

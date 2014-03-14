@@ -6,12 +6,12 @@ class SalesRow extends Syncable<SalesRow> {
   /*
    * CONSTRUCTOR
    */
-  SalesRow._createNew (int id, TransportRow this._transport, Customer this._customer):super(id) {
+  SalesRow._createNew (int id, Transport this._transport, Customer this._customer):super(id) {
 
   }
 
   /// Factory constructor for the SalesRow to avoid duplicate objects in memory. If it already exists it will use the old object.
-  factory SalesRow (int id, TransportRow transport, Customer cust) {
+  factory SalesRow (int id, Transport transport, Customer cust) {
     if (exists(id) && id != 0) {
       return get(id);
     } else return new SalesRow._createNew(id, transport, cust);
@@ -70,7 +70,7 @@ class SalesRow extends Syncable<SalesRow> {
   /*
    * SALES ROW
    */
-  TransportRow _transport;
+  Transport _transport;
   Customer _customer;
   num _amount;
   num _salePrice;
@@ -79,7 +79,7 @@ class SalesRow extends Syncable<SalesRow> {
   ProductGroup product;
   int _produceID;
 
-  TransportRow get transport => _transport;
+  Transport get transport => _transport;
   Customer get customer => _customer;
 
   @IncludeSchema(isOptional: true)
@@ -115,7 +115,7 @@ class SalesRow extends Syncable<SalesRow> {
     }
   }
 
-  set transport(TransportRow transport) {
+  set transport(Transport transport) {
     if (transport != _transport) {
       _transport = transport;
       requiresDatabaseSync();

@@ -31,6 +31,7 @@ part 'controller/sales/sales.dart';
 part 'controller/sales/salesclassic.dart';
 part 'controller/purchases/purchases.dart';
 part 'controller/main/productdropdown.dart';
+part 'controller/sales/confirmation.dart';
 
 
 void main() {

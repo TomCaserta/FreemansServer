@@ -81,6 +81,77 @@ class SendSessionClientPacket extends ClientPacket {
     return super.toJsonDefault(ID)..addAll({ "sessionID": sessionID });
   }
 }
+class FetchSalesRowDataClientPacket extends ClientPacket {
+  static int ID = CLIENT_PACKET_IDS.SALES_ROW_DATA;
+  int start;
+  int max;
+  num amount;
+  String amountOperator = "=";
+  num salePrice;
+  String salePriceOperator = "=";
+  String rID;
+  String orderBy = "";
+  int identifier;
+  int descriptorID;
+  int customerID;
+  int produceID;
+  int productID;
+  int weightID;
+  int packagingID;
+  int deliveryDateFrom;
+  int deliveryDateTo;
+  int deliveryCost;
+  String deliveryCostOperator = "=";
+  int transportID;
+  bool active = true;
+  FetchSalesRowDataClientPacket ({this.rID,
+                                           this.start,
+                                           this.max,
+                                           this.amount,
+                                           this.amountOperator,
+                                           this.salePrice,
+                                           this.salePriceOperator,
+                                           this.identifier,
+                                           this.descriptorID,
+                                           this.customerID,
+                                           this.produceID,
+                                           this.productID,
+                                           this.weightID,
+                                           this.packagingID,
+                                           this.deliveryDateFrom,
+                                           this.deliveryDateTo,
+                                           this.deliveryCost,
+                                           this.deliveryCostOperator,
+                                           this.transportID,
+                                           this.orderBy,
+                                           this.active
+                                           });
+
+  Map<String, dynamic> toJson () {
+    return super.toJsonDefault(ID)..addAll({ "start": start,
+                                             "identifier": identifier,
+                                             "max": max,
+                                             "amount": amount,
+                                             "amountOperator": amountOperator,
+                                             "salePrice": salePrice,
+                                             "salePriceOperator": salePriceOperator,
+                                             "customerID": customerID,
+                                             "productID": productID,
+                                             "descriptorID": descriptorID,
+                                             "weightID": weightID,
+                                             "packagingID": packagingID,
+                                             "produceID": produceID,
+                                             "deliveryDateFrom": deliveryDateFrom,
+                                             "deliveryDateTo": deliveryDateTo,
+                                             "deliveryCost": deliveryCost,
+                                             "deliveryCostOperator": deliveryCostOperator,
+                                             "transportID": transportID,                
+                                             "orderBy": orderBy,
+                                             "active": active
+                                          });
+  }
+  
+}
 
 
 class FetchPurchaseRowDataClientPacket extends RequireResponseClientPacket {
@@ -88,7 +159,6 @@ class FetchPurchaseRowDataClientPacket extends RequireResponseClientPacket {
   int start;
   int identifier;
   int max;
-  String groupBy;
   num amount;
   String amountOperator = "=";
   num cost;
@@ -103,11 +173,11 @@ class FetchPurchaseRowDataClientPacket extends RequireResponseClientPacket {
   int purchaseTimeTo;
   bool getSales = false;
   String orderBy;
-FetchPurchaseRowDataClientPacket ({
+  bool active = true;
+  FetchPurchaseRowDataClientPacket ({
                                   this.start,
                                   this.identifier,
                                   this.max,
-                                  this.groupBy,
                                   this.amount,
                                   this.amountOperator: "=",
                                   this.cost,
@@ -121,7 +191,8 @@ FetchPurchaseRowDataClientPacket ({
                                   this.purchaseTimeFrom,
                                   this.purchaseTimeTo,
                                   this.getSales,
-                                  this.orderBy
+                                  this.orderBy,
+                                  this.active
                                   });
 
 
@@ -129,7 +200,6 @@ FetchPurchaseRowDataClientPacket ({
     return super.toJsonDefault(ID)..addAll({ "start": start,
                                              "identifier": identifier,
                                              "max": max,
-                                             "groupBy": groupBy,
                                              "amount": amount,
                                              "amountOperator": amountOperator,
                                              "cost": cost,
@@ -143,7 +213,8 @@ FetchPurchaseRowDataClientPacket ({
                                              "purchaseTimeFrom": purchaseTimeFrom,
                                              "purchaseTimeTo": purchaseTimeTo,
                                              "getSales": getSales,
-                                             "orderBy": orderBy
+                                             "orderBy": orderBy,
+                                             "active": active
                                           });
   }
 }
@@ -173,4 +244,5 @@ class CLIENT_PACKET_IDS {
   static const int DATA_CHANGE = 5;
   static const int SEND_SESSION = 6;
   static const int PURCHASE_ROW_DATA = 7;
+  static const int SALES_ROW_DATA = 8;
 }

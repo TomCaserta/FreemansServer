@@ -83,7 +83,6 @@ class PurchaseRow extends Syncable {
 
   static Future<List<PurchaseRow>> searchData (WebsocketHandler wsh, {int start, int identifier,
                                                 int max,
-                                                String groupBy,
                                                 int amount,
                                                 String amountOperator: "=",
                                                 int cost,
@@ -97,12 +96,13 @@ class PurchaseRow extends Syncable {
                                                 int purchaseTimeFrom,
                                                 int purchaseTimeTo,
                                                 bool getSales,
-                                                String orderBy}) {
+                                                String orderBy,
+                                                bool active
+                                                }) {
     Completer c = new Completer();
     FetchPurchaseRowDataClientPacket packet = new FetchPurchaseRowDataClientPacket(start: start,
                                                                                    identifier: identifier,
                                                                                    max: max,
-                                                                                   groupBy: groupBy,
                                                                                    amount: amount,
                                                                                    amountOperator: amountOperator,
                                                                                    cost: cost,
@@ -116,6 +116,7 @@ class PurchaseRow extends Syncable {
                                                                                    purchaseTimeFrom: purchaseTimeFrom,
                                                                                    purchaseTimeTo: purchaseTimeTo,
                                                                                    getSales: getSales,
+                                                                                   active: active,
                                                                                    orderBy: orderBy);
     wsh.sendGetResponse(packet).then((ActionResponseServerPacket resp) {
       if (resp.complete == true) {

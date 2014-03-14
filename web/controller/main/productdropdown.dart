@@ -1,7 +1,8 @@
 part of FreemansClient;
 
-@NgDirective (
-    selector: "product"
+@NgController (
+    selector: "product",
+    publishAs: "dropdown"
 )
 class ProductDropdown {
   String fieldType = "";
@@ -27,62 +28,66 @@ class ProductDropdown {
   
   set productS (Product prod) {
     product = prod;
-    s.$eval("$prodAttr = product");
+    s.$eval("$prodAttr = dropdown.product");
   }
   
   set productWeightS (ProductWeight prodWeight) {
     productWeight = prodWeight;
-    s.$eval("$prodAttr = productWeight");
+
+    s.$eval("$weightAttr = dropdown.productWeight");
   }
   
   set productPackagingS (ProductPackaging prodPackaging) {
-    productPackaging = productPackaging;
-    s.$eval("$prodAttr = productPackaging");
+    productPackaging = prodPackaging;
+    s.$eval("$packagingAttr = dropdown.productPackaging");
   }
   
   set productDescriptorS (ProductDescriptors prodDescriptor) {
     productDescriptor = prodDescriptor;
-    s.$eval("$prodAttr = productDescriptor");
+    s.$eval("$descriptorAttr = dropdown.productDescriptor");
   }
   
   @NgAttr("state")
   set state (String state) {
     if (state != null && state.isNotEmpty) {
       if (stateChange != null) stateChange();
-     var ss = s.$eval(state);
-     if (ss != this.stateservice) { 
-       this.stateservice = ss;
-     Function pL, pacL, wl,pdl;
-     if (this.stateservice != null) {
-      pL = s.$watch("$state.activeProductList",(c, p, ws) { 
-        
-        if (c.hashCode != p.hashCode) { 
-          updateList();
-          print("Updated");        
-          print(c);
-        }
-                     
-      }); 
-//      pacL = s.$watch("$state.activePackagingList",(c, p, ws) { 
-//        if (c != p) updateList();
-//       }); 
-//      wl = s.$watch("$state.activeWeightList",(c, p, ws) { 
-//        if (c != p)  updateList();
-//      }); 
-//      pdl = s.$watch("$state.activeProductDescriptorList",(c, p, ws) { 
-//        if (c != p) updateList();
-//      }); 
-     }
-     stateChange = s.$watch(state, (curr, prev, Scope s) { 
-       if (curr != prev && curr != null) {
-         this.stateservice = curr;
-         updateList();
-      
-       }
-     });
-     
-     updateList();
-    }
+       var ss = s.$eval(state);
+       if (ss != this.stateservice) { 
+         this.stateservice = ss;
+         Function pL, pacL, wl,pdl;
+         if (this.stateservice != null) {
+          pL = s.$watchCollection("$state.activeProductList",(List c, List p, ws) { 
+            if (c != p) { 
+              updateList();
+            }                     
+          }); 
+          pacL = s.$watchCollection("$state.activePackagingList",(List c, List p, ws) { 
+             if (c != p) { 
+               updateList();
+             }                     
+          }); 
+
+          wl = s.$watchCollection("$state.activeWeightList",(List c, List p, ws) { 
+             if (c != p) { 
+               updateList();
+             }                     
+          }); 
+
+          pdl = s.$watchCollection("$state.activeProductDescriptorList",(List c, List p, ws) { 
+             if (c != p) { 
+               updateList();
+             }                     
+          }); 
+         }
+         stateChange = s.$watch(state, (curr, prev, Scope s) { 
+           if (curr != prev && curr != null) {
+             this.stateservice = curr;
+             updateList();
+           }
+         });
+       
+        updateList();
+      }
     }
   }
 
@@ -93,7 +98,9 @@ class ProductDropdown {
     prodAttr = prod;
     prodChange = s.$watch(prod, (currentValue, previousValue, Scope scope) {
       if (currentValue != previousValue) {
-        this.product = currentValue;
+        if (currentValue != null) updateSelected(currentValue);
+        else removeTypeFromSelected(SyncableTypes.PRODUCT);
+        refreshSelectedElements();
       }
     });
   }
@@ -105,7 +112,9 @@ class ProductDropdown {
     weightAttr = prodWeight;
     weightChange = s.$watch(prodWeight,(currentValue, previousValue, Scope scope) { 
       if (currentValue != previousValue) {
-        this.productWeight = currentValue;
+        if (currentValue != null) updateSelected(currentValue);
+        else removeTypeFromSelected(SyncableTypes.PRODUCT_WEIGHT);
+        refreshSelectedElements();
       }
     });
   }
@@ -117,7 +126,10 @@ class ProductDropdown {
     packagingAttr = prodPackaging;
     packagingChange = s.$watch(prodPackaging, (currentValue, previousValue, Scope scope) { 
       if (currentValue != previousValue) {
-        this.productPackaging = currentValue;
+        if (currentValue != null) updateSelected(currentValue);
+        else removeTypeFromSelected(SyncableTypes.PRODUCT_PACKAGING);
+        
+        refreshSelectedElements();
       }
     });
   }
@@ -129,7 +141,9 @@ class ProductDropdown {
     descriptorAttr = prodDescriptor;
     descriptorChange = s.$watch (prodDescriptor, (currentValue, previousValue, Scope scope) { 
       if (currentValue != previousValue) {
-        this.productDescriptor = currentValue;
+        if (currentValue != null) updateSelected(currentValue);
+        else removeTypeFromSelected(SyncableTypes.PRODUCT_DESCRIPTOR);
+        refreshSelectedElements();
       }
     });
   }
@@ -167,6 +181,7 @@ class ProductDropdown {
     inputBox.onKeyUp.listen((KeyboardEvent ev) {
       // If the key is a character:
       if ((ev.which >= 48 && ev.which <= 222) || (ev.which == 32)) {
+        print(ev.which == 32);
         refreshSubset();
       }
       
@@ -211,6 +226,18 @@ class ProductDropdown {
           }
           /// Check again because it may have changed inside the above if 
           if (ev.which == 13) ev.preventDefault();
+          break;
+        case 32:
+          print(filterRes("$currentSearch "));
+          if (filterRes("$currentSearch ").length == 0) {
+            if (activeList.length > 0) {
+              if (selectedElement == null) {
+                selectedElement = filteredList[0];
+              }
+              appendElement(selectedElement);  
+              ev.preventDefault();
+            }
+          }
           break;
         case 127: ev.preventDefault();
         // Delete
@@ -261,6 +288,13 @@ class ProductDropdown {
   }
   
   void updateSelected (Syncable selected) {
+    for (int x = 0; x < selectedElements.length; x++) { 
+      var s = selectedElements[x];
+      if (s.type == selected.type) {
+        selectedElements.removeAt(x);
+        x--;
+      }
+    }
     selectedElements.add(selected);
     switch (selected.type) {
       case SyncableTypes.PRODUCT:
@@ -278,6 +312,32 @@ class ProductDropdown {
     }
     updateList();
   }
+  
+  void removeTypeFromSelected (int type) {
+    for (int x = 0; x < selectedElements.length; x++) { 
+      var s = selectedElements[x];
+      if (s.type == type) {
+        selectedElements.removeAt(x);
+        x--;
+      }
+    }
+    switch (type) {
+      case SyncableTypes.PRODUCT:
+        this.productS = null;
+        break;
+      case SyncableTypes.PRODUCT_PACKAGING:
+        this.productPackagingS = null;
+        break;
+      case SyncableTypes.PRODUCT_WEIGHT:
+        this.productWeightS = null;
+        break;
+      case SyncableTypes.PRODUCT_DESCRIPTOR:
+        this.productDescriptorS = null;
+        break;
+    }
+    updateList();
+  }
+  
   
   void updateList () {
     bool addProducts = true;
@@ -308,12 +368,35 @@ class ProductDropdown {
       if (addDescriptors) activeList.addAll(stateservice.activeProductDescriptorList);
     }
   }
-  void appendElement (Syncable element) {
-    updateSelected(element);
+  
+  void refreshSelectedElements() {
+    //selectedElementsDisplay
+    for (int x = 0; x < this.selectedElementsDisplay.childNodes.length; x++) {
+      this.selectedElementsDisplay.childNodes[x].remove();
+      x--;
+    }
+    selectedElements.forEach((e) => appendElement(e, false));
+  }
+  
+  void appendElement (Syncable element, [bool doAdditional = true]) {
     this.selectedElementsDisplay.append(new LIElement()..text = element.name);
-    inputBox.text = "";
-    inputBox.focus();
-    refreshSubset();
+    if (doAdditional) {
+      updateSelected(element); 
+      inputBox.text = "";
+      inputBox.focus();
+      refreshSubset();
+    }  
+  }
+  List filterRes (String filterStr) {
+    return activeList.where((Syncable s) {
+      String res = s.name;
+      if (filterStr.length <= res.length) {
+        return res.substring(0,filterStr.length).toLowerCase() == filterStr.toLowerCase().replaceAll(" ", " "); //  For some reason theres non breaking spaces
+      }
+      else {
+        return false;
+      }        
+    }).toList();
   }
   
   void refreshSubset() {
@@ -327,15 +410,7 @@ class ProductDropdown {
       ulEl.classes.add("auto-completer-suggestions");
       currentSelected = 0;
       bool isFirst = true;
-      filteredList = activeList.where((Syncable s) {
-        String res = s.name;
-        if (currentSearch.length <= res.length) {
-          return res.substring(0,currentSearch.length).toLowerCase() == currentSearch.toLowerCase();
-        }
-        else {
-          return false;
-        }        
-      }).toList();
+      filteredList = filterRes(currentSearch);
       if (filteredList.length > 0) selectedElement = filteredList[0];
       
       int x = 0;

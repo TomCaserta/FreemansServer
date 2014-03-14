@@ -61,6 +61,7 @@ class PurchasesController {
       nPurRow.purchaseTime = _purchaseTime.toUtc();
       if (activeWeight != null) nPurRow.weightID = activeWeight.ID;
       if (activePackaging != null) nPurRow.packagingID = activePackaging.ID;
+      if(activeDescriptor != null) nPurRow.descriptorID = activeDescriptor.ID;
       if (isAdd) {
         nPurRow.insert(this.state.wsh).then((ActionResponseServerPacket response) {
           if (response.complete == true) {
@@ -71,6 +72,7 @@ class PurchasesController {
             this.activeWeight = null;
             this.activeProduct = null;
             this.activePackaging = null;
+            this.activeDescriptor = null;
             this.cost = null;
             this.qty = null;
             nPurRow.mergeJson(response.payload[0]);
@@ -98,6 +100,7 @@ class PurchasesController {
             this.activeWeight = null;
             this.activeProduct = null;
             this.activePackaging = null;
+            this.activeDescriptor = null;
             this.cost = null;
             this.qty = null;
             this.ID = null;
@@ -132,6 +135,7 @@ class PurchasesController {
     this.activeTransport = null;
     this.activeWeight = null;
     this.activeProduct = null;
+    this.activeDescriptor = null;
     this.activePackaging = null;
     this.cost = null;
     this.qty = null;
@@ -147,6 +151,7 @@ class PurchasesController {
     activeWeight = row.weight;
     activeProduct = row.product;
     activePackaging = row.packaging;
+    activeDescriptor = row.descriptor;
     activeTransport = row.collectingHaulier;
     cost = row.cost;
     qty = row.amount;

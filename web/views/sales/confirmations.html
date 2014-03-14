@@ -1,0 +1,36 @@
+<div confirmation class="confirmation">
+  <div class="letter_head" ng-bind-html="confirmation.getLetterHead">
+
+  </div>
+  
+  <table>
+    <tbody>
+      <tr><th>Send To:</th><td>{{confirmation.customerName}}</td> <th>DATE:</th><td>{{confirmation.fullDate}}</td></tr>
+    </tbody>
+    
+  </table>
+  
+  
+  <h2>DELIVERY {{confirmation.fullDay}} NIGHT <span class="important" ng-if="confirmation.requiresAmmendment">AMMENDMENT</span><h2>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Qty</th> <th>Item</th> <th>Cost</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="salesRow in confirmation.salesRow">
+        <td></td> <td></td> <td></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div class="footer">
+    <p>
+    VAT NO.   906 3867 07</p><p>
+    COMPANY REGISTRATION NO. 6234538
+    </p>
+    <p><small>Document generated at {{confirmation.currentTime}}</small></p>
+  </div>
+</div>
