@@ -1,0 +1,21 @@
+<sales-confirmations>
+  <div class="well well-sm">
+    <form class="form-inline">
+    <div class="form-group">
+        <label for="date">Date:</label>
+        <input id="date" ng-model="confirmations.selectedDate" class="form-control" type="date">
+    </div>
+    <div class="form-group">
+
+        <button class="btn btn-success">
+            Send {{confirmations.confirmations.length}} Sales Confirmations
+        </button>
+    </div>
+    </form>
+  </div>
+  <div class="confirmation-container">
+      <div confirmation-document ng-repeat="confirmation in confirmations.confirmations" date="confirmation.date" sales="confirmation.sr" customer-name="confirmation.cust.name" requires-ammendment="confirmation.requireAmmendment"></div>
+
+  </div>
+
+</sales-confirmations>

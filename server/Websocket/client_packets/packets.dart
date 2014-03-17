@@ -65,9 +65,8 @@ class InitialDataRequest extends ClientPacket {
       List terL = Syncable.getVals(Terms);
       List locL = Syncable.getVals(Location);
       List thcL = Syncable.getVals(TransportHaulageCost);
-
-      
-      client.sendPacket(new InitialDataResponseServerPacket(rID, aL, cL, pL, pWL, pPL, pD, pCL, tL, uL, sL, terL, locL, thcL));
+      List optL = Syncable.getVals(Options);
+      client.sendPacket(new InitialDataResponseServerPacket(rID, aL, cL, pL, pWL, pPL, pD, pCL, tL, uL, sL, terL, locL, thcL, optL));
     }
   }
 }
@@ -118,6 +117,7 @@ class SyncableTypes {
   static const int PURCHASE_ROW = 12;
   static const int SALE_ROW = 13;
   static const int PRODUCT_DESCRIPTOR = 14;
+  static const int OPTION = 15;
 }
 
 class SyncableModifyClientPacket extends ClientPacket {
@@ -180,6 +180,9 @@ class SyncableModifyClientPacket extends ClientPacket {
         case SyncableTypes.PRODUCT_DESCRIPTOR:
           schema = PRODUCTDESCRIPTOR_SCHEMA;
           break;
+        case SyncableTypes.OPTION:
+          schema = OPTIONS_SCHEMA;
+          break;
         default:
           client.sendPacket(new ActionResponseServerPacket(this.rID, false, ["Unknown type $type"]));
           return;
@@ -233,6 +236,9 @@ class SyncableModifyClientPacket extends ClientPacket {
                 break;
               case SyncableTypes.PRODUCT_DESCRIPTOR:
                 s = new ProductDescriptor.fromJson(payload);
+                break;
+              case SyncableTypes.OPTION:
+                s = new Options.fromJson(payload);
                 break;
             }
           } else {
@@ -514,7 +520,7 @@ class FetchSalesRowDataClientPacket extends ClientPacket {
       StringBuffer buffer = new StringBuffer();
       List params = [];
       buffer.write(" WHERE active=? ");
-      params.add((active != null && active == true ? 1 : 0));
+      params.add((active == null || active == true ? 1 : 0));
       if (identifier != null) {
         if (buffer.length > 0) buffer.write(" AND ");
         else buffer.write(" WHERE ");
@@ -599,7 +605,7 @@ class FetchSalesRowDataClientPacket extends ClientPacket {
       }
 
       String fullSql = "${SalesRow.selector}${buffer.toString()}";
-      ffpServerLog.info("Fetching $fullSql from the database!");
+      ffpServerLog.info("Fetching $fullSql from the database! ${params}");
       dbHandler.prepareExecute(fullSql, params).then((Results res) {
         List<SalesRow> salesRows = [];
         res.listen((Row r) {
@@ -614,6 +620,24 @@ class FetchSalesRowDataClientPacket extends ClientPacket {
   }
 }
 
+class GeneratePDFClientPacket extends ClientPacket {
+  static int ID = CLIENT_PACKET_IDS.GENERATE_PDF;
+  String html;
+  String directory;
+  String outputfile;
+  GeneratePDFClientPacket.create (String this.html, String this.directory, String this.outputfile) {
+    
+   
+  }
+  void handlePacket(WebsocketHandler wsh, Client client) {
+    if (!client.user.isGuest && client.user.hasPermission("generatepdf")) {
+         Directory dir = new Directory("").absolute;
+         Directory asked = new Directory(this.directory).absolute;
+         
+    }
+  }
+}
+
 
 class CLIENT_PACKET_IDS {
   static const int AUTHENTICATE = 1;
@@ -624,4 +648,5 @@ class CLIENT_PACKET_IDS {
   static const int SEND_SESSION = 6;
   static const int PURCHASE_ROW_DATA = 7;
   static const int SALES_ROW_DATA = 8;
+  static const int GENERATE_PDF = 9;
 }

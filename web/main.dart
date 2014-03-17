@@ -32,7 +32,8 @@ part 'controller/sales/salesclassic.dart';
 part 'controller/purchases/purchases.dart';
 part 'controller/main/productdropdown.dart';
 part 'controller/sales/confirmation.dart';
-
+part "controller/lists/output_html.dart";
+part "controller/sales/sales_confirmations.dart";
 
 void main() {
   Logger.root.level = Level.FINE;
@@ -61,6 +62,9 @@ class FreemansModule extends Module {
     type(ListEditor);
     type(MultiListSelectBox);
     type(ProductDropdown);
+    type(OutputHtml);
+    type(ConfirmationDocument);
+    type(SalesConfirmations);
     factory(NgRoutingUsePushState,
         (_) => new NgRoutingUsePushState.value(false));
    
@@ -81,6 +85,10 @@ freemansRouteInitializer(Router router, ViewFactory views) {
           path: 'sheetview',
           view: 'views/sales/classic.html'
        ),
+        'confirmations': ngRoute(
+            path: 'confirmations',
+            view: 'views/sales/sales_confirmations.html'
+        ),
        'sales': ngRoute(
           path: 'sales',
           view: 'views/sales/index.html'

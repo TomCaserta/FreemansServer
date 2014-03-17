@@ -9,6 +9,9 @@ import "../utilities/preloader.dart";
 
 
 class StateService {
+
+
+
   bool loggedIn = false;
   WebsocketHandler wsh = new WebsocketHandler("ws://127.0.0.1:1337/websocket");
   Preloader preloader = new Preloader();
@@ -26,6 +29,15 @@ class StateService {
   List<Terms> termsList = new List<Terms>();
   List<Locations> locationList = new List<Locations>();
   List<TransportHaulageCost> transportHaulageCostList = new List<TransportHaulageCost>();
+  List<Options> optionList = new List<Options>();
+
+  String getOption (String optionName) {
+    Iterable<Options> opts = optionList.where((e) => e.name == optionName);
+    if (opts.length > 0) {
+      return opts.first.option;
+    }
+    else return "";
+  }
 
   List get activeSupplierList {
     return this.supplierList.where((e) => e.isActive).toList();
@@ -120,6 +132,10 @@ class StateService {
     });
     packet.productDescriptorList.forEach((Map productDescriptorList) {
       this.productDescriptorList.add(new ProductDescriptors.fromJson(productDescriptorList));
+    });
+    print(packet.optionsList);
+    packet.optionsList.forEach((Map optionList) {
+      this.optionList.add(new Options.fromJson(optionList));
     });
   }
   

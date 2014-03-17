@@ -1,4 +1,4 @@
-<section class="col-md-10 col-md-offset-1 well-sm well row" listoverview>
+<section class="col-md-12  well-sm well row" listoverview>
 <div class="row col-md-2">
     <ul class="listbox large">
         <!--- LEAVE NO GAP BETWEEN BUTTON AND DIV OTHERWISE IT WILL THROW IT ONTO A NEW LINE -->
@@ -681,6 +681,7 @@
     </form>
 </section>
 
+
 <section class="col-lg-12" ng-if="listoverview.activeList.name == 'Packaging'">
     <form role="form" class="form-horizontal">
         <div class="panel panel-default">
@@ -810,6 +811,47 @@
     </form>
 </section>
 
+<section class="col-lg-12" ng-if="listoverview.activeList.name == 'Options'">
+    <form role="form" class="form-horizontal">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4>Option</h4></div>
+            <div class="panel-body">
+                <fieldset>
+                    <div class="form-group">
+                        <label for="name" class="col-md-2">Option name:</label>
+
+                        <div class="col-md-10">
+                            <input class="form-control" id="name" ng-model="listoverview.activeList.activeItem.name" placeholder="Option Name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="description" class="col-md-2">Option Value:</label>
+
+                        <div class="col-md-10">
+                            <textarea class="form-control" id="description" ng-model="listoverview.activeList.activeItem.option" placeholder="Option Value">
+                            </textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-2 label">Output:</div>
+
+                        <div class="col-md-10">
+                            <div output-html="listoverview.activeList.activeItem.option">
+
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <listbuttons controller="listoverview.activeList" name="Option"></listbuttons>
+            </div>
+        </div>
+    </form>
+</section>
 
 
 </div>

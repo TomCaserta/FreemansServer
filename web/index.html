@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html style="overflow-y: auto;">
-  <head>
-    <title>Freemans Software</title>
+  <head class="do-print">
+    <title> ​  ‮</title>
     
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -13,12 +13,13 @@
     <link rel="icon" href="resources/icon_16.png" />
     
     <link href="css/main.css" rel="stylesheet" media="screen">
+    <LINK rel="stylesheet" type"text/css" href="css/print.css" media="print">
     
   </head>
   <body ng-app>
-   <nav mainnav ng-show="main.loaded" ng-cloak class="navbar navbar-default navbar-fixed-top" role="navigation">
+   <nav mainnav ng-show="main.loaded" ng-cloak class="do-not-print navbar navbar-default navbar-fixed-top" role="navigation">
       
-      <div class="navbar-header">
+      <div class="navbar-header ">
         <button type="button"  data-target="#collapse-nav" class="navbar-toggle" data-toggle="collapse">
           <span class="sr-only">Toggle navigation</span>
           <span class="icon-bar"></span>
@@ -48,7 +49,7 @@
           <progress value="{{loader.progress}}" style="width: 100%" max="100"></progress> 
         </div>
      </section>    
-    <ng-view>
+    <ng-view class="do-print">
     </ng-view>
     <noscript>This page requires javascript to run. If you have not got javascript or you have blocked the page from loading then the rest of this page will not work.</noscript>
     <script type="application/dart" src="main.dart"></script>

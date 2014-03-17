@@ -97,7 +97,7 @@ class ProductGroup extends Syncable<ProductGroup> {
       });
     }
     else {
-      dbh.prepareExecute("UPDATE productgroupss SET productID=?, weightID=?, packagingID=?, descriptorID=?, lastUsed=?, isActive=? WHERE ID=?", [productID,weightID,packagingID, descriptorID, (lastUsed != null ? lastUsed.millisecondsSinceEpoch : null), (isActive ? 1 : 0), ID]).then((res) {
+      dbh.prepareExecute("UPDATE productgroups SET productID=?, weightID=?, packagingID=?, descriptorID=?, lastUsed=?, isActive=? WHERE ID=?", [productID,weightID,packagingID, descriptorID, (lastUsed != null ? lastUsed.millisecondsSinceEpoch : null), (isActive ? 1 : 0), ID]).then((res) {
         if (res.affectedRows <= 1) {
           this.synced();
           c.complete(true);

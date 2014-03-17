@@ -1,5 +1,5 @@
-<div confirmation class="confirmation">
-  <div class="letter_head" ng-bind-html="confirmation.getLetterHead">
+<div confirmation class="do-print confirmation">
+  <div class="letter_head" output-html="confirmation.getLetterHead">
 
   </div>
   
@@ -11,7 +11,7 @@
   </table>
   
   
-  <h2>DELIVERY {{confirmation.fullDay}} NIGHT <span class="important" ng-if="confirmation.requiresAmmendment">AMMENDMENT</span><h2>
+  <h2>DELIVERY {{confirmation.fullDay}} NIGHT <span class="important" ng-if="confirmation.requiresAmmendment">AMMENDMENT</span></h2>
   
   <table>
     <thead>
@@ -20,17 +20,17 @@
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="salesRow in confirmation.salesRow">
-        <td></td> <td></td> <td></td>
+      <tr ng-repeat="salesRow in confirmation.salesRows">
+        <td>{{salesRow.amount}}</td> <td>X {{salesRow.weight.name}} {{salesRow.packaging.name}} {{salesRow.descriptor.name}} {{salesRow.product.name}}</td> <td>&pound;<span ng-if="salesRow.salePrice == null">_____</span><span ng-if="salesRow.salePrice != null">{{salesRow.salePrice | number:2}}</span></td>
       </tr>
     </tbody>
   </table>
   
-  <div class="footer">
+  <footer>
     <p>
     VAT NO.   906 3867 07</p><p>
     COMPANY REGISTRATION NO. 6234538
     </p>
     <p><small>Document generated at {{confirmation.currentTime}}</small></p>
-  </div>
+  </footer>
 </div>

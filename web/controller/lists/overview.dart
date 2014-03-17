@@ -42,6 +42,7 @@ class ListEditor {
       lists.add(new ListContainer<ProductPackaging>("Packaging", state, state.productPackagingList));
       lists.add(new ListContainer<Terms>("Terms", state, state.termsList));
       lists.add(new ListContainer<Locations>("Locations", state, state.locationList));
+      lists.add(new ListContainer<Options>("Options", state, state.optionList));
     }
   }
   void confirmedViewChange ([String listName, bool isNew]) {

@@ -9,6 +9,21 @@ class SalesController {
   StateService state;
 
    DateTime deliveryDate = new DateTime.now();
+   
+   String get selDelDate => new DateFormat('yyyy-MM-dd').format(deliveryDate);
+   set selDelDate (String delDate) {
+     try {
+       DateTime parseDT = new DateFormat('yyyy-MM-dd').parse(delDate);
+       deliveryDate = parseDT;
+       getMatchingPurchases ();
+    
+     }
+     catch (E) {
+       // TODO: handle this error
+       print("Could not parse $delDate");
+     }
+   }
+   
   int purchaseRowID;
   Customer activeCustomer;
   ProductWeight _activeWeight;
@@ -34,6 +49,13 @@ class SalesController {
     getMatchingPurchases ();
   }
 
+  ProductDescriptors _activeDescriptor;
+  ProductDescriptors get activeDescriptor => _activeDescriptor;
+  set activeDescriptor (ProductDescriptors activeDescriptor) {
+    _activeDescriptor = activeDescriptor;
+    getMatchingPurchases ();
+  }
+
   Transport activeTransport;
   num cost;
   num qty;
@@ -53,7 +75,6 @@ class SalesController {
 
   void removeSurcharge () {
     if (activeTransport != null && haulageCost != null) {
-      print("Removing surcharge amt");
       haulageCost = (activeTransport.removeSurcharge(haulageCost, deliveryDate) * 100).round() / 100;
     }
   }
@@ -61,7 +82,6 @@ class SalesController {
   void addSurcharge () {
 
      if (activeTransport != null && haulageCost != null) {
-       print("Adding surcharge amt");
        haulageCost = (activeTransport.applySurcharge(haulageCost, deliveryDate) * 100).round() / 100;
      }
   }
@@ -79,6 +99,7 @@ class SalesController {
       nSalesRow.deliveryDate = deliveryDate.toUtc();
       if (activeWeight != null) nSalesRow.weightID = activeWeight.ID;
       if (activePackaging != null) nSalesRow.packagingID = activePackaging.ID;
+      if (activeDescriptor !=null) nSalesRow.descriptorID = activeDescriptor.ID;
       nSalesRow.produceID = purchaseRowID;
       nSalesRow.isActive = true;
       if (isAdd) {
@@ -91,6 +112,7 @@ class SalesController {
             this.activeWeight = null;
             this.activeProduct = null;
             this.activePackaging = null;
+            this.activeDescriptor = null;
             this.haulageCost = null;
             this.cost = null;
             this.qty = null;
@@ -121,6 +143,7 @@ class SalesController {
      this.activeProduct = parent.product;
      this.activeWeight = parent.weight;
      this.activePackaging = parent.packaging;
+     this.activeDescriptor = parent.descriptor;
    }
   void getMatchingPurchases ([int pageNum = 0]) {
       int productID;
@@ -129,8 +152,16 @@ class SalesController {
       if (activeWeight !=null) weightID = activeWeight.ID;
       int packagingID;
       if (activePackaging !=null) packagingID = activePackaging.ID;
+      int descriptorID;
+      if (activeDescriptor != null) descriptorID = activeDescriptor.ID;
       List<PurchaseRow> matchingPurchases = [];
-      PurchaseRow.searchData(this.state.wsh, orderBy: "ID DESC", start: (200 * pageNum), max: ((200 * pageNum) + 200), productID: productID, weightID: weightID, packagingID: packagingID, getSales: true).then((List<PurchaseRow> data) {
+      
+
+      int t = deliveryDate.millisecondsSinceEpoch;
+      int dayBegin = t - (t % 86400000) - 1;
+      int dayEnd = dayBegin + 86400000 + 1;
+      
+      PurchaseRow.searchData(this.state.wsh, purchaseTimeTo: dayEnd, orderBy: "ID DESC", start: (200 * pageNum), max: ((200 * pageNum) + 200), productID: productID, weightID: weightID, packagingID: packagingID, descriptorID: descriptorID, getSales: true).then((List<PurchaseRow> data) {
         data.forEach((PurchaseRow row) {
           num totalQty = 0;
           row.salesRow.forEach((SalesRow r) {

@@ -20,6 +20,11 @@ class SalesRow extends Syncable {
   int weightID;
   int packagingID;
   int descriptorID;
+  
+  Product get product => Syncable.get(SyncableTypes.PRODUCT, productID);
+  ProductWeight get weight => Syncable.get(SyncableTypes.PRODUCT_WEIGHT, weightID);
+  ProductPackaging get packaging => Syncable.get(SyncableTypes.PRODUCT_PACKAGING, packagingID);
+  ProductDescriptors get descriptor => Syncable.get(SyncableTypes.PRODUCT_DESCRIPTOR, descriptorID);
 
   SalesRow ();
 
@@ -62,7 +67,8 @@ class SalesRow extends Syncable {
   static List<SalesRow> processList (List data) {
     var prList = [];
     data.forEach((Map salesRowData) {
-      prList.add(new PurchaseRow.fromJson(salesRowData));
+      print("Proccessed List Item");
+      prList.add(new SalesRow.fromJson(salesRowData));
     });
     return prList;
   }

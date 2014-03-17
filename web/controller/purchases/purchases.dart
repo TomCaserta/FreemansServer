@@ -165,7 +165,6 @@ class PurchasesController {
   void refreshPurchases () {
     if (_purchaseTime != null) {
       int t = _purchaseTime.millisecondsSinceEpoch;
-      print(t);
       int dayBegin = t - (t % 86400000) - 1;
       int dayEnd = dayBegin + 86400000 + 1;
 

@@ -178,6 +178,7 @@ class InitialDataResponseServerPacket extends ServerPacket {
   List termsList = new List();
   List locationList = new List();
   List transportHaulageCostList = new List();
+  List optionsList = new List();
   
   InitialDataResponseServerPacket.create(this.accountList,
                                          this.customerList,
@@ -191,7 +192,8 @@ class InitialDataResponseServerPacket extends ServerPacket {
                                          this.supplierList,
                                          this.termsList,
                                          this.locationList,
-                                         this.transportHaulageCostList);
+                                         this.transportHaulageCostList,
+                                         this.optionsList);
   void handlePacket (WebsocketHandler wsh) {
     
   }

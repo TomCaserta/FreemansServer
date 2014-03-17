@@ -32,6 +32,7 @@ class InitialDataResponseServerPacket extends ServerPacket {
   List termsList = new List<Terms>();
   List locationList = new List<Location>();
   List transportHaulageCostList = new List<TransportHaulageCost>();
+  List optionsList = new List<Options>();
   
   InitialDataResponseServerPacket(
                                   this.rID,
@@ -47,7 +48,8 @@ class InitialDataResponseServerPacket extends ServerPacket {
                                   this.supplierList,
                                   this.termsList,
                                   this.locationList,
-                                  this.transportHaulageCostList
+                                  this.transportHaulageCostList,
+                                  this.optionsList
                                  );
   
   Map toJson () {
@@ -64,7 +66,8 @@ class InitialDataResponseServerPacket extends ServerPacket {
                                               "supplierList": supplierList,
                                               "termsList": termsList,
                                               "locationList": locationList,
-                                              "transportHaulageCostList": transportHaulageCostList
+                                              "transportHaulageCostList": transportHaulageCostList,
+                                              "optionsList": optionsList
                                             });
   }
 }

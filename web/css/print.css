@@ -1,0 +1,45 @@
+/* line 1, ../scss/print.scss */
+:not(.do-print) {
+  display: none; }
+
+/* line 5, ../scss/print.scss */
+.do-not-print {
+  display: none !important; }
+
+/* line 10, ../scss/print.scss */
+html, body {
+  display: initial !important; }
+
+/* line 14, ../scss/print.scss */
+.do-print {
+  display: initial !important; }
+
+/* line 17, ../scss/print.scss */
+.do-print * {
+  display: initial !important; }
+
+/* line 22, ../scss/print.scss */
+*.do-print {
+  display: initial !important; }
+
+/* line 26, ../scss/print.scss */
+ng-view {
+  position: relative; }
+
+/* line 30, ../scss/print.scss */
+[confirmation-document] {
+  position: relative;
+  font-family: Calibri, Arial, sans-serif;
+  text-align: center;
+  width: 867px;
+  height: auto;
+  page-break-inside: avoid;
+  -webkit-region-break-inside: avoid;
+  page-break-after: always;
+  -webkit-region-break-after: always; }
+
+/* line 44, ../scss/print.scss */
+[confirmation-document] > footer {
+  font-size: 0.6em;
+  position: relative;
+  bottom: 0px; }

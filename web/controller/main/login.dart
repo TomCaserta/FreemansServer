@@ -30,6 +30,7 @@ class Login {
     }
     if (req) {
       errors = new List<String>();
+      if (!service.wsh.loaded) addError("Cannot connect to server... please try again");
       service.wsh.sendGetResponse(new AuthenticateClientPacket(this.username, this.password)).then((ServerPacket packet) { 
         if (packet is ActionResponseServerPacket) { 
           packet.payload.forEach((e) {
@@ -38,6 +39,7 @@ class Login {
         }
         else if (packet is LoggedInServerPacket) {
           service.handleLogin(packet);
+          window.location.hash = "overview";
         }
       });
     }

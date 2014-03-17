@@ -200,9 +200,9 @@ class SalesRow extends Syncable<SalesRow> {
 
   }
 
-  Future<bool> updateDatabase(DatabaseHandler dbh, QuickbooksConnector qbc) {
+  Future<List<bool>> updateDatabase(DatabaseHandler dbh, QuickbooksConnector qbc) {
     Completer c = new Completer();
-    List<Future<dynamic>> futures = new List<Future<bool>>();
+    List<Future<dynamic>> futures = new List<Future<dynamic>>();
     // Fake completer/future to ensure that we always have atleast one future waiting on.
     // Whilst its a bit hacky its easier than doing a check.
     Completer fakeCompleter = new Completer();

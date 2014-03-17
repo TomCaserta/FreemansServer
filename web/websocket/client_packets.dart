@@ -81,7 +81,7 @@ class SendSessionClientPacket extends ClientPacket {
     return super.toJsonDefault(ID)..addAll({ "sessionID": sessionID });
   }
 }
-class FetchSalesRowDataClientPacket extends ClientPacket {
+class FetchSalesRowDataClientPacket extends RequireResponseClientPacket {
   static int ID = CLIENT_PACKET_IDS.SALES_ROW_DATA;
   int start;
   int max;
@@ -89,7 +89,6 @@ class FetchSalesRowDataClientPacket extends ClientPacket {
   String amountOperator = "=";
   num salePrice;
   String salePriceOperator = "=";
-  String rID;
   String orderBy = "";
   int identifier;
   int descriptorID;
@@ -104,7 +103,7 @@ class FetchSalesRowDataClientPacket extends ClientPacket {
   String deliveryCostOperator = "=";
   int transportID;
   bool active = true;
-  FetchSalesRowDataClientPacket ({this.rID,
+  FetchSalesRowDataClientPacket ({
                                            this.start,
                                            this.max,
                                            this.amount,
@@ -234,6 +233,7 @@ class SyncableTypes {
   static const int PURCHASE_ROW = 12;
   static const int SALE_ROW = 13;
   static const int PRODUCT_DESCRIPTOR = 14;
+  static const int OPTION = 15;
 }
 
 class CLIENT_PACKET_IDS {

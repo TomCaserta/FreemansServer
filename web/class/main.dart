@@ -21,6 +21,7 @@ part "product_weight.dart";
 part "product_packaging.dart";
 part "product_descriptors.dart";
 part "product_group.dart";
+part "option.dart";
 
 abstract class Syncable {
   static Map<int,Map<int, Syncable>> _cached = new Map<int, Map<int, Syncable>>();

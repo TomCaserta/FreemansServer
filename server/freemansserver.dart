@@ -14,6 +14,7 @@ import 'package:utf/utf.dart';
 import 'package:uuid/uuid.dart' as uuid;
 import 'utils/permissions.dart';
 import 'utils/preloader.dart';
+import "package:path/path.dart" as path;
 import 'utils/functions.dart';
 
 /* QUICKBOOKS INTEGRATION */
@@ -44,6 +45,7 @@ part 'syncables/product_descriptors.dart';
 part 'syncables/product_packaging.dart';
 part 'syncables/product_weight.dart';
 part 'syncables/product_categories.dart';
+part 'syncables/options.dart';
 
 /* UTILITIES */
 part 'utils/syncable.dart';
@@ -103,6 +105,7 @@ void main() {
     prel.addFuture(new PreloadElement("ProductPackagingInit", ProductPackaging.init));
     prel.addFuture(new PreloadElement("ProductCategoryInit", ProductCategory.init));
     prel.addFuture(new PreloadElement("ProductDescriptor", ProductDescriptor.init));
+    prel.addFuture(new PreloadElement("OptionsInit", Options.init));
     prel.addFuture(new PreloadElement("LocationInit", Location.init));
     prel.addFuture(new PreloadElement("TransportHaulageCostInit", TransportHaulageCost.init));
     prel.addMethod(new PreloadElement("PacketInit", ClientPacket.init));
